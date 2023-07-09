@@ -27,7 +27,11 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
-
+import Switch from "@mui/material/Switch";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
+import DarkModeTwoToneIcon from "@mui/icons-material/DarkModeTwoTone";
+import Brightness6TwoToneIcon from "@mui/icons-material/Brightness6TwoTone";
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
 import MDInput from "components/MDInput";
@@ -53,6 +57,7 @@ import {
   setTransparentNavbar,
   setMiniSidenav,
   setOpenConfigurator,
+  setDarkMode,
 } from "context";
 
 function DashboardNavbar({ absolute, light, isMini }) {
@@ -61,6 +66,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const handleDarkMode = () => setDarkMode(dispatch, !darkMode);
 
   useEffect(() => {
     // Setting the navbar type
@@ -142,27 +148,28 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
-            <MDBox pr={1}>
+            {/* <MDBox pr={1}>
               <MDInput label="Search here" />
-            </MDBox>
+            </MDBox> */}
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              {/* <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
                 </IconButton>
-              </Link>
+              </Link> */}
               <IconButton
-                size="small"
+                className="ml-5"
+                size="large"
                 disableRipple
                 color="inherit"
                 sx={navbarMobileMenu}
                 onClick={handleMiniSidenav}
               >
-                <Icon sx={iconsStyle} fontSize="medium">
+                <Icon sx={iconsStyle} fontSize="large">
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
               </IconButton>
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -170,8 +177,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
+              </IconButton> */}
+              <IconButton size="medium">
+                <Switch
+                  size="medium"
+                  checked={darkMode}
+                  icon={<WbSunnyOutlinedIcon color="warning" />}
+                  checkedIcon={<DarkModeTwoToneIcon color="white" />}
+                  onChange={handleDarkMode}
+                />
               </IconButton>
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -184,8 +200,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <MDBadge badgeContent={9} color="error" size="xs" circular>
                   <Icon sx={iconsStyle}>notifications</Icon>
                 </MDBadge>
-              </IconButton>
-              {renderMenu()}
+              </IconButton> */}
+              {/* {renderMenu()} */}
             </MDBox>
           </MDBox>
         )}

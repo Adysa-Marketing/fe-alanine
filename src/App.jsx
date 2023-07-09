@@ -29,7 +29,9 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
 // Material Dashboard 2 PRO React routes
-import routes from "routes";
+import { routes } from "routes";
+import Layout from "contents";
+import Login from "contents/Authentication/Login";
 
 // Material Dashboard 2 PRO React contexts
 import {
@@ -61,16 +63,6 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
 
-  // Cache for the rtl
-  useMemo(() => {
-    const cacheRtl = createCache({
-      key: "rtl",
-      stylisPlugins: [rtlPlugin],
-    });
-
-    setRtlCache(cacheRtl);
-  }, []);
-
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
@@ -90,34 +82,24 @@ export default function App() {
   // Change the openConfigurator state
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
 
-  // Setting the dir attribute for the body element
-  useEffect(() => {
-    document.body.setAttribute("dir", direction);
-  }, [direction]);
-
   // Setting page scroll to 0 when changing the route
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  const getRoutes = (allRoutes) => {
-    const index = [];
-    const theRoutes = allRoutes.map((route) => {
-      if (route.index) index.push(<Route index element={route.component} key={route.key} />);
+  const getRoutes = (allRoutes) =>
+    allRoutes.map((route) => {
       if (route.collapse) {
-        return (
-          <Route exact path={route.route} element={route.component} key={route.key}>
-            {getRoutes(route.collapse)}
-          </Route>
-        );
-      } else if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
+        return getRoutes(route.collapse);
       }
+
+      if (route.route) {
+        return <Route path={route.route} element={route.component} key={route.key} />;
+      }
+
       return null;
     });
-    return theRoutes.concat(index);
-  };
 
   const configsButton = (
     <MDBox
@@ -143,40 +125,15 @@ export default function App() {
     </MDBox>
   );
 
-  return direction === "rtl" ? (
-    <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
-        <CssBaseline />
-        {layout === "dashboard" && (
-          <>
-            <Sidenav
-              color="error"
-              brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-              brandName="Portal BIS2"
-              routes={routes}
-              onMouseEnter={handleOnMouseEnter}
-              onMouseLeave={handleOnMouseLeave}
-            />
-            <Configurator />
-            {configsButton}
-          </>
-        )}
-        {layout === "vr" && <Configurator />}
-        <Routes>
-          {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboards/analytics" />} />
-        </Routes>
-      </ThemeProvider>
-    </CacheProvider>
-  ) : (
-    <ThemeProvider theme={darkMode ? themeDark : theme}>
+  return (
+    <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
       <CssBaseline />
       {layout === "dashboard" && (
         <>
           <Sidenav
-            color={sidenavColor}
+            color="error"
             brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-            brandName="Portal BIS1"
+            brandName="Adysa Marketing"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
@@ -187,8 +144,9 @@ export default function App() {
       )}
       {layout === "vr" && <Configurator />}
       <Routes>
-        {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboards/analytics" />} />
+        <Route exact path="/login" element={<Login />} key="login" />
+        <Route element={<Layout key="layout" />}>{getRoutes(routes)}</Route>
+        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </ThemeProvider>
   );
