@@ -36,9 +36,9 @@ function Admin() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama", accessor: "name", width: "15%" },
-    { Header: "Username", accessor: "username", width: "15%" },
-    { Header: "Email", accessor: "email", width: "15%" },
+    { Header: "Nama", accessor: "name", width: "25%" },
+    { Header: "Username", accessor: "username", width: "20%" },
+    { Header: "Email", accessor: "email", width: "25%" },
     { Header: "Gender", accessor: "gender", width: "15%" },
     { Header: "Point", accessor: "point", width: "15%" },
     { Header: "Status", accessor: "status", width: "15%" },
@@ -86,6 +86,7 @@ function Admin() {
         let no = 0;
         const output = data.data.map((item) => {
           no++;
+          const statusId = item.isActive ? 1 : 2;
           return {
             no,
             name: item.name,
@@ -100,7 +101,13 @@ function Admin() {
             ),
             action:
               user && [1].includes(user.roleId) ? (
-                <ButtonAction id={item.id} urlKey={"/api/v1/master/admin"}></ButtonAction>
+                <ButtonAction
+                  id={item.id}
+                  urlKey={"/master/admin"}
+                  refreshData={loadData}
+                  changeStatus={true}
+                  statusId={statusId}
+                ></ButtonAction>
               ) : (
                 "-"
               ),

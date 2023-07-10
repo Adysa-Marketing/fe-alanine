@@ -16,7 +16,7 @@ import Config from "config";
 import Confirm from "contents/Components/Confirm";
 import ModalNotif from "contents/Components/ModalNotif";
 
-function ButtonAction({ id, urlKey, refreshData }) {
+function ButtonAction({ id, urlKey, refreshData, changeStatus, statusId }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
 
@@ -29,7 +29,11 @@ function ButtonAction({ id, urlKey, refreshData }) {
   const handleEdit = () => {
     closeMenu();
     navigate(`${urlKey}/edit/${id}`);
-    // navigate(`/inventory/${urlKey}/edit/${id}`);
+  };
+
+  const handleDetail = () => {
+    closeMenu();
+    navigate(`${urlKey}/detail/${id}`);
   };
 
   const handleDelete = () => {
@@ -46,11 +50,11 @@ function ButtonAction({ id, urlKey, refreshData }) {
 
   const sumbitDel = () => {
     useAxios()
-      .post(`${Config.ApiUrl}${urlKey}/delete`, { id })
+      .delete(`${Config.ApiUrl}/api/v1/${urlKey}/delete`, { id })
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
-          modalMessage: response.data,
+          modalMessage: response.data.message,
           onClose: () => {
             console.log("[REFRESH]");
             refreshData();
@@ -65,6 +69,51 @@ function ButtonAction({ id, urlKey, refreshData }) {
       });
   };
 
+  const handleStatus = (status) => {
+    closeMenu();
+    confirmRef.current.setShow({
+      title: "Konfirmasi",
+      message: "Apakah anda yakin ingin merubah status data ?",
+      onAction: () => {
+        submitStatus(status);
+      },
+    });
+  };
+
+  const submitStatus = () => {
+    useAxios()
+      .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, {
+        id,
+        statusId: statusId == 1 ? 2 : 1,
+      })
+      .then((response) => {
+        modalNotifRef.current.setShow({
+          modalTitle: "Sukses",
+          modalMessage: response.data.message,
+          onClose: () => {
+            console.log("[REFRESH]");
+            refreshData();
+          },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response) {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: err.response ? err.response.message : "Terjadi kesalahan pada system",
+          });
+        }
+        // eslint-disable-next-line no-empty
+        else {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: "Koneksi jaringan terputus",
+          });
+        }
+      });
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -74,8 +123,15 @@ function ButtonAction({ id, urlKey, refreshData }) {
       onClose={closeMenu}
       keepMounted
     >
+      <MenuItem onClick={handleDetail}>Detail</MenuItem>
       <MenuItem onClick={handleEdit}>Edit</MenuItem>
       <MenuItem onClick={handleDelete}>Hapus</MenuItem>
+      {changeStatus && (
+        <>
+          {statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>}
+          {statusId == 2 && <MenuItem onClick={() => handleStatus(1)}>Activate</MenuItem>}
+        </>
+      )}
     </Menu>
   );
 
@@ -93,10 +149,16 @@ function ButtonAction({ id, urlKey, refreshData }) {
   );
 }
 
+ButtonAction.defaultProps = {
+  changeStatus: false,
+};
+
 ButtonAction.propTypes = {
   id: PropTypes.number,
   urlKey: PropTypes.string,
   refreshData: PropTypes.func,
+  changeStatus: PropTypes.bool,
+  statusId: PropTypes.number,
 };
 
 export default ButtonAction;
