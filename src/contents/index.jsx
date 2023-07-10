@@ -37,12 +37,12 @@ function Layout() {
 
   // set theme dark && transparent
   useEffect(() => {
-    // const user = secureStorage.getItem("user");
-    const user = {
-      name: "redha",
-      email: "redha@gmail.com",
-      roleId: 1,
-    };
+    const user = secureStorage.getItem("user");
+    // const user = {
+    //   name: "redha",
+    //   email: "redha@gmail.com",
+    //   roleId: 1,
+    // };
 
     if (!user) {
       navigate("/login");

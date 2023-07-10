@@ -62,6 +62,7 @@ import Icon from "@mui/material/Icon";
 
 // Images
 import profilePicture from "assets/images/team-3.jpg";
+import Admin from "contents/Master/Admin";
 
 const routes = [
   // ==========================================================================================
@@ -576,6 +577,67 @@ const routes = [
         name: "Admin",
         key: "admin",
         route: "/master/admin",
+        component: <Admin />,
+      },
+      // ====================== article ======================
+      {
+        name: "Artikel",
+        key: "article",
+        route: "/master/article",
+        component: <Container />,
+      },
+      // ====================== bank ======================
+      {
+        name: "Bank",
+        key: "bank",
+        route: "/master/bank",
+        component: <Container />,
+      },
+      // ====================== package ======================
+      {
+        name: "Paket",
+        key: "package",
+        route: "/master/package",
+        component: <Container />,
+      }, // ====================== product ======================
+      {
+        name: "Produk",
+        key: "product",
+        route: "/master/product",
+        component: <Container />,
+      },
+      // ====================== product-category ======================
+      {
+        name: "Kategori Produk",
+        key: "product-category",
+        route: "/master/product-category",
+        component: <Container />,
+      },
+      // ====================== reward ======================
+      {
+        name: "Reward",
+        key: "reward",
+        route: "/master/reward",
+        component: <Container />,
+      }, // ====================== serial ======================
+      {
+        name: "Serial",
+        key: "serial",
+        route: "/master/serial",
+        component: <Container />,
+      },
+      // ====================== stokis ======================
+      {
+        name: "Stokis",
+        key: "stokis",
+        route: "/master/stokis",
+        component: <Container />,
+      },
+      // ====================== wabot ======================
+      {
+        name: "WhatsApp Bot",
+        key: "wa-bot",
+        route: "/master/wa-bot",
         component: <Container />,
       },
     ],
@@ -675,7 +737,7 @@ const getMenu = (user) => {
           name: "Admin",
           key: "admin",
           route: "/master/admin",
-          component: <Container />,
+          component: <Admin />,
         },
       ]
     : [];
@@ -714,7 +776,7 @@ const getMenu = (user) => {
               component: <Container />,
             },
             {
-              name: "kategori Produk",
+              name: "Kategori Produk",
               key: "product-category",
               route: "/master/product-category",
               component: <Container />,

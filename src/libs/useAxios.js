@@ -13,7 +13,7 @@ const useAxios = () => {
   let authToken = secureStorage.getItem("token") ? secureStorage.getItem("token") : null;
 
   const axiosInstance = axios.create({
-    baseURL,
+    baseUrl,
     headers: { Authorization: `Bearer ${authToken}` },
   });
 
