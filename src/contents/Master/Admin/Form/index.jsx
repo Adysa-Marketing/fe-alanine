@@ -189,17 +189,17 @@ function FormAdmin() {
         });
       })
       .catch((err) => {
+        console.log("error : ", err);
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
             modalMessage: err.response.data
-              ? err.response.data?.message.length
-                ? err.response.data.message[0].message
-                : err.response.data?.message
+              ? err.response.data?.message
               : "Terjadi kesalahan pada system",
             color: "warning",
             onClose: () => {
-              redirectSet("/master/admin");
+              actions.setSubmitting(false);
+              // redirectSet("/master/admin");
             },
           });
         } else {
@@ -207,7 +207,8 @@ function FormAdmin() {
             modalTitle: "Gagal",
             modalMessage: "Koneksi jaringan terputus",
             onClose: () => {
-              redirectSet("/master/admin");
+              actions.setSubmitting(false);
+              // redirectSet("/master/admin");
             },
           });
         }
