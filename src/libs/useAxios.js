@@ -29,7 +29,7 @@ const useAxios = () => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response && error.response.data == "Forbidden Access") {
+      if (error.response && error.response.data.message == "Forbidden Access") {
         logout();
       }
       return Promise.reject(error);

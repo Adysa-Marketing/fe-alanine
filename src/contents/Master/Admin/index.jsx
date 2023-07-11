@@ -77,7 +77,6 @@ function Admin() {
       ...gender,
       ...status,
     };
-    console.log("payload : ", payload);
 
     useAxios()
       .post(`${Config.ApiUrl}/api/v1/master/admin/list`, payload)
@@ -119,8 +118,8 @@ function Admin() {
         rowsSet(output);
         isLoadingSet(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log("[!] Error : ", error);
         isLoadingSet(false);
       });
   };

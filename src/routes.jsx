@@ -23,7 +23,6 @@
 // Material Dashboard 2 PRO React layouts
 import Analytics from "layouts/dashboards/analytics";
 import Sales from "layouts/dashboards/sales";
-import ProfileOverview from "layouts/pages/profile/profile-overview";
 import AllProjects from "layouts/pages/profile/all-projects";
 import NewUser from "layouts/pages/users/new-user";
 import Settings from "layouts/pages/account/settings";
@@ -62,7 +61,11 @@ import Icon from "@mui/material/Icon";
 
 // Images
 import profilePicture from "assets/images/team-3.jpg";
+
+// Contents
 import Admin from "contents/Master/Admin";
+import FormAdmin from "contents/Master/Admin/Form";
+import ProfileOverview from "contents/Master/Admin/Overview";
 
 const routes = [
   // ==========================================================================================
@@ -579,6 +582,24 @@ const routes = [
         route: "/master/admin",
         component: <Admin />,
       },
+      {
+        name: "Tambah Admin",
+        key: "add",
+        route: "/master/admin/add",
+        component: <FormAdmin />,
+      },
+      {
+        name: "Edit Admin",
+        key: "edit",
+        route: "/master/admin/edit/:id",
+        component: <FormAdmin />,
+      },
+      {
+        name: "Detail Admin",
+        key: "detail",
+        route: "/master/admin/detail/:id",
+        component: <ProfileOverview />,
+      },
       // ====================== article ======================
       {
         name: "Artikel",
@@ -653,9 +674,9 @@ const getMenu = (user) => {
       name: "Dashboard",
       // index: true,
       key: "dashboard",
-      route: "/setting/dashboard",
+      route: "/dashboard",
       icon: <Icon fontSize="medium">home</Icon>,
-      component: <Dashboard />,
+      component: <Container />,
       noCollapse: true,
     },
   ];
