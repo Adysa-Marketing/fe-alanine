@@ -37,9 +37,10 @@ import Footer from "examples/Footer";
 import ModalNotif from "contents/Components/ModalNotif";
 import useAxios from "libs/useAxios";
 import Config from "config";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import MiniFormCard from "contents/Components/FormCard/MiniFormCard";
+import ButtonBack from "contents/Components/ButtonBack";
 
 function FormAccountBank() {
   const [state, setState] = useState({
@@ -274,14 +275,7 @@ function FormAccountBank() {
                   />
                 </MDBox>
                 <MDBox pt={3} display="flex" justifyContent="space-between">
-                  <MDButton
-                    variant="gradient"
-                    color="error"
-                    component={Link}
-                    to={{ pathname: "/master/bank" }}
-                  >
-                    KEMBALI
-                  </MDButton>
+                  <ButtonBack label={"KEMBALI"} />
                   <MDButton
                     type="button"
                     variant="gradient"
@@ -289,7 +283,7 @@ function FormAccountBank() {
                     onKeyDown={handleKeyDown}
                     onClick={handleSubmit}
                   >
-                    SUBMIT
+                    {state.action == "create" ? "Submit" : "Update"}
                   </MDButton>
                 </MDBox>
               </Grid>

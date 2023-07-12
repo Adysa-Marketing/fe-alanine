@@ -70,6 +70,8 @@ import Article from "contents/Master/Article";
 import FormArticle from "contents/Master/Article/Form";
 import AccountBank from "contents/Master/Bank";
 import FormAccountBank from "contents/Master/Bank/Form";
+import Package from "contents/Master/Package";
+import FormPackage from "contents/Master/Package/Form";
 
 const routes = [
   // ==========================================================================================
@@ -653,8 +655,21 @@ const routes = [
         name: "Paket",
         key: "package",
         route: "/master/package",
-        component: <Container />,
-      }, // ====================== product ======================
+        component: <Package />,
+      },
+      {
+        name: "Paket",
+        key: "add",
+        route: "/master/package/add",
+        component: <FormPackage />,
+      },
+      {
+        name: "Paket",
+        key: "edit",
+        route: "/master/package/edit/:id",
+        component: <FormPackage />,
+      },
+      // ====================== product ======================
       {
         name: "Produk",
         key: "product",

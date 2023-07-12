@@ -39,30 +39,38 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import { Navigate, useParams } from "react-router-dom";
 
-function FormArticle() {
-  const [statuses, statusesSet] = useState([
-    { id: 1, label: "Aktif" },
-    { id: 2, label: "Draft" },
-  ]);
+import MiniFormCard from "contents/Components/FormCard/MiniFormCard";
+import ButtonBack from "contents/Components/ButtonBack";
 
-  const [id, idSet] = useState("");
-  const [title, titleSet] = useState("");
-  const [name, nameSet] = useState("");
-  const [excerpt, excerptSet] = useState("");
-  const [status, statusSet] = useState(null);
-  const [description, descriptionSet] = useState("");
-  const [remark, remarkSet] = useState("");
-  const [action, actionSet] = useState("");
-  const [redirect, redirectSet] = useState(null);
-  const [image, imageSet] = useState(null);
-  const [imageFilename, imageFilenameSet] = useState("");
+function FormPackage() {
+  const [state, setState] = useState({
+    title: "",
+    id: "",
+    name: "",
+    amount: "",
+    type: null,
+    description: "",
+    remark: "",
+    image: null,
+    imageFilename: "",
 
-  const [error, errorSet] = useState([]);
-  const [success, successSet] = useState([]);
+    types: [
+      { id: 1, label: "Bronze" },
+      { id: 2, label: "Silver" },
+      { id: 3, label: "Gold" },
+    ],
+
+    action: "",
+    disabledSubmit: false,
+    redirect: null,
+
+    error: [],
+    success: [],
+  });
 
   const params = useParams();
-  const imageRef = useRef();
   const modalNotifRef = useRef();
+  const imageRef = useRef();
 
   useEffect(() => {
     loadPath();
@@ -72,78 +80,123 @@ function FormArticle() {
     const pathname = window.location.pathname;
     const index = pathname.indexOf("edit");
     if (index === -1) {
-      titleSet("Tambah Artikel");
-      actionSet("create");
+      setState((prevState) => ({
+        ...prevState,
+        title: "Tambah Paket",
+        action: "create",
+      }));
     } else {
-      titleSet("Edit Artikel");
-      actionSet("update");
+      setState((prevState) => ({
+        ...prevState,
+        title: "Edit Paket",
+        action: "update",
+      }));
       loadDetail(params.id);
     }
   };
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/article/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/master/package/get/${id}`)
       .then((response) => {
         const data = response.data.data;
-        idSet(data.id);
-        nameSet(data.title);
-        excerptSet(data.excerpt);
-        descriptionSet(data.description);
-        statusSet(data.isActive ? { id: 1, label: "Aktif" } : { id: 2, label: "Draft" });
-        remarkSet(data.remark);
 
-        successSet({
-          ...success,
-          name: data.title ? true : false,
-          excerpt: data.excerpt ? true : false,
-          description: data.description ? true : false,
-          status: data.isActive ? true : false,
-          remark: data.remark ? true : false,
-          image: data.image ? true : false,
-        });
+        setState((prev) => ({
+          ...prev,
+          id: data.id,
+          name: data.name,
+          amount: data.amount,
+          type:
+            data.type == "Bronze"
+              ? { id: 1, label: "Bronze" }
+              : data.type == "Silver"
+              ? { id: 2, label: "Silver" }
+              : { id: 3, label: "Gold" },
+          description: data.description,
+          image: data.image,
+          remark: data.remark,
+          success: {
+            ...prev.success,
+            name: data.name ? true : false,
+            amount: data.amount ? true : false,
+            type: data.type ? true : false,
+            description: data.description ? true : false,
+            image: data.image ? true : false,
+            remark: data.remark ? true : false,
+          },
+        }));
       })
       .catch((err) => {
-        console.log("[!] Error : ", err);
+        console.log("[!] Error : ", err.response.data);
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: err.response ? err.response.message : "Koneksi jaringan terputus",
+          modalMessage:
+            err.response && err.response.data
+              ? err.response.data?.message
+              : err.response.message
+              ? err.response.message
+              : "Terjadi kesalahan pada system",
+          color: "warning",
           onClose: () => {
-            redirectSet("/master/article");
+            setState((prev) => ({
+              ...prev,
+              redirect: "/master/package",
+            }));
           },
         });
       });
   };
 
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setState((prevState) => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
+
   const handleBlur = (e) => {
     const { id, value } = e.target;
     if (value) {
-      successSet({ ...success, [e.target.id]: true });
-      errorSet({ ...error, [e.target.id]: false });
+      setState((prevState) => ({
+        ...prevState,
+        success: { ...prevState.success, [e.target.id]: true },
+        error: { ...prevState.error, [e.target.id]: false },
+      }));
     } else {
-      successSet({ ...success, [e.target.id]: false });
-      errorSet({ ...error, [e.target.id]: true });
+      setState((prevState) => ({
+        ...prevState,
+        success: { ...prevState.success, [e.target.id]: false },
+        error: { ...prevState.error, [e.target.id]: true },
+      }));
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSubmit();
   };
 
   const handleSubmit = () => {
     if (
-      success.name &&
-      success.excerpt &&
-      success.description &&
-      success.status &&
-      success.remark &&
-      success.image
+      state.success.name &&
+      state.success.amount &&
+      state.success.type &&
+      state.success.image &&
+      state.description &&
+      state.remark
     ) {
       sendData();
     } else {
       let input = "";
-      !success.remark && (input = "Catatan");
-      !success.image && (input = "Gambar");
-      !success.status && (input = "Status");
-      !success.description && (input = "Deksripsi");
-      !success.excerpt && (input = "Kutipan");
-      !success.name && (input = "Judul");
+      !state.success.remark && (input = "Catatan");
+      !state.success.description && (input = "Deskripsi");
+      !state.success.image && (input = "Gambar");
+      !state.success.type && (input = "Type Paket");
+      !state.success.amount && (input = "Harga Paket");
+      !state.success.name && (input = "Nama Paket");
+
+      console.log("succes : ", state.success);
+      console.log("erroor : ", state.error);
 
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
@@ -154,22 +207,25 @@ function FormArticle() {
 
   const sendData = () => {
     const formData = new FormData();
-    formData.append("id", id);
-    formData.append("title", name);
-    formData.append("excerpt", excerpt);
-    formData.append("isActive", status?.id);
-    formData.append("image", image);
-    formData.append("description", description);
-    formData.append("remark", remark);
+    formData.append("id", state.id);
+    formData.append("name", state.name);
+    formData.append("amount", state.amount);
+    formData.append("type", state.type?.label);
+    formData.append("image", state.image);
+    formData.append("description", state.description);
+    formData.append("remark", state.remark);
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/article/${action}`, formData)
+      .post(`${Config.ApiUrl}/api/v1/master/package/${state.action}`, formData)
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
           modalMessage: response.data.message,
           onClose: () => {
-            redirectSet("/master/article");
+            setState((prev) => ({
+              ...prev,
+              redirect: "/master/package",
+            }));
           },
         });
       })
@@ -177,11 +233,12 @@ function FormArticle() {
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
-            modalMessage: err.response.data
-              ? Array.isArray(err.response.data?.message)
-                ? err.response.data?.message[0].message
-                : err.response.data?.message
-              : "Terjadi kesalahan pada system",
+            modalMessage:
+              err.response && err.response.data
+                ? err.response.data?.message
+                : err.response.message
+                ? err.response.message
+                : "Terjadi kesalahan pada system",
             color: "warning",
           });
         } else {
@@ -194,8 +251,8 @@ function FormArticle() {
       });
   };
 
-  if (redirect) {
-    return <Navigate to={redirect} />;
+  if (state.redirect) {
+    return <Navigate to={state.redirect} />;
   }
   return (
     <DashboardLayout>
@@ -207,18 +264,18 @@ function FormArticle() {
             <MDBox mt={6} mb={8} textAlign="center">
               <MDBox mb={1}>
                 <MDTypography variant="h3" fontWeight="bold">
-                  {title}
+                  {state.title}
                 </MDTypography>
               </MDBox>
               <MDTypography variant="h6" fontWeight="regular" color="secondary">
-                Informasi ini akan menjelaskan lebih lanjut tentang data artikel.
+                Informasi ini akan menjelaskan lebih lanjut tentang data paket.
               </MDTypography>
             </MDBox>
             <Card>
               <MDBox mt={-3} mb={3} mx={2}>
                 <Stepper alternativeLabel>
                   <Step>
-                    <StepLabel>Form Artikel</StepLabel>
+                    <StepLabel>Form Paket</StepLabel>
                   </Step>
                 </Stepper>
               </MDBox>
@@ -230,13 +287,13 @@ function FormArticle() {
                         <Grid item xs={12} sm={6}>
                           <MDInput
                             type="text"
-                            label="Judul"
+                            label="Nama Paket"
                             id="name"
-                            value={name}
-                            onChange={(e) => nameSet(e.target.value)}
+                            value={state.name}
+                            onChange={handleChange}
                             onBlur={handleBlur}
-                            success={success ? success.name : false}
-                            error={error ? error.name : false}
+                            success={state.success ? state.success.name : false}
+                            error={state.error ? state.error.name : false}
                             variant="standard"
                             fullWidth
                           />
@@ -244,13 +301,13 @@ function FormArticle() {
                         <Grid item xs={12} sm={6}>
                           <MDInput
                             type="text"
-                            label="Kutipan"
-                            id="excerpt"
-                            value={excerpt}
-                            onChange={(e) => excerptSet(e.target.value)}
+                            label="Harga Paket"
+                            id="amount"
+                            value={state.amount}
+                            onChange={handleChange}
                             onBlur={handleBlur}
-                            success={success ? success.excerpt : false}
-                            error={error ? error.excerpt : false}
+                            success={state.success ? state.success.amount : false}
+                            error={state.error ? state.error.amount : false}
                             variant="standard"
                             fullWidth
                           />
@@ -272,22 +329,31 @@ function FormArticle() {
                           </MDBox>
                           <MDEditor
                             id="title"
-                            value={description}
+                            value={state.description}
                             onChange={(content, delta, source, editorue) => {
                               if (content) {
-                                descriptionSet(content);
-                                successSet({ ...success, description: true });
-                                errorSet({ ...error, description: false });
+                                setState((prev) => ({
+                                  ...prev,
+                                  description: content,
+                                  success: { ...prev.success, description: true },
+                                  error: { ...prev.error, description: false },
+                                }));
                               }
                             }}
                             onBlur={(previousRange, source, editor) => {
                               const index = previousRange.index;
                               if (index > 0) {
-                                successSet({ ...success, description: true });
-                                errorSet({ ...error, description: false });
+                                setState((prev) => ({
+                                  ...prev,
+                                  success: { ...prev.success, description: true },
+                                  error: { ...prev.error, description: false },
+                                }));
                               } else {
-                                successSet({ ...success, description: false });
-                                errorSet({ ...error, description: true });
+                                setState((prev) => ({
+                                  ...prev,
+                                  success: { ...prev.success, description: false },
+                                  error: { ...prev.error, description: true },
+                                }));
                               }
                             }}
                           />
@@ -295,20 +361,25 @@ function FormArticle() {
                         <Grid item container xs={12} sm={6}>
                           <Grid item xs={12} sm={3}>
                             <Autocomplete
-                              options={statuses}
-                              id="status"
-                              value={status}
-                              onChange={(e, newValue) => {
-                                statusSet(newValue);
-                                successSet({ ...success, status: true });
-                                errorSet({ ...error, status: false });
+                              options={state.types}
+                              id="type"
+                              value={state.type}
+                              onChange={(e, value) => {
+                                // if (value) {
+                                setState((prev) => ({
+                                  ...prev,
+                                  type: value,
+                                  success: { ...prev.success, description: true },
+                                  error: { ...prev.error, description: false },
+                                }));
+                                // }
                               }}
                               onBlur={handleBlur}
                               variant="standard"
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
                               renderInput={(params) => (
-                                <MDInput {...params} label="Status Artikel" variant="standard" />
+                                <MDInput {...params} label="Type Paket" variant="standard" />
                               )}
                             />
                           </Grid>
@@ -324,17 +395,18 @@ function FormArticle() {
                                     const file = e.target.files[0];
                                     const filename = file.name;
                                     const ext = filename.split(".")[1];
-                                    imageSet(file);
-                                    imageFilenameSet(filename);
-                                    successSet({ ...success, image: true });
-                                    errorSet({ ...error, error: false });
+                                    setState((prev) => ({
+                                      ...prev,
+                                      image: file,
+                                      imageFilename: filename,
+                                    }));
                                   }
                                 }}
                                 hidden
                               />
                               <MDInput
                                 fullWidth
-                                value={imageFilename}
+                                value={state.imageFilename}
                                 label="Upload Gambar"
                                 variant="standard"
                                 onClick={() => {
@@ -343,8 +415,8 @@ function FormArticle() {
                                 readOnly
                                 id="image"
                                 onBlur={handleBlur}
-                                success={success ? success.image : false}
-                                error={error ? error.image : false}
+                                success={state.success ? state.success.image : false}
+                                error={state.error ? state.error.image : false}
                               />
                               <small style={{ color: "red", fontSize: "12px" }}>
                                 Maksimal ukuran 2MB
@@ -355,11 +427,11 @@ function FormArticle() {
                             type="text"
                             label="Catatan"
                             id="remark"
-                            value={remark}
-                            onChange={(e) => remarkSet(e.target.value)}
+                            value={state.remark}
+                            onChange={handleChange}
                             onBlur={handleBlur}
-                            success={success ? success.remark : false}
-                            error={error ? error.remark : false}
+                            success={state.success ? state.success.remark : false}
+                            error={state.error ? state.error.remark : false}
                             variant="standard"
                             fullWidth
                           />
@@ -370,7 +442,7 @@ function FormArticle() {
                   <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
                     <MDBox />
                     <MDButton variant="gradient" type="button" color="dark" onClick={handleSubmit}>
-                      {action == "create" ? "Submit" : "Update"}
+                      {state.action == "create" ? "Submit" : "Update"}
                     </MDButton>
                   </MDBox>
                 </MDBox>
@@ -379,9 +451,8 @@ function FormArticle() {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer />
     </DashboardLayout>
   );
 }
 
-export default FormArticle;
+export default FormPackage;
