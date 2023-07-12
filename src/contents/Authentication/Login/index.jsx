@@ -77,7 +77,7 @@ function Login() {
             message: "Login Sukses",
             color: "success",
           });
-          setTimeout(() => {
+          setInterval(() => {
             isLoginSet(true);
           }, 2000);
         })

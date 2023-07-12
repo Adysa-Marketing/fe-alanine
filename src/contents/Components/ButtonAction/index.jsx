@@ -19,7 +19,7 @@ import Confirm from "contents/Components/Confirm";
 import ModalNotif from "contents/Components/ModalNotif";
 import DialogForm from "contents/Components/DialogForm";
 
-function ButtonAction({ id, urlKey, refreshData, changeStatus, statusId }) {
+function ButtonAction({ id, urlKey, refreshData, changePassword, changeStatus, statusId }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
   const dialogFormRef = useRef();
@@ -197,7 +197,7 @@ function ButtonAction({ id, urlKey, refreshData, changeStatus, statusId }) {
       <MenuItem onClick={handleDetail}>Detail</MenuItem>
       <MenuItem onClick={handleEdit}>Edit</MenuItem>
       <MenuItem onClick={handleDelete}>Hapus</MenuItem>
-      <MenuItem onClick={handlePassword}>Ganti Password</MenuItem>
+      {changePassword && <MenuItem onClick={handlePassword}>Ganti Password</MenuItem>}
       {changeStatus &&
         ((statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>) ||
           (statusId == 2 && <MenuItem onClick={() => handleStatus(1)}>Activate</MenuItem>))}
@@ -276,6 +276,7 @@ ButtonAction.propTypes = {
   id: PropTypes.number,
   urlKey: PropTypes.string,
   refreshData: PropTypes.func,
+  changePassword: PropTypes.bool,
   changeStatus: PropTypes.bool,
   statusId: PropTypes.number,
 };

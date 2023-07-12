@@ -66,6 +66,8 @@ import profilePicture from "assets/images/team-3.jpg";
 import Admin from "contents/Master/Admin";
 import FormAdmin from "contents/Master/Admin/Form";
 import ProfileOverview from "contents/Master/Admin/Overview";
+import Article from "contents/Master/Article";
+import FormArticle from "contents/Master/Article/Form";
 
 const routes = [
   // ==========================================================================================
@@ -605,7 +607,25 @@ const routes = [
         name: "Artikel",
         key: "article",
         route: "/master/article",
-        component: <Container />,
+        component: <Article />,
+      },
+      {
+        name: "Tambah Artikel",
+        key: "add",
+        route: "/master/article/add",
+        component: <FormArticle />,
+      },
+      {
+        name: "Edit Artikel",
+        key: "edit",
+        route: "/master/article/edit/:id",
+        component: <FormArticle />,
+      },
+      {
+        name: "Detail Artikel",
+        key: "detail",
+        route: "/master/article/detail/:id",
+        component: <FormArticle />,
       },
       // ====================== bank ======================
       {

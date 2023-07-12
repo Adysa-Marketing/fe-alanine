@@ -24,7 +24,7 @@ import ButtonAction from "contents/Components/ButtonAction";
 import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
-function Admin() {
+function Article() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -36,23 +36,19 @@ function Admin() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama", accessor: "name", width: "25%" },
-    { Header: "Username", accessor: "username", width: "20%" },
-    { Header: "Email", accessor: "email", width: "25%" },
-    { Header: "Gender", accessor: "gender", width: "15%" },
-    { Header: "Point", accessor: "point", width: "15%" },
+    { Header: "Gambar", accessor: "image", width: "25%" },
+    { Header: "Judul", accessor: "title", width: "25%" },
+    { Header: "Slug", accessor: "slug", width: "20%" },
+    { Header: "Penulis", accessor: "author", width: "25%" },
+    { Header: "Views", accessor: "views", width: "15%" },
     { Header: "Status", accessor: "status", width: "15%" },
+    { Header: "Kutipam", accessor: "excerpt", width: "30%" },
   ]);
 
   const [status, statusSet] = useState(null);
-  const [gender, genderSet] = useState(null);
   const [statuses, statusesSet] = useState([
     { id: 1, label: "Aktif" },
-    { id: 2, label: "Tidak Aktif" },
-  ]);
-  const [genders, gendersSet] = useState([
-    { key: "Male", label: "Pria" },
-    { key: "Female", label: "Wanita" },
+    { id: 2, label: "Draff" },
   ]);
 
   useEffect(() => {
@@ -67,19 +63,18 @@ function Admin() {
   const loadData = (params) => {
     isLoadingSet(true);
 
-    const gender = params && params.gender ? { gender: params.gender } : {};
     const status = params && params.status ? { statusId: params.status } : {};
 
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
-      ...gender,
+      type: "All",
       ...status,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/admin/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/master/article/list`, payload)
       .then((response) => {
         const data = response.data;
         let no = 0;
@@ -88,23 +83,38 @@ function Admin() {
           const statusId = item.isActive ? 1 : 2;
           return {
             no,
-            name: item.name,
-            username: item.username,
-            email: item.email,
-            gender: item.gender,
-            point: item.point,
+            title: <p style={{ wordWrap: "break-word", width: "10em" }}>{item.title}</p>,
+            slug: <p style={{ wordWrap: "break-word", width: "10em" }}>{item.slug}</p>,
+            author: item.author,
+            views: item.view,
+            excerpt: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.excerpt}</p>,
+            image: item.image ? (
+              <MDBox
+                component="img"
+                src={`${Config.ApiAsset}/article/${item.image}`}
+                alt="Gambar"
+                borderRadius="lg"
+                shadow="sm"
+                width="100%"
+                height="150px"
+                position="relative"
+                zIndex={10}
+                mb={2}
+              />
+            ) : (
+              "-"
+            ),
             status: item.isActive ? (
               <MDBadge badgeContent="Aktif" container color="success" />
             ) : (
-              <MDBadge badgeContent="Tidak Aktif" container color="error" />
+              <MDBadge badgeContent="Draff" container color="warning" />
             ),
             action:
-              user && [1].includes(user.roleId) ? (
+              user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/master/admin"}
+                  urlKey={"/master/article"}
                   refreshData={loadData}
-                  changePassword={true}
                   changeStatus={true}
                   statusId={statusId}
                 ></ButtonAction>
@@ -135,7 +145,7 @@ function Admin() {
             color="info"
             variant="gradient"
             component={Link}
-            to={{ pathname: "/master/admin/add" }}
+            to={{ pathname: "/master/article/add" }}
           >
             Tambah
           </MDButton>
@@ -143,7 +153,7 @@ function Admin() {
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Admin
+              Daftar Artikel
             </MDTypography>
           </MDBox>
 
@@ -160,7 +170,6 @@ function Admin() {
                       loadData({
                         currentPage: 1,
                         keyword: e.target.value,
-                        gender: gender ? gender.key : null,
                         status: status ? status.id : null,
                       });
                     }
@@ -169,7 +178,7 @@ function Admin() {
                 />
               </Grid>
               {/* Status */}
-              {user && [1].includes(user.roleId) && (
+              {user && [1, 2].includes(user.roleId) && (
                 <Grid item xs={12} md={3} lg={3}>
                   <Autocomplete
                     value={status}
@@ -178,7 +187,6 @@ function Admin() {
                       statusSet(value);
                       loadData({
                         keyword,
-                        gender: gender ? gender.key : null,
                         currentPage: 1,
                         status: value ? value.id : null,
                       });
@@ -194,37 +202,6 @@ function Admin() {
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     renderInput={(params) => (
                       <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
-
-              {/* Gender */}
-              {user && [1].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={gender}
-                    options={genders}
-                    onChange={(e, value) => {
-                      genderSet(value);
-                      loadData({
-                        keyword,
-                        status: status ? status.id : null,
-                        gender: value ? value.key : null,
-                        currentPage: 1,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.key === value.key}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Gender" {...params} />
                     )}
                   />
                 </Grid>
@@ -257,4 +234,4 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default Article;

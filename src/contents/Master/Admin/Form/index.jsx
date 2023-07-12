@@ -147,10 +147,7 @@ function FormAdmin() {
         });
       });
   };
-  const sleep = (ms) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
+
   const handleBack = () => setActiveStep(activeStep - 1);
 
   const submitForm = async (values, actions) => {
@@ -189,7 +186,6 @@ function FormAdmin() {
         });
       })
       .catch((err) => {
-        console.log("error : ", err);
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
@@ -199,7 +195,6 @@ function FormAdmin() {
             color: "warning",
             onClose: () => {
               actions.setSubmitting(false);
-              // redirectSet("/master/admin");
             },
           });
         } else {
@@ -208,7 +203,6 @@ function FormAdmin() {
             modalMessage: "Koneksi jaringan terputus",
             onClose: () => {
               actions.setSubmitting(false);
-              // redirectSet("/master/admin");
             },
           });
         }
@@ -236,6 +230,16 @@ function FormAdmin() {
       <MDBox py={3} mb={20} height="65vh">
         <Grid container justifyContent="center" alignItems="center" sx={{ height: "100%", mt: 8 }}>
           <Grid item xs={12} lg={8}>
+            <MDBox mb={8} mt={-8} textAlign="center">
+              <MDBox mb={1}>
+                <MDTypography variant="h3" fontWeight="bold">
+                  {title}
+                </MDTypography>
+              </MDBox>
+              <MDTypography variant="h6" fontWeight="regular" color="secondary">
+                Informasi ini akan menjelaskan lebih lanjut tentang data admin.
+              </MDTypography>
+            </MDBox>
             <Formik
               initialValues={initialValues}
               validationSchema={currentValidation}
@@ -245,17 +249,6 @@ function FormAdmin() {
                 <Form id={formId} autoComplete="off">
                   <Card sx={{ height: "100%" }}>
                     <MDBox mx={2} mt={-3}>
-                      <MDBox
-                        p={2}
-                        mt={3}
-                        lineHeight={1}
-                        display="flex"
-                        justifyContent={{ xs: "center", md: "flex-start" }}
-                      >
-                        <MDTypography variant="h5" fontWeight="medium">
-                          {title}
-                        </MDTypography>
-                      </MDBox>
                       <Stepper activeStep={activeStep} alternativeLabel>
                         {steps.map((label) => (
                           <Step key={label}>

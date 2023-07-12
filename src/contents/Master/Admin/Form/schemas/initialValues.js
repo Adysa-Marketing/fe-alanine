@@ -46,13 +46,13 @@ let initialValues = {
   [password.name]: "",
   [confirmPassword.name]: "",
   [address.name]: "",
-  [country.name]: "",
-  [province.name]: "",
-  [district.name]: "",
-  [subDistrict.name]: "",
+  [country.name]: null,
+  [province.name]: null,
+  [district.name]: null,
+  [subDistrict.name]: null,
   [nokk.name]: "",
   [image.name]: "",
-  [gender.name]: "",
+  [gender.name]: null,
   [bio.name]: "",
 };
 

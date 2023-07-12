@@ -52,6 +52,8 @@ function Profile({ formData }) {
               name={nokk.name}
               value={nokkV}
               placeholder={nokk.placeholder}
+              error={errors.nokk && touched.nokk}
+              success={nokkV.length > 0 && !errors.nokk}
             />
           </Grid>
           <Grid item xs={6} sm={6}>
@@ -59,7 +61,9 @@ function Profile({ formData }) {
               options={["Male", "Female"]}
               value={genderV}
               onChange={(e, value) => {
-                formData.values.gender = value ? value : "";
+                if (value) {
+                  formData.values.gender = value ? value : "";
+                }
               }}
               renderInput={(params) => (
                 <FormField

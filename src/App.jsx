@@ -91,7 +91,12 @@ export default function App() {
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
-        return getRoutes(route.collapse);
+        // return getRoutes(route.collapse);
+        return (
+          <Route exact path={route.route} element={route.component} key={route.key}>
+            {getRoutes(route.collapse)}
+          </Route>
+        );
       }
 
       if (route.route) {

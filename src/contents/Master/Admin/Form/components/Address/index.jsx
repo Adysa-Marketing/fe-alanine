@@ -146,11 +146,14 @@ function Address({ formData }) {
           <Grid item xs={6} sm={6}>
             <Autocomplete
               options={countries}
-              value={countryV?.label}
+              value={countryV}
               onChange={(e, value) => {
-                loadProvince(value?.id);
-                formData.values.country = value ? value : "";
+                if (value) {
+                  loadProvince(value?.id);
+                  formData.values.country = value ? value : "";
+                }
               }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <FormField
                   {...params}
@@ -169,11 +172,14 @@ function Address({ formData }) {
           <Grid item xs={6} sm={6}>
             <Autocomplete
               options={provinces}
-              value={provinceV?.label}
+              value={provinceV}
               onChange={(e, value) => {
-                loadDistrict(value?.id);
-                formData.values.province = value ? value : "";
+                if (value) {
+                  loadDistrict(value?.id);
+                  formData.values.province = value ? value : "";
+                }
               }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <FormField
                   {...params}
@@ -192,11 +198,14 @@ function Address({ formData }) {
           <Grid item xs={6} sm={6}>
             <Autocomplete
               options={districts}
-              value={districtV?.label}
+              value={districtV}
               onChange={(e, value) => {
-                loadSubDistrict(value?.id);
-                formData.values.district = value ? value : "";
+                if (value) {
+                  loadSubDistrict(value?.id);
+                  formData.values.district = value ? value : "";
+                }
               }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <FormField
                   {...params}
@@ -215,10 +224,13 @@ function Address({ formData }) {
           <Grid item xs={6} sm={6}>
             <Autocomplete
               options={subDistricts}
-              value={subDistrictV?.label}
+              value={subDistrictV}
               onChange={(e, value) => {
-                formData.values.subDistrict = value ? value : "";
+                if (value) {
+                  formData.values.subDistrict = value ? value : "";
+                }
               }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
               renderInput={(params) => (
                 <FormField
                   {...params}
