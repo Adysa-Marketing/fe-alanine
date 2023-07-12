@@ -40,9 +40,6 @@ import Config from "config";
 import { Navigate, useParams } from "react-router-dom";
 
 function FormArticle() {
-  const [editorValue, setEditorValue] = useState(
-    "<p>Some initial <strong>bold</strong> text</p><br><br><br><br>"
-  );
   const [statuses, statusesSet] = useState([
     { id: 1, label: "Aktif" },
     { id: 2, label: "Draft" },

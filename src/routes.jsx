@@ -68,6 +68,8 @@ import FormAdmin from "contents/Master/Admin/Form";
 import ProfileOverview from "contents/Master/Admin/Overview";
 import Article from "contents/Master/Article";
 import FormArticle from "contents/Master/Article/Form";
+import AccountBank from "contents/Master/Bank";
+import FormAccountBank from "contents/Master/Bank/Form";
 
 const routes = [
   // ==========================================================================================
@@ -632,7 +634,19 @@ const routes = [
         name: "Bank",
         key: "bank",
         route: "/master/bank",
-        component: <Container />,
+        component: <AccountBank />,
+      },
+      {
+        name: "Tambah Bank",
+        key: "add",
+        route: "/master/bank/add",
+        component: <FormAccountBank />,
+      },
+      {
+        name: "Edit Bank",
+        key: "edit",
+        route: "/master/bank/edit/:id",
+        component: <FormAccountBank />,
       },
       // ====================== package ======================
       {

@@ -19,7 +19,7 @@ import Confirm from "contents/Components/Confirm";
 import ModalNotif from "contents/Components/ModalNotif";
 import DialogForm from "contents/Components/DialogForm";
 
-function ButtonAction({ id, urlKey, refreshData, changePassword, changeStatus, statusId }) {
+function ButtonAction({ id, urlKey, refreshData, detail, changePassword, changeStatus, statusId }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
   const dialogFormRef = useRef();
@@ -194,7 +194,7 @@ function ButtonAction({ id, urlKey, refreshData, changePassword, changeStatus, s
       onClose={closeMenu}
       keepMounted
     >
-      <MenuItem onClick={handleDetail}>Detail</MenuItem>
+      {detail && <MenuItem onClick={handleDetail}>Detail</MenuItem>}
       <MenuItem onClick={handleEdit}>Edit</MenuItem>
       <MenuItem onClick={handleDelete}>Hapus</MenuItem>
       {changePassword && <MenuItem onClick={handlePassword}>Ganti Password</MenuItem>}
@@ -268,6 +268,7 @@ function ButtonAction({ id, urlKey, refreshData, changePassword, changeStatus, s
 }
 
 ButtonAction.defaultProps = {
+  detail: false,
   changeStatus: false,
   changePassword: false,
 };
@@ -276,6 +277,7 @@ ButtonAction.propTypes = {
   id: PropTypes.number,
   urlKey: PropTypes.string,
   refreshData: PropTypes.func,
+  detail: PropTypes.bool,
   changePassword: PropTypes.bool,
   changeStatus: PropTypes.bool,
   statusId: PropTypes.number,

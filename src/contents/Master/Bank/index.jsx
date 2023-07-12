@@ -24,7 +24,7 @@ import ButtonAction from "contents/Components/ButtonAction";
 import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
-function Admin() {
+function AccountBank() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -36,23 +36,9 @@ function Admin() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama", accessor: "name", width: "25%" },
-    { Header: "Username", accessor: "username", width: "20%" },
-    { Header: "Email", accessor: "email", width: "25%" },
-    { Header: "Gender", accessor: "gender", width: "15%" },
-    { Header: "Point", accessor: "point", width: "15%" },
-    { Header: "Status", accessor: "status", width: "15%" },
-  ]);
-
-  const [status, statusSet] = useState(null);
-  const [gender, genderSet] = useState(null);
-  const [statuses, statusesSet] = useState([
-    { id: 1, label: "Aktif" },
-    { id: 2, label: "Tidak Aktif" },
-  ]);
-  const [genders, gendersSet] = useState([
-    { key: "Male", label: "Pria" },
-    { key: "Female", label: "Wanita" },
+    { Header: "Nama Bank", accessor: "bank", width: "25%" },
+    { Header: "Nama Pemilik", accessor: "name", width: "25%" },
+    { Header: "No Rekening", accessor: "norek", width: "20%" },
   ]);
 
   useEffect(() => {
@@ -67,47 +53,30 @@ function Admin() {
   const loadData = (params) => {
     isLoadingSet(true);
 
-    const gender = params && params.gender ? { gender: params.gender } : {};
-    const status = params && params.status ? { statusId: params.status } : {};
-
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
-      ...gender,
-      ...status,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/admin/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/master/bank/list`, payload)
       .then((response) => {
         const data = response.data;
         let no = 0;
         const output = data.data.map((item) => {
           no++;
-          const statusId = item.isActive ? 1 : 2;
           return {
             no,
-            name: item.name,
-            username: item.username,
-            email: item.email,
-            gender: item.gender,
-            point: item.point,
-            status: item.isActive ? (
-              <MDBadge badgeContent="Aktif" container color="success" />
-            ) : (
-              <MDBadge badgeContent="Tidak Aktif" container color="error" />
-            ),
+            bank: item.name,
+            name: item.accountName,
+            norek: item.noRekening,
             action:
-              user && [1].includes(user.roleId) ? (
+              user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/master/admin"}
+                  urlKey={"/master/bank"}
                   refreshData={loadData}
-                  detail={true}
-                  changePassword={true}
-                  changeStatus={true}
-                  statusId={statusId}
                 ></ButtonAction>
               ) : (
                 "-"
@@ -136,7 +105,7 @@ function Admin() {
             color="info"
             variant="gradient"
             component={Link}
-            to={{ pathname: "/master/admin/add" }}
+            to={{ pathname: "/master/bank/add" }}
           >
             Tambah
           </MDButton>
@@ -144,7 +113,7 @@ function Admin() {
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Admin
+              Daftar Akun Bank
             </MDTypography>
           </MDBox>
 
@@ -161,75 +130,12 @@ function Admin() {
                       loadData({
                         currentPage: 1,
                         keyword: e.target.value,
-                        gender: gender ? gender.key : null,
-                        status: status ? status.id : null,
                       });
                     }
                   }}
                   onChange={(e) => keywordSet(e.target.value)}
                 />
               </Grid>
-              {/* Status */}
-              {user && [1].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={status}
-                    options={statuses}
-                    onChange={(e, value) => {
-                      statusSet(value);
-                      loadData({
-                        keyword,
-                        gender: gender ? gender.key : null,
-                        currentPage: 1,
-                        status: value ? value.id : null,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
-
-              {/* Gender */}
-              {user && [1].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={gender}
-                    options={genders}
-                    onChange={(e, value) => {
-                      genderSet(value);
-                      loadData({
-                        keyword,
-                        status: status ? status.id : null,
-                        gender: value ? value.key : null,
-                        currentPage: 1,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.key === value.key}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Gender" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
             </Grid>
           </MDBox>
           <MDBox p={2}>
@@ -258,4 +164,4 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default AccountBank;
