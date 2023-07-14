@@ -252,12 +252,12 @@ function Admin() {
                   statusId: status ? status.id : null,
                 });
               }}
-              onChangePage={(currentPage) => {
-                if (currentPage !== currentPage) {
-                  currentPageSet(currentPage);
+              onChangePage={(current) => {
+                if (current !== currentPage) {
+                  currentPageSet(current);
                   loadData({
                     rowsPerPage,
-                    currentPage,
+                    currentPage: current,
                     keyword,
                     gender: gender ? gender.key : null,
                     statusId: status ? status.id : null,

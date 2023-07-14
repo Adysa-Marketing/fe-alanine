@@ -78,6 +78,8 @@ import ProductCategory from "contents/Master/ProductCategory";
 import FormProductCategory from "contents/Master/ProductCategory/Form";
 import Reward from "contents/Master/Reward";
 import FormReward from "contents/Master/Reward/Form";
+import Serial from "contents/Master/Serial";
+import FormSerial from "contents/Master/Serial/Form";
 
 const routes = [
   // ==========================================================================================
@@ -721,13 +723,13 @@ const routes = [
         component: <Reward />,
       },
       {
-        name: "Reward",
+        name: "Tambah Reward",
         key: "add-reward",
         route: "/master/reward/add",
         component: <FormReward />,
       },
       {
-        name: "Reward",
+        name: "Edit Reward",
         key: "edit-reward",
         route: "/master/reward/edit/:id",
         component: <FormReward />,
@@ -737,7 +739,13 @@ const routes = [
         name: "Serial",
         key: "serial",
         route: "/master/serial",
-        component: <Container />,
+        component: <Serial />,
+      },
+      {
+        name: "Tambah Serial",
+        key: "add-serial",
+        route: "/master/serial/add",
+        component: <FormSerial />,
       },
       // ====================== stokis ======================
       {

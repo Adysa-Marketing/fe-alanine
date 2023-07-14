@@ -185,7 +185,7 @@ function FormReward() {
       } else if (!/^[1-9][0-9]*$/.test(state.point)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: "Jumlah Point harus angka dan tidak boleh kurang dari 1",
+          modalMessage: "Jumlah Po harus angka dan tidak boleh kurang dari 1",
         });
       } else if (!/^[1-9][0-9]*$/.test(state.minFoot)) {
         modalNotifRef.current.setShow({

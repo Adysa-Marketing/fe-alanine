@@ -209,12 +209,12 @@ function Product() {
                   categoryId: category ? category.id : null,
                 });
               }}
-              onChangePage={(currentPage) => {
-                if (currentPage !== currentPage) {
-                  currentPageSet(currentPage);
+              onChangePage={(current) => {
+                if (current !== currentPage) {
+                  currentPageSet(current);
                   loadData({
                     rowsPerPage,
-                    currentPage,
+                    currentPage: current,
                     keyword,
                     categoryId: category ? category.id : null,
                   });
