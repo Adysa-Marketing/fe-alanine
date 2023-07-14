@@ -119,7 +119,7 @@ function Stokis() {
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Reward
+              Daftar Stokis
             </MDTypography>
           </MDBox>
 
