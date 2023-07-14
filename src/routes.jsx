@@ -80,6 +80,8 @@ import Reward from "contents/Master/Reward";
 import FormReward from "contents/Master/Reward/Form";
 import Serial from "contents/Master/Serial";
 import FormSerial from "contents/Master/Serial/Form";
+import Stokis from "contents/Master/Stokis";
+import FormStokis from "contents/Master/Stokis/Form";
 
 const routes = [
   // ==========================================================================================
@@ -752,7 +754,19 @@ const routes = [
         name: "Stokis",
         key: "stokis",
         route: "/master/stokis",
-        component: <Container />,
+        component: <Stokis />,
+      },
+      {
+        name: "Tambah Stokis",
+        key: "add-stokis",
+        route: "/master/stokis/add",
+        component: <FormStokis />,
+      },
+      {
+        name: "Edit Stokis",
+        key: "edit-stokis",
+        route: "/master/stokis/edit/:id",
+        component: <FormStokis />,
       },
       // ====================== wabot ======================
       {

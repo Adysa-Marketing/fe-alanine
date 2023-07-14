@@ -102,8 +102,6 @@ function FormSeri() {
       !state.success.remark && (input = "Deskripsi");
       !state.success.amount && (input = "Total Serial");
 
-      console.log("success :", state.success);
-      console.log("error :", state.error);
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
         modalMessage: `Data "${input}" masih kosong, Silahkan di cek kembali !`,
@@ -138,8 +136,8 @@ function FormSeri() {
             modalTitle: "Gagal",
             modalMessage:
               err.response && err.response.data
-                ? err.response.data.length
-                  ? err.response.data[0].message
+                ? err.response.data?.message.length
+                  ? err.response.data.message[0].message
                   : err.response.data.message
                 : err.response.data.message
                 ? err.response.message
