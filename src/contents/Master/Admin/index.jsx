@@ -244,10 +244,24 @@ function Admin() {
               onChangeRowsPerPage={(value) => {
                 rowsPerPageSet(value);
                 currentPageSet(1);
+                loadData({
+                  rowsPerPage: value,
+                  currentPage: 1,
+                  keyword,
+                  gender: gender ? gender.key : null,
+                  statusId: status ? status.id : null,
+                });
               }}
               onChangePage={(currentPage) => {
                 if (currentPage !== currentPage) {
                   currentPageSet(currentPage);
+                  loadData({
+                    rowsPerPage,
+                    currentPage,
+                    keyword,
+                    gender: gender ? gender.key : null,
+                    statusId: status ? status.id : null,
+                  });
                 }
               }}
             />

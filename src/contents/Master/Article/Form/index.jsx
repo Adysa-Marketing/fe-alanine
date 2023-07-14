@@ -38,6 +38,7 @@ import ModalNotif from "contents/Components/ModalNotif";
 import useAxios from "libs/useAxios";
 import Config from "config";
 import { Navigate, useParams } from "react-router-dom";
+import ButtonBack from "contents/Components/ButtonBack";
 
 function FormArticle() {
   const [statuses, statusesSet] = useState([
@@ -368,7 +369,7 @@ function FormArticle() {
                     </MDBox>
                   </MDBox>
                   <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
-                    <MDBox />
+                    <ButtonBack label={"KEMBALI"} />
                     <MDButton variant="gradient" type="button" color="dark" onClick={handleSubmit}>
                       {action == "create" ? "Submit" : "Update"}
                     </MDButton>

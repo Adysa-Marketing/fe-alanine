@@ -50,8 +50,6 @@ import SignUpCover from "layouts/authentication/sign-up/cover";
 import ResetCover from "layouts/authentication/reset-password/cover";
 
 // Adysa Contents
-import Dashboard from "contents/Dashboards";
-import Container from "@mui/material/Container";
 
 // Material Dashboard 2 PRO React components
 import MDAvatar from "components/MDAvatar";
@@ -63,6 +61,8 @@ import Icon from "@mui/material/Icon";
 import profilePicture from "assets/images/team-3.jpg";
 
 // Contents
+import Dashboard from "contents/Dashboards";
+import Container from "@mui/material/Container";
 import Admin from "contents/Master/Admin";
 import FormAdmin from "contents/Master/Admin/Form";
 import ProfileOverview from "contents/Master/Admin/Overview";
@@ -72,6 +72,8 @@ import AccountBank from "contents/Master/Bank";
 import FormAccountBank from "contents/Master/Bank/Form";
 import Package from "contents/Master/Package";
 import FormPackage from "contents/Master/Package/Form";
+import Product from "contents/Master/Product";
+import FormProduct from "contents/Master/Product/Form";
 
 const routes = [
   // ==========================================================================================
@@ -590,19 +592,19 @@ const routes = [
       },
       {
         name: "Tambah Admin",
-        key: "add",
+        key: "add-admin",
         route: "/master/admin/add",
         component: <FormAdmin />,
       },
       {
         name: "Edit Admin",
-        key: "edit",
+        key: "edit-admin",
         route: "/master/admin/edit/:id",
         component: <FormAdmin />,
       },
       {
         name: "Detail Admin",
-        key: "detail",
+        key: "detail-admin",
         route: "/master/admin/detail/:id",
         component: <ProfileOverview />,
       },
@@ -615,19 +617,19 @@ const routes = [
       },
       {
         name: "Tambah Artikel",
-        key: "add",
+        key: "add-article",
         route: "/master/article/add",
         component: <FormArticle />,
       },
       {
         name: "Edit Artikel",
-        key: "edit",
+        key: "edit-article",
         route: "/master/article/edit/:id",
         component: <FormArticle />,
       },
       {
         name: "Detail Artikel",
-        key: "detail",
+        key: "detail-article",
         route: "/master/article/detail/:id",
         component: <FormArticle />,
       },
@@ -640,13 +642,13 @@ const routes = [
       },
       {
         name: "Tambah Bank",
-        key: "add",
+        key: "add-bank",
         route: "/master/bank/add",
         component: <FormAccountBank />,
       },
       {
         name: "Edit Bank",
-        key: "edit",
+        key: "edit-bank",
         route: "/master/bank/edit/:id",
         component: <FormAccountBank />,
       },
@@ -658,14 +660,14 @@ const routes = [
         component: <Package />,
       },
       {
-        name: "Paket",
-        key: "add",
+        name: "Tambah Paket",
+        key: "add-package",
         route: "/master/package/add",
         component: <FormPackage />,
       },
       {
-        name: "Paket",
-        key: "edit",
+        name: "Edit Paket",
+        key: "edit-package",
         route: "/master/package/edit/:id",
         component: <FormPackage />,
       },
@@ -674,7 +676,19 @@ const routes = [
         name: "Produk",
         key: "product",
         route: "/master/product",
-        component: <Container />,
+        component: <Product />,
+      },
+      {
+        name: "Tambah Produk",
+        key: "add-product",
+        route: "/master/product/add",
+        component: <FormProduct />,
+      },
+      {
+        name: "Edit Produk",
+        key: "edit-product",
+        route: "/master/product/edit/:id",
+        component: <FormProduct />,
       },
       // ====================== product-category ======================
       {

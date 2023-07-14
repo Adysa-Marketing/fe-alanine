@@ -39,7 +39,7 @@ function Package() {
     { Header: "Nama Paket", accessor: "name", width: "25%" },
     { Header: "Type", accessor: "type", width: "25%" },
     { Header: "Harga", accessor: "amount", width: "25%" },
-    { Header: "Deskripsi", accessor: "description", width: "35%" },
+    { Header: "Kutipan", accessor: "description", width: "35%" },
   ]);
 
   useEffect(() => {
@@ -154,10 +154,20 @@ function Package() {
               onChangeRowsPerPage={(value) => {
                 rowsPerPageSet(value);
                 currentPageSet(1);
+                loadData({
+                  rowsPerPage: value,
+                  currentPage: 1,
+                  keyword,
+                });
               }}
               onChangePage={(currentPage) => {
                 if (currentPage !== currentPage) {
                   currentPageSet(currentPage);
+                  loadData({
+                    rowsPerPage,
+                    currentPage,
+                    keyword,
+                  });
                 }
               }}
             />

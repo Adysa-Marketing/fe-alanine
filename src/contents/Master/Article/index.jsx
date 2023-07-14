@@ -220,10 +220,24 @@ function Article() {
               onChangeRowsPerPage={(value) => {
                 rowsPerPageSet(value);
                 currentPageSet(1);
+                loadData({
+                  rowsPerPage: value,
+                  currentPage: 1,
+                  keyword,
+                  type: "All",
+                  statusId: status ? status.id : null,
+                });
               }}
               onChangePage={(currentPage) => {
                 if (currentPage !== currentPage) {
                   currentPageSet(currentPage);
+                  loadData({
+                    rowsPerPage,
+                    currentPage,
+                    keyword,
+                    type: "All",
+                    statusId: status ? status.id : null,
+                  });
                 }
               }}
             />

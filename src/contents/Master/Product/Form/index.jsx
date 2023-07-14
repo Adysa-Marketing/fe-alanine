@@ -42,13 +42,14 @@ import { Navigate, useParams } from "react-router-dom";
 import MiniFormCard from "contents/Components/FormCard/MiniFormCard";
 import ButtonBack from "contents/Components/ButtonBack";
 
-function FormPackage() {
+function FormProduct() {
   const [state, setState] = useState({
     title: "",
     id: "",
     name: "",
+    stock: "",
     amount: "",
-    type: null,
+    type: "",
     description: "",
     remark: "",
     image: null,
@@ -59,6 +60,9 @@ function FormPackage() {
       { id: 2, label: "Silver" },
       { id: 3, label: "Gold" },
     ],
+
+    category: null,
+    categories: [],
 
     action: "",
     disabledSubmit: false,
@@ -73,8 +77,23 @@ function FormPackage() {
   const imageRef = useRef();
 
   useEffect(() => {
+    loadCategory();
     loadPath();
   }, []);
+
+  const loadCategory = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/master/product-category/dropdown`)
+      .then((response) => {
+        let data = response.data.data;
+        data = data.map((item) => ({ id: item.id, label: item.name }));
+        setState((prev) => ({
+          ...prev,
+          categories: data,
+        }));
+      })
+      .catch((error) => console.log("[!] Error :", error));
+  };
 
   const loadPath = () => {
     const pathname = window.location.pathname;
@@ -82,13 +101,13 @@ function FormPackage() {
     if (index === -1) {
       setState((prevState) => ({
         ...prevState,
-        title: "Tambah Paket",
+        title: "Tambah Produk",
         action: "create",
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        title: "Edit Paket",
+        title: "Edit Produk",
         action: "update",
       }));
       loadDetail(params.id);
@@ -97,7 +116,7 @@ function FormPackage() {
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/package/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/master/product/get/${id}`)
       .then((response) => {
         const data = response.data.data;
 
@@ -105,24 +124,22 @@ function FormPackage() {
           ...prev,
           id: data.id,
           name: data.name,
+          stock: data.stock,
           amount: data.amount,
-          type:
-            data.type == "Bronze"
-              ? { id: 1, label: "Bronze" }
-              : data.type == "Silver"
-              ? { id: 2, label: "Silver" }
-              : { id: 3, label: "Gold" },
+          category: data.ProductCategory
+            ? { id: data.ProductCategory.id, label: data.ProductCategory.name }
+            : null,
           description: data.description,
           image: data.image,
           remark: data.remark,
           success: {
             ...prev.success,
             name: data.name ? true : false,
+            stock: data.stock ? true : false,
             amount: data.amount ? true : false,
-            type: data.type ? true : false,
+            category: data.ProductCategory ? true : false,
             description: data.description ? true : false,
             image: data.image ? true : false,
-            remark: data.remark ? true : false,
           },
         }));
       })
@@ -140,7 +157,7 @@ function FormPackage() {
           onClose: () => {
             setState((prev) => ({
               ...prev,
-              redirect: "/master/package",
+              redirect: "/master/product",
             }));
           },
         });
@@ -179,27 +196,32 @@ function FormPackage() {
   const handleSubmit = () => {
     if (
       state.success.name &&
+      state.success.stock &&
       state.success.amount &&
-      state.success.type &&
+      state.success.category &&
       state.success.image &&
-      state.description &&
-      state.remark
+      state.description
     ) {
       if (!/^[1-9][0-9]*$/.test(state.amount)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
           modalMessage: "Harga Paket harus berupa angka dan tidak boleh kurang dari 1",
         });
+      } else if (!/^[1-9][0-9]*$/.test(state.stock)) {
+        modalNotifRef.current.setShow({
+          modalTitle: "Gagal",
+          modalMessage: "Stok minimal 1",
+        });
       } else {
         sendData();
       }
     } else {
       let input = "";
-      !state.success.remark && (input = "Catatan");
       !state.success.description && (input = "Deskripsi");
       !state.success.image && (input = "Gambar");
-      !state.success.type && (input = "Type Paket");
-      !state.success.amount && (input = "Harga Paket");
+      !state.success.category && (input = "Kategori Produk");
+      !state.success.amount && (input = "Harga Produk");
+      !state.success.stock && (input = "Stok");
       !state.success.name && (input = "Nama Paket");
 
       modalNotifRef.current.setShow({
@@ -214,13 +236,14 @@ function FormPackage() {
     formData.append("id", state.id);
     formData.append("name", state.name);
     formData.append("amount", state.amount);
-    formData.append("type", state.type?.label);
+    formData.append("stock", state.stock);
+    formData.append("categoryId", state.category.id);
     formData.append("image", state.image);
     formData.append("description", state.description);
     formData.append("remark", state.remark);
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/package/${state.action}`, formData)
+      .post(`${Config.ApiUrl}/api/v1/master/product/${state.action}`, formData)
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
@@ -228,7 +251,7 @@ function FormPackage() {
           onClose: () => {
             setState((prev) => ({
               ...prev,
-              redirect: "/master/package",
+              redirect: "/master/product",
             }));
           },
         });
@@ -272,14 +295,14 @@ function FormPackage() {
                 </MDTypography>
               </MDBox>
               <MDTypography variant="h6" fontWeight="regular" color="secondary">
-                Informasi ini akan menjelaskan lebih lanjut tentang data paket.
+                Informasi ini akan menjelaskan lebih lanjut tentang data produk.
               </MDTypography>
             </MDBox>
             <Card>
               <MDBox mt={-3} mb={3} mx={2}>
                 <Stepper alternativeLabel>
                   <Step>
-                    <StepLabel>Form Paket</StepLabel>
+                    <StepLabel>Form Produk</StepLabel>
                   </Step>
                 </Stepper>
               </MDBox>
@@ -291,11 +314,11 @@ function FormPackage() {
                         <Grid item xs={12} sm={6}>
                           <MDInput
                             type="text"
-                            label="Nama Paket"
+                            label="Nama Produk"
                             id="name"
                             value={state.name}
-                            onChange={handleChange}
                             onKeyDown={handleKeyDown}
+                            onChange={handleChange}
                             onBlur={handleBlur}
                             success={state.success ? state.success.name : false}
                             error={state.error ? state.error.name : false}
@@ -303,20 +326,38 @@ function FormPackage() {
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <MDInput
-                            type="text"
-                            label="Harga Paket"
-                            id="amount"
-                            value={state.amount}
-                            onChange={handleChange}
-                            onKeyDown={handleKeyDown}
-                            onBlur={handleBlur}
-                            success={state.success ? state.success.amount : false}
-                            error={state.error ? state.error.amount : false}
-                            variant="standard"
-                            fullWidth
-                          />
+                        <Grid item container xs={12} sm={6}>
+                          <Grid item xs={12} sm={4}>
+                            <MDInput
+                              type="text"
+                              label="Stok"
+                              id="stock"
+                              value={state.stock}
+                              onKeyDown={handleKeyDown}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              success={state.success ? state.success.stock : false}
+                              error={state.error ? state.error.stock : false}
+                              variant="standard"
+                              fullWidth
+                            />
+                          </Grid>
+                          <Grid item xs={0} sm={1}></Grid>
+                          <Grid item xs={12} sm={4}>
+                            <MDInput
+                              type="text"
+                              label="Harga Produk"
+                              id="amount"
+                              value={state.amount}
+                              onKeyDown={handleKeyDown}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              success={state.success ? state.success.amount : false}
+                              error={state.error ? state.error.amount : false}
+                              variant="standard"
+                              fullWidth
+                            />
+                          </Grid>
                         </Grid>
                       </Grid>
                     </MDBox>
@@ -366,33 +407,31 @@ function FormPackage() {
                           />
                         </Grid>
                         <Grid item container xs={12} sm={6}>
-                          <Grid item xs={12} sm={3}>
+                          <Grid item xs={12} sm={4}>
                             <Autocomplete
-                              options={state.types}
-                              id="type"
-                              value={state.type}
+                              options={state.categories}
+                              id="category"
+                              value={state.category}
                               onKeyDown={handleKeyDown}
                               onChange={(e, value) => {
-                                // if (value) {
                                 setState((prev) => ({
                                   ...prev,
-                                  type: value,
-                                  success: { ...prev.success, type: true },
-                                  error: { ...prev.error, type: false },
+                                  category: value,
+                                  success: { ...prev.success, category: true },
+                                  error: { ...prev.error, category: false },
                                 }));
-                                // }
                               }}
                               onBlur={handleBlur}
                               variant="standard"
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
                               renderInput={(params) => (
-                                <MDInput {...params} label="Type Paket" variant="standard" />
+                                <MDInput {...params} label="Kategory Paket" variant="standard" />
                               )}
                             />
                           </Grid>
                           <Grid item xs={0} sm={1}></Grid>
-                          <Grid item xs={12} sm={8}>
+                          <Grid item xs={12} sm={6}>
                             <MDBox mb={2}>
                               <input
                                 type="file"
@@ -438,9 +477,6 @@ function FormPackage() {
                             value={state.remark}
                             onKeyDown={handleKeyDown}
                             onChange={handleChange}
-                            onBlur={handleBlur}
-                            success={state.success ? state.success.remark : false}
-                            error={state.error ? state.error.remark : false}
                             variant="standard"
                             fullWidth
                           />
@@ -464,4 +500,4 @@ function FormPackage() {
   );
 }
 
-export default FormPackage;
+export default FormProduct;

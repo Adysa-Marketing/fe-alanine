@@ -24,7 +24,7 @@ import ButtonAction from "contents/Components/ButtonAction";
 import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
-function AccountBank() {
+function Product() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -36,10 +36,15 @@ function AccountBank() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama Bank", accessor: "bank", width: "25%" },
-    { Header: "Nama Pemilik", accessor: "name", width: "25%" },
-    { Header: "No Rekening", accessor: "norek", width: "20%" },
+    { Header: "Nama Paket", accessor: "name", width: "25%" },
+    { Header: "Kategori", accessor: "category", width: "25%" },
+    { Header: "Harga", accessor: "amount", width: "25%" },
+    { Header: "Stok", accessor: "stock", width: "15%" },
+    { Header: "Deskripsi", accessor: "description", width: "35%" },
   ]);
+
+  const [category, categorySet] = useState(null);
+  const [categories, categoriesSet] = useState([]);
 
   useEffect(() => {
     const userData = secureStorage.getItem("user");
@@ -47,20 +52,36 @@ function AccountBank() {
   }, []);
 
   useEffect(() => {
-    if (user) loadData();
+    if (user) {
+      loadCategory();
+      loadData();
+    }
   }, [user]);
+
+  const loadCategory = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/master/product-category/dropdown`)
+      .then((response) => {
+        let data = response.data.data;
+        data = data.map((item) => ({ id: item.id, label: item.name }));
+        categoriesSet(data);
+      })
+      .catch((error) => console.log("[!] Error :", error));
+  };
 
   const loadData = (params) => {
     isLoadingSet(true);
 
+    const categoryId = params && params.categoryId ? { categoryId: params.categoryId } : {};
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
+      ...categoryId,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/bank/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/master/product/list`, payload)
       .then((response) => {
         const data = response.data;
         let no = 0;
@@ -68,14 +89,18 @@ function AccountBank() {
           no++;
           return {
             no,
-            bank: item.name,
-            name: item.accountName,
-            norek: item.noRekening,
+            name: item.name,
+            category: item.ProductCategory?.name,
+            amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
+            stock: item.stock,
+            description: (
+              <p style={{ wordWrap: "break-word", width: "25em" }}>{item.description}</p>
+            ),
             action:
               user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/master/bank"}
+                  urlKey={"/master/product"}
                   refreshData={loadData}
                 ></ButtonAction>
               ) : (
@@ -105,7 +130,7 @@ function AccountBank() {
             color="info"
             variant="gradient"
             component={Link}
-            to={{ pathname: "/master/bank/add" }}
+            to={{ pathname: "/master/product/add" }}
           >
             Tambah
           </MDButton>
@@ -113,7 +138,7 @@ function AccountBank() {
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Akun Bank
+              Daftar Paket
             </MDTypography>
           </MDBox>
 
@@ -130,10 +155,37 @@ function AccountBank() {
                       loadData({
                         currentPage: 1,
                         keyword: e.target.value,
+                        categoryId: category ? category.id : null,
                       });
                     }
                   }}
                   onChange={(e) => keywordSet(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={category}
+                  options={categories}
+                  onChange={(e, value) => {
+                    categorySet(value);
+                    loadData({
+                      keyword,
+                      categoryId: value ? value.id : null,
+                      currentPage: 1,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Kategori" {...params} />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -154,6 +206,7 @@ function AccountBank() {
                   rowsPerPage: value,
                   currentPage: 1,
                   keyword,
+                  categoryId: category ? category.id : null,
                 });
               }}
               onChangePage={(currentPage) => {
@@ -163,6 +216,7 @@ function AccountBank() {
                     rowsPerPage,
                     currentPage,
                     keyword,
+                    categoryId: category ? category.id : null,
                   });
                 }
               }}
@@ -174,4 +228,4 @@ function AccountBank() {
   );
 }
 
-export default AccountBank;
+export default Product;
