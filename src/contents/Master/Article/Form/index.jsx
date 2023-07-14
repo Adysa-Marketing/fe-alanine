@@ -272,7 +272,7 @@ function FormArticle() {
                             </MDTypography>
                           </MDBox>
                           <MDEditor
-                            id="title"
+                            id="description"
                             value={description}
                             onChange={(content, delta, source, editorue) => {
                               if (content) {
@@ -309,7 +309,13 @@ function FormArticle() {
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
                               renderInput={(params) => (
-                                <MDInput {...params} label="Status Artikel" variant="standard" />
+                                <MDInput
+                                  {...params}
+                                  label="Status Artikel"
+                                  success={success ? success.status : false}
+                                  error={error ? error.status : false}
+                                  variant="standard"
+                                />
                               )}
                             />
                           </Grid>

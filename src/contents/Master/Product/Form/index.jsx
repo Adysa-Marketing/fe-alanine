@@ -375,7 +375,7 @@ function FormProduct() {
                             </MDTypography>
                           </MDBox>
                           <MDEditor
-                            id="title"
+                            id="description"
                             value={state.description}
                             onKeyDown={handleKeyDown}
                             onChange={(content, delta, source, editorue) => {

@@ -334,7 +334,7 @@ function FormPackage() {
                             </MDTypography>
                           </MDBox>
                           <MDEditor
-                            id="title"
+                            id="description"
                             value={state.description}
                             onKeyDown={handleKeyDown}
                             onChange={(content, delta, source, editorue) => {
@@ -373,21 +373,25 @@ function FormPackage() {
                               value={state.type}
                               onKeyDown={handleKeyDown}
                               onChange={(e, value) => {
-                                // if (value) {
                                 setState((prev) => ({
                                   ...prev,
                                   type: value,
                                   success: { ...prev.success, type: true },
                                   error: { ...prev.error, type: false },
                                 }));
-                                // }
                               }}
                               onBlur={handleBlur}
                               variant="standard"
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
                               renderInput={(params) => (
-                                <MDInput {...params} label="Type Paket" variant="standard" />
+                                <MDInput
+                                  {...params}
+                                  label="Type Paket"
+                                  success={state.success ? state.success.type : false}
+                                  error={state.error ? state.error.type : false}
+                                  variant="standard"
+                                />
                               )}
                             />
                           </Grid>

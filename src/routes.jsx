@@ -74,6 +74,8 @@ import Package from "contents/Master/Package";
 import FormPackage from "contents/Master/Package/Form";
 import Product from "contents/Master/Product";
 import FormProduct from "contents/Master/Product/Form";
+import ProductCategory from "contents/Master/ProductCategory";
+import FormProductCategory from "contents/Master/ProductCategory/Form";
 
 const routes = [
   // ==========================================================================================
@@ -695,7 +697,19 @@ const routes = [
         name: "Kategori Produk",
         key: "product-category",
         route: "/master/product-category",
-        component: <Container />,
+        component: <ProductCategory />,
+      },
+      {
+        name: "Tambah Kategori Produk",
+        key: "add-product-category",
+        route: "/master/product-category/add",
+        component: <FormProductCategory />,
+      },
+      {
+        name: "Edit Kategori Produk",
+        key: "edit-product-category",
+        route: "/master/product-category/edit/:id",
+        component: <FormProductCategory />,
       },
       // ====================== reward ======================
       {
