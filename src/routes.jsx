@@ -76,6 +76,8 @@ import Product from "contents/Master/Product";
 import FormProduct from "contents/Master/Product/Form";
 import ProductCategory from "contents/Master/ProductCategory";
 import FormProductCategory from "contents/Master/ProductCategory/Form";
+import Reward from "contents/Master/Reward";
+import FormReward from "contents/Master/Reward/Form";
 
 const routes = [
   // ==========================================================================================
@@ -716,8 +718,21 @@ const routes = [
         name: "Reward",
         key: "reward",
         route: "/master/reward",
-        component: <Container />,
-      }, // ====================== serial ======================
+        component: <Reward />,
+      },
+      {
+        name: "Reward",
+        key: "add-reward",
+        route: "/master/reward/add",
+        component: <FormReward />,
+      },
+      {
+        name: "Reward",
+        key: "edit-reward",
+        route: "/master/reward/edit/:id",
+        component: <FormReward />,
+      },
+      // ====================== serial ======================
       {
         name: "Serial",
         key: "serial",

@@ -42,27 +42,18 @@ import { Navigate, useParams } from "react-router-dom";
 import MiniFormCard from "contents/Components/FormCard/MiniFormCard";
 import ButtonBack from "contents/Components/ButtonBack";
 
-function FormProduct() {
+function FormReward() {
   const [state, setState] = useState({
     title: "",
     id: "",
     name: "",
-    stock: "",
     amount: "",
-    type: "",
+    point: "",
+    minFoot: "",
     description: "",
     remark: "",
     image: null,
     imageFilename: "",
-
-    types: [
-      { id: 1, label: "Bronze" },
-      { id: 2, label: "Silver" },
-      { id: 3, label: "Gold" },
-    ],
-
-    category: null,
-    categories: [],
 
     action: "",
     disabledSubmit: false,
@@ -77,23 +68,8 @@ function FormProduct() {
   const imageRef = useRef();
 
   useEffect(() => {
-    loadCategory();
     loadPath();
   }, []);
-
-  const loadCategory = () => {
-    useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/product-category/dropdown`)
-      .then((response) => {
-        let data = response.data.data;
-        data = data.map((item) => ({ id: item.id, label: item.name }));
-        setState((prev) => ({
-          ...prev,
-          categories: data,
-        }));
-      })
-      .catch((error) => console.log("[!] Error :", error));
-  };
 
   const loadPath = () => {
     const pathname = window.location.pathname;
@@ -101,13 +77,13 @@ function FormProduct() {
     if (index === -1) {
       setState((prevState) => ({
         ...prevState,
-        title: "Tambah Produk",
+        title: "Tambah Reward",
         action: "create",
       }));
     } else {
       setState((prevState) => ({
         ...prevState,
-        title: "Edit Produk",
+        title: "Edit Reward",
         action: "update",
       }));
       loadDetail(params.id);
@@ -116,7 +92,7 @@ function FormProduct() {
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/product/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/master/reward/get/${id}`)
       .then((response) => {
         const data = response.data.data;
 
@@ -124,22 +100,21 @@ function FormProduct() {
           ...prev,
           id: data.id,
           name: data.name,
-          stock: data.stock,
           amount: data.amount,
-          category: data.ProductCategory
-            ? { id: data.ProductCategory.id, label: data.ProductCategory.name }
-            : null,
+          point: data.point,
+          minFoot: data.minFoot,
           description: data.description,
           image: data.image,
           remark: data.remark,
           success: {
             ...prev.success,
             name: data.name ? true : false,
-            stock: data.stock ? true : false,
             amount: data.amount ? true : false,
-            category: data.ProductCategory ? true : false,
+            point: data.point ? true : false,
+            minFoot: data.minFoot ? true : false,
             description: data.description ? true : false,
             image: data.image ? true : false,
+            remark: data.remark ? true : false,
           },
         }));
       })
@@ -157,7 +132,7 @@ function FormProduct() {
           onClose: () => {
             setState((prev) => ({
               ...prev,
-              redirect: "/master/product",
+              redirect: "/master/reward",
             }));
           },
         });
@@ -196,33 +171,38 @@ function FormProduct() {
   const handleSubmit = () => {
     if (
       state.success.name &&
-      state.success.stock &&
       state.success.amount &&
-      state.success.category &&
+      state.success.point &&
+      state.success.minFoot &&
       state.success.image &&
       state.description
     ) {
       if (!/^[1-9][0-9]*$/.test(state.amount)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: "Harga Produk harus berupa angka dan tidak boleh kurang dari 1",
+          modalMessage: "Perkiraan harga Reward harus berupa angka dan tidak boleh kurang dari 1",
         });
-      } else if (!/^[1-9][0-9]*$/.test(state.stock)) {
+      } else if (!/^[1-9][0-9]*$/.test(state.point)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: "Stok minimal 1",
+          modalMessage: "Jumlah Point harus angka dan tidak boleh kurang dari 1",
+        });
+      } else if (!/^[1-9][0-9]*$/.test(state.minFoot)) {
+        modalNotifRef.current.setShow({
+          modalTitle: "Gagal",
+          modalMessage: "Minimal Jumlah kaki harus angka dan tidak boleh kurang dari 1",
         });
       } else {
         sendData();
       }
     } else {
       let input = "";
-      !state.success.description && (input = "Deskripsi");
       !state.success.image && (input = "Gambar");
-      !state.success.category && (input = "Kategori Produk");
-      !state.success.amount && (input = "Harga Produk");
-      !state.success.stock && (input = "Stok");
-      !state.success.name && (input = "Nama Produk");
+      !state.success.minFoot && (input = "Jumlah Kaki");
+      !state.success.description && (input = "Deskripsi");
+      !state.success.point && (input = "Jumlah Point");
+      !state.success.amount && (input = "Harga Reward");
+      !state.success.name && (input = "Nama Reward");
 
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
@@ -236,14 +216,14 @@ function FormProduct() {
     formData.append("id", state.id);
     formData.append("name", state.name);
     formData.append("amount", state.amount);
-    formData.append("stock", state.stock);
-    formData.append("categoryId", state.category.id);
+    formData.append("point", state.point);
+    formData.append("minFoot", state.minFoot);
     formData.append("image", state.image);
     formData.append("description", state.description);
     formData.append("remark", state.remark);
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/product/${state.action}`, formData)
+      .post(`${Config.ApiUrl}/api/v1/master/reward/${state.action}`, formData)
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
@@ -251,7 +231,7 @@ function FormProduct() {
           onClose: () => {
             setState((prev) => ({
               ...prev,
-              redirect: "/master/product",
+              redirect: "/master/reward",
             }));
           },
         });
@@ -295,14 +275,14 @@ function FormProduct() {
                 </MDTypography>
               </MDBox>
               <MDTypography variant="h6" fontWeight="regular" color="secondary">
-                Informasi ini akan menjelaskan lebih lanjut tentang data produk.
+                Informasi ini akan menjelaskan lebih lanjut tentang data reward.
               </MDTypography>
             </MDBox>
             <Card>
               <MDBox mt={-3} mb={3} mx={2}>
                 <Stepper alternativeLabel>
                   <Step>
-                    <StepLabel>Form Produk</StepLabel>
+                    <StepLabel>Form Reward</StepLabel>
                   </Step>
                 </Stepper>
               </MDBox>
@@ -314,11 +294,11 @@ function FormProduct() {
                         <Grid item xs={12} sm={6}>
                           <MDInput
                             type="text"
-                            label="Nama Produk"
+                            label="Nama Reward"
                             id="name"
                             value={state.name}
-                            onKeyDown={handleKeyDown}
                             onChange={handleChange}
+                            onKeyDown={handleKeyDown}
                             onBlur={handleBlur}
                             success={state.success ? state.success.name : false}
                             error={state.error ? state.error.name : false}
@@ -330,14 +310,14 @@ function FormProduct() {
                           <Grid item xs={12} sm={4}>
                             <MDInput
                               type="text"
-                              label="Stok"
-                              id="stock"
-                              value={state.stock}
-                              onKeyDown={handleKeyDown}
+                              label="Harga Reward"
+                              id="amount"
+                              value={state.amount}
                               onChange={handleChange}
+                              onKeyDown={handleKeyDown}
                               onBlur={handleBlur}
-                              success={state.success ? state.success.stock : false}
-                              error={state.error ? state.error.stock : false}
+                              success={state.success ? state.success.amount : false}
+                              error={state.error ? state.error.amount : false}
                               variant="standard"
                               fullWidth
                             />
@@ -346,14 +326,14 @@ function FormProduct() {
                           <Grid item xs={12} sm={4}>
                             <MDInput
                               type="text"
-                              label="Harga Produk"
-                              id="amount"
-                              value={state.amount}
-                              onKeyDown={handleKeyDown}
+                              label="Jumlah Poin"
+                              id="point"
+                              value={state.point}
                               onChange={handleChange}
+                              onKeyDown={handleKeyDown}
                               onBlur={handleBlur}
-                              success={state.success ? state.success.amount : false}
-                              error={state.error ? state.error.amount : false}
+                              success={state.success ? state.success.point : false}
+                              error={state.error ? state.error.point : false}
                               variant="standard"
                               fullWidth
                             />
@@ -408,26 +388,18 @@ function FormProduct() {
                         </Grid>
                         <Grid item container xs={12} sm={6}>
                           <Grid item xs={12} sm={4}>
-                            <Autocomplete
-                              options={state.categories}
-                              id="category"
-                              value={state.category}
+                            <MDInput
+                              type="text"
+                              label="Jumlah Kaki"
+                              id="minFoot"
+                              value={state.minFoot}
+                              onChange={handleChange}
                               onKeyDown={handleKeyDown}
-                              onChange={(e, value) => {
-                                setState((prev) => ({
-                                  ...prev,
-                                  category: value,
-                                  success: { ...prev.success, category: true },
-                                  error: { ...prev.error, category: false },
-                                }));
-                              }}
                               onBlur={handleBlur}
+                              success={state.success ? state.success.minFoot : false}
+                              error={state.error ? state.error.minFoot : false}
                               variant="standard"
-                              isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
-                              renderInput={(params) => (
-                                <MDInput {...params} label="Kategory Paket" variant="standard" />
-                              )}
                             />
                           </Grid>
                           <Grid item xs={0} sm={1}></Grid>
@@ -477,6 +449,9 @@ function FormProduct() {
                             value={state.remark}
                             onKeyDown={handleKeyDown}
                             onChange={handleChange}
+                            onBlur={handleBlur}
+                            success={state.success ? state.success.remark : false}
+                            error={state.error ? state.error.remark : false}
                             variant="standard"
                             fullWidth
                           />
@@ -500,4 +475,4 @@ function FormProduct() {
   );
 }
 
-export default FormProduct;
+export default FormReward;
