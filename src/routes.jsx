@@ -89,6 +89,7 @@ import Member from "contents/Manage/Member";
 import MemberOverview from "contents/Manage/Member/Overview";
 import Testimoni from "contents/Manage/Testimoni";
 import Partnership from "contents/Manage/Partnership";
+import Referral from "contents/Manage/Referral";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -819,13 +820,6 @@ const routes = [
         route: "/manage/commission",
         component: <Commission />,
       },
-      // ====================== partnership ======================
-      {
-        name: "Partnership",
-        key: "partnership",
-        route: "/manage/partnership",
-        component: <Partnership />,
-      },
       // ====================== member ======================
       {
         name: "Member",
@@ -838,6 +832,20 @@ const routes = [
         key: "detail-member",
         route: "/manage/member/detail/:id",
         component: <MemberOverview />,
+      },
+      // ====================== partnership ======================
+      {
+        name: "Partnership",
+        key: "partnership",
+        route: "/manage/partnership",
+        component: <Partnership />,
+      },
+      // ====================== referral ======================
+      {
+        name: "Referral",
+        key: "referral",
+        route: "/manage/referral",
+        component: <Referral />,
       },
       // ====================== testimonial ======================
       {
