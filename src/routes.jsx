@@ -82,6 +82,14 @@ import Serial from "contents/Master/Serial";
 import FormSerial from "contents/Master/Serial/Form";
 import Stokis from "contents/Master/Stokis";
 import FormStokis from "contents/Master/Stokis/Form";
+import Agen from "contents/Manage/Agen";
+import Commission from "contents/Manage/Commission";
+
+const logout = () => {
+  secureStorage.removeItem("token");
+  secureStorage.removeItem("user");
+  window.location.href = "/login";
+};
 
 const routes = [
   // ==========================================================================================
@@ -777,6 +785,30 @@ const routes = [
       },
     ],
   },
+  // ============================================= MANAGE =============================================
+  {
+    type: "collapse",
+    name: "Manage",
+    key: "manage",
+    route: "/manage",
+    icon: <Icon fontSize="medium">group</Icon>,
+    collapse: [
+      // ====================== agen ======================
+      {
+        name: "Agen",
+        key: "agen",
+        route: "/manage/agen",
+        component: <Agen />,
+      },
+      // ====================== commission ======================
+      {
+        name: "Commission",
+        key: "commission",
+        route: "/manage/commission",
+        component: <Commission />,
+      },
+    ],
+  },
 ];
 
 // ============================================= MENUS =============================================
@@ -786,7 +818,7 @@ const getMenu = (user) => {
     {
       type: "collapse",
       name: "Dashboard",
-      // index: true,
+      index: true,
       key: "dashboard",
       route: "/dashboard",
       icon: <Icon fontSize="medium">home</Icon>,
@@ -872,7 +904,7 @@ const getMenu = (user) => {
           name: "Admin",
           key: "admin",
           route: "/master/admin",
-          component: <Admin />,
+          component: <Container />,
         },
       ]
     : [];
@@ -945,7 +977,120 @@ const getMenu = (user) => {
       ]
     : [];
 
-  menus = [...menus, ...menuSetting, ...menuMaster];
+  // ============================================= MENU MANAGE =============================================
+  const subManageAgen = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Agen",
+          key: "agen",
+          route: "/manage/agen",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subManageAgenProduct = [3].includes(roleId)
+    ? [
+        {
+          name: "Produk Agen",
+          key: "agen-product",
+          route: "/manage/agen-product",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subManageMember = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Member",
+          key: "member",
+          route: "/manage/member",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subManagePartnership = [3, 4].includes(roleId)
+    ? [
+        {
+          name: "Partnership",
+          key: "partnership",
+          route: "/manage/partnership",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subManageReward = [3, 4].includes(roleId)
+    ? [
+        {
+          name: "Reward",
+          key: "reward",
+          route: "/manage/reward",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subManageTestimoni = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Testimoni",
+          key: "testimonial",
+          route: "/manage/testimoni",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const menuManage = [1, 2, 3, 4].includes(roleId)
+    ? [
+        {
+          type: "collapse",
+          name: "Manage",
+          key: "manage",
+          route: "/manage",
+          icon: <Icon fontSize="medium">group</Icon>,
+          collapse: [
+            ...subManageAgen,
+            ...subManageAgenProduct,
+            {
+              name: "Commission",
+              key: "commission",
+              route: "/manage/commission",
+              component: <Container />,
+            },
+            ...subManageMember,
+            ...subManagePartnership,
+            {
+              name: "Referral",
+              key: "referral",
+              route: "/manage/referral",
+              component: <Container />,
+            },
+            ...subManageReward,
+            ...subManageTestimoni,
+          ],
+        },
+      ]
+    : [];
+
+  menus = [
+    ...menus,
+    ...menuSetting,
+    ...menuMaster,
+    ...menuManage,
+    {
+      type: "collapse",
+      name: "Logout",
+      key: "logout",
+      href: logout,
+      noCollapse: true,
+      icon: <Icon fontSize="medium">logout</Icon>,
+      component: <Container />,
+    },
+  ];
 
   return menus;
 };
