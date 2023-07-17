@@ -102,6 +102,8 @@ function Product() {
                   id={item.id}
                   urlKey={"/master/product"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

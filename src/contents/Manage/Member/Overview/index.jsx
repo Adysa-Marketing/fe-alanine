@@ -34,8 +34,8 @@ import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 
 // Overview page components
-import Header from "contents/Master/Admin/Overview/components/Header";
-import ProfilesList from "contents/Master/Admin/Overview/components/ProfilesList";
+import Header from "contents/Manage/Member/Overview/components/Header";
+import ProfilesList from "contents/Manage/Member/Overview/components/ProfilesList";
 
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
@@ -43,11 +43,12 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import ModalNotif from "contents/Components/ModalNotif";
 
-function ProfileOverview() {
+function MemberOverview() {
   const [name, nameSet] = useState("");
   const [username, usernameSet] = useState("");
   const [email, emailSet] = useState("");
   const [phone, phoneSet] = useState("");
+  const [point, pointSet] = useState(0);
   const [address, addressSet] = useState("");
   const [country, countrySet] = useState("");
   const [province, provinceSet] = useState("");
@@ -57,6 +58,7 @@ function ProfileOverview() {
   const [gender, genderSet] = useState("");
   const [kk, kkSet] = useState("");
   const [bio, bioSet] = useState("");
+  const [testimoni, testimoniSet] = useState({});
   const [role, roleSet] = useState("");
   const [sponsorKey, sponsorKeySet] = useState("");
   const [downline, downlineSet] = useState([]);
@@ -71,7 +73,7 @@ function ProfileOverview() {
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/admin/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/manage/member/get/${id}`)
       .then((response) => {
         const data = response.data.data;
         nameSet(data.name);
@@ -79,6 +81,7 @@ function ProfileOverview() {
         emailSet(data.email);
         phoneSet(data.phone);
         addressSet(data.address);
+        pointSet(data.point);
         countrySet(data.Country?.name);
         provinceSet(data.Province?.name);
         districtSet(data.District?.name);
@@ -87,6 +90,7 @@ function ProfileOverview() {
         genderSet(data.gender);
         kkSet(data.kk);
         bioSet(data.remark);
+        testimoniSet(data.Testimonial);
         roleSet(data.Role?.name);
         sponsorKeySet(data.SponsorKey?.key);
         const Downline = data.SponsorKey?.Referrals
@@ -116,7 +120,7 @@ function ProfileOverview() {
           modalTitle: "Gagal",
           modalMessage: err.response ? err.response.message : "Koneksi jaringan terputus",
           onClose: () => {
-            redirectSet("/master/admin");
+            redirectSet("/manage/member");
           },
         });
       });
@@ -145,6 +149,7 @@ function ProfileOverview() {
                   role,
                   phone,
                   email,
+                  point,
                   nik: kk,
                   gender,
                   sponsorKey,
@@ -155,13 +160,21 @@ function ProfileOverview() {
                   kecamatan: subDistrict,
                 }}
                 social={[]}
-                action={{ route: `/master/admin/edit/${params.id}`, tooltip: "Edit Profile" }}
+                action={{ route: `/manage/member/detail/${params.id}`, tooltip: "" }}
                 shadow={false}
               />
               <Divider orientation="vertical" sx={{ mx: 0 }} />
             </Grid>
             <Grid item xs={12} xl={4}>
               <ProfilesList title="Downline Utama" profiles={downline} shadow={false} />
+            </Grid>
+            <Grid item xs={12} xl={4}>
+              <MDTypography variant="h6" mt={2} mb={4} fontWeight="medium">
+                Testimonial
+              </MDTypography>
+              <MDTypography variant="h6" mt={2} mb={4} fontWeight="light">
+                {testimoni?.testimonial}
+              </MDTypography>
             </Grid>
           </Grid>
         </MDBox>
@@ -171,4 +184,4 @@ function ProfileOverview() {
   );
 }
 
-export default ProfileOverview;
+export default MemberOverview;

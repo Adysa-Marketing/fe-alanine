@@ -115,6 +115,8 @@ function Article() {
                   id={item.id}
                   urlKey={"/master/article"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                   changeStatus={true}
                   statusId={statusId}
                 ></ButtonAction>

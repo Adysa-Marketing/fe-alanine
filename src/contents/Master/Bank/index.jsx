@@ -77,6 +77,8 @@ function AccountBank() {
                   id={item.id}
                   urlKey={"/master/bank"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

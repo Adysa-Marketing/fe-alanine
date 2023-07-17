@@ -75,6 +75,8 @@ function ProductCategory() {
                   id={item.id}
                   urlKey={"/master/product-category"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

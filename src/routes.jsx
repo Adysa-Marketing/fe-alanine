@@ -85,6 +85,8 @@ import FormStokis from "contents/Master/Stokis/Form";
 import Agen from "contents/Manage/Agen";
 import Commission from "contents/Manage/Commission";
 import AgenProduct from "contents/Manage/AgenProduct";
+import Member from "contents/Manage/Member";
+import MemberOverview from "contents/Manage/Member/Overview";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -814,6 +816,19 @@ const routes = [
         key: "commission",
         route: "/manage/commission",
         component: <Commission />,
+      },
+      // ====================== member ======================
+      {
+        name: "Member",
+        key: "member",
+        route: "/manage/member",
+        component: <Member />,
+      },
+      {
+        name: "Detail Member",
+        key: "detail-member",
+        route: "/manage/member/detail/:id",
+        component: <MemberOverview />,
       },
     ],
   },

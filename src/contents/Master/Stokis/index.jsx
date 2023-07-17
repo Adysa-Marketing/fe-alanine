@@ -83,6 +83,8 @@ function Stokis() {
                   id={item.id}
                   urlKey={"/master/stokis"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

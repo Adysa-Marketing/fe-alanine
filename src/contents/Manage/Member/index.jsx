@@ -27,7 +27,7 @@ import Config from "config";
 import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
-function Agen() {
+function Member() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -40,14 +40,26 @@ function Agen() {
     { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
     { Header: "Nama", accessor: "name", width: "25%" },
-    { Header: "Status", accessor: "status", width: "20%" },
-    { Header: "Tanggal Approve", accessor: "dateApproved", width: "20%" },
-    { Header: "Stokis", accessor: "stokis", width: "20%" },
-    { Header: "Diskon Produk Agen", accessor: "agenDiscount", width: "30%" },
+    { Header: "Username", accessor: "username", width: "25%" },
+    { Header: "Email", accessor: "email", width: "25%" },
+    { Header: "No Telpon", accessor: "phone", width: "25%" },
+    { Header: "Poin", accessor: "point", width: "15%" },
+    { Header: "Gender", accessor: "gender", width: "15%" },
+    { Header: "Status", accessor: "status", width: "15%" },
   ]);
 
   const [status, statusSet] = useState(null);
-  const [statuses, statusesSet] = useState([]);
+  const [statuses, statusesSet] = useState([
+    { id: 1, label: "Aktif" },
+    { id: 2, label: "Disable" },
+  ]);
+
+  const [gender, genderSet] = useState(null);
+  const [genders, gendersSet] = useState([
+    { id: 1, label: "Male" },
+    { id: 2, label: "Female" },
+  ]);
+
   useEffect(() => {
     const userData = secureStorage.getItem("user");
     userSet(userData);
@@ -55,61 +67,54 @@ function Agen() {
 
   useEffect(() => {
     if (user) {
-      loadAgenStatus();
       loadData();
     }
   }, [user]);
-
-  const loadAgenStatus = () => {
-    useAxios()
-      .get(`${Config.ApiUrl}/api/v1/dropdown/agen-status`)
-      .then((response) => {
-        let data = response.data.data;
-        data = data.map((status) => {
-          return {
-            id: status.id,
-            label: status.name,
-          };
-        });
-
-        statusesSet(data);
-      })
-      .catch((error) => console.log("[!] Error :", error));
-  };
 
   const loadData = (params) => {
     isLoadingSet(true);
 
     const statusId = params && params.statusId ? { statusId: params.statusId } : {};
+    const queryGender = params && params.gender ? { gender: params.gender } : {};
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
       ...statusId,
+      ...queryGender,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/manage/agen/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/manage/member/list`, payload)
       .then((response) => {
         const data = response.data;
         let no = 0;
         const output = data.data.map((item) => {
           no++;
+          const statusId = item.isActive ? 1 : 2;
           return {
             no,
             name: item.name,
-            status: item.AgenStatus?.name,
-            dateApproved: moment(item.dateApproved).format("YYYY-MM-DD HH:mm:ss"),
-            stokis: item.Stoki?.name,
-            agenDiscount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.Stoki?.agenDiscount),
+            username: item.username,
+            email: item.email,
+            phone: item.phone,
+            point: item.point,
+            gender: item.gender,
+            status: item.isActive ? (
+              <MDBadge badgeContent="Aktif" container color="success" />
+            ) : (
+              <MDBadge badgeContent="Tidak Aktif" container color="error" />
+            ),
             action:
               user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/manage/agen"}
+                  urlKey={"/manage/member"}
                   refreshData={loadData}
-                  edit={true}
-                  remove={true}
+                  detail={true}
+                  changePassword={true}
+                  changeStatus={true}
+                  statusId={statusId}
                 ></ButtonAction>
               ) : (
                 "-"
@@ -132,46 +137,36 @@ function Agen() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pb={3} my={3}>
-        <MDBox pb={2} mt={{ xs: 2, md: 0 }} display="flex">
-          <MDButton
-            size="medium"
-            color="info"
-            variant="gradient"
-            component={Link}
-            to={{ pathname: "/manage/agen/add" }}
-          >
-            Tambah
-          </MDButton>
-        </MDBox>
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Agen
+              Daftar Member
             </MDTypography>
           </MDBox>
 
           <MDBox px={2} width="100%" display="flex" justifyContent="flex-start">
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3} lg={3}>
-                <MDInput
-                  label="Search..."
-                  size="small"
-                  fullWidth
-                  value={keyword}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      loadData({
-                        currentPage: 1,
-                        keyword: e.target.value,
-                        statusId: status ? status.id : null,
-                      });
-                    }
-                  }}
-                  onChange={(e) => keywordSet(e.target.value)}
-                />
-              </Grid>
               {user && [1, 2].includes(user.roleId) && (
                 <>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <MDInput
+                      label="Search..."
+                      size="small"
+                      fullWidth
+                      value={keyword}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          loadData({
+                            currentPage: 1,
+                            keyword: e.target.value,
+                            statusId: status ? status.id : null,
+                            gender: gender ? gender.label : null,
+                          });
+                        }
+                      }}
+                      onChange={(e) => keywordSet(e.target.value)}
+                    />
+                  </Grid>
                   <Grid item xs={12} md={3} lg={3}>
                     <Autocomplete
                       value={status}
@@ -182,6 +177,7 @@ function Agen() {
                           keyword,
                           currentPage: 1,
                           statusId: value ? value.id : null,
+                          gender: gender ? gender.label : null,
                         });
                       }}
                       sx={{
@@ -198,6 +194,38 @@ function Agen() {
                           sx={{ padding: "0px" }}
                           fullWidth
                           label="Pilih Status"
+                          {...params}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <Autocomplete
+                      value={gender}
+                      options={genders}
+                      onChange={(e, value) => {
+                        genderSet(value);
+                        loadData({
+                          keyword,
+                          currentPage: 1,
+                          gender: value ? value.label : null,
+                          statusId: status ? status.id : null,
+                        });
+                      }}
+                      sx={{
+                        ".MuiAutocomplete-input": {
+                          padding: "7.5px 5px 7.5px 8px !important",
+                        },
+                        ".MuiOutlinedInput-root": {
+                          padding: "1.5px !important",
+                        },
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      renderInput={(params) => (
+                        <MDInput
+                          sx={{ padding: "0px" }}
+                          fullWidth
+                          label="Pilih Gender"
                           {...params}
                         />
                       )}
@@ -224,6 +252,7 @@ function Agen() {
                   currentPage: 1,
                   keyword,
                   statusId: status ? status.id : null,
+                  gender: gender ? gender.label : null,
                 });
               }}
               onChangePage={(current) => {
@@ -235,6 +264,7 @@ function Agen() {
                     currentPage: current,
                     keyword,
                     statusId: status ? status.id : null,
+                    gender: gender ? gender.label : null,
                   });
                 }
               }}
@@ -246,4 +276,4 @@ function Agen() {
   );
 }
 
-export default Agen;
+export default Member;

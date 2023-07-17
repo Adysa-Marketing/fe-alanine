@@ -81,6 +81,8 @@ function Package() {
                   id={item.id}
                   urlKey={"/master/package"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

@@ -133,7 +133,7 @@ export default function App() {
   return (
     <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
       <CssBaseline />
-      {layout === "dashboard" && (
+      {/* {layout === "dashboard" && (
         <>
           <Sidenav
             color="error"
@@ -146,7 +146,7 @@ export default function App() {
           <Configurator />
           {configsButton}
         </>
-      )}
+      )} */}
       {/* {layout === "vr" && <Configurator />} */}
       <Routes>
         <Route exact path="/login" element={<Login />} key="login" />

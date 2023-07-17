@@ -83,6 +83,8 @@ function Reward() {
                   id={item.id}
                   urlKey={"/master/reward"}
                   refreshData={loadData}
+                  edit={true}
+                  remove={true}
                 ></ButtonAction>
               ) : (
                 "-"

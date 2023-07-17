@@ -105,6 +105,8 @@ function Admin() {
                   urlKey={"/master/admin"}
                   refreshData={loadData}
                   detail={true}
+                  edit={true}
+                  remove={true}
                   changePassword={true}
                   changeStatus={true}
                   statusId={statusId}
