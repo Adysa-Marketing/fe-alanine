@@ -84,6 +84,7 @@ import Stokis from "contents/Master/Stokis";
 import FormStokis from "contents/Master/Stokis/Form";
 import Agen from "contents/Manage/Agen";
 import Commission from "contents/Manage/Commission";
+import AgenProduct from "contents/Manage/AgenProduct";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -799,6 +800,13 @@ const routes = [
         key: "agen",
         route: "/manage/agen",
         component: <Agen />,
+      },
+      // ====================== agen ======================
+      {
+        name: "Produk Agen",
+        key: "agen-product",
+        route: "/manage/agen-product",
+        component: <AgenProduct />,
       },
       // ====================== commission ======================
       {

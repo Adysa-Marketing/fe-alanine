@@ -26,7 +26,7 @@ import Config from "config";
 import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
-function Commission() {
+function AgenProduct() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -37,18 +37,14 @@ function Commission() {
   const [rows, rowsSet] = useState([]);
   const [tableHead, tableHeadSet] = useState([
     { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Komisi", accessor: "amount", width: "25%" },
-    { Header: "Upline", accessor: "upline", width: "20%" },
-    { Header: "Downline", accessor: "downline", width: "20%" },
-    { Header: "Level", accessor: "level", width: "25%" },
-    { Header: "Tanggal", accessor: "date", width: "30%" },
+    { Header: "Nama", accessor: "name", width: "25%" },
+    { Header: "Harga", accessor: "amount", width: "20%" },
+    { Header: "Stok", accessor: "stock", width: "20%" },
+    { Header: "Kategori", accessor: "category", width: "25%" },
   ]);
 
-  const [level, levelSet] = useState(null);
-  const [levels, levelsSet] = useState([]);
-
-  const [startDate, startDateSet] = useState("");
-  const [endDate, endDateSet] = useState("");
+  const [category, categorySet] = useState(null);
+  const [categories, categoriesSet] = useState([]);
 
   useEffect(() => {
     const userData = secureStorage.getItem("user");
@@ -57,14 +53,14 @@ function Commission() {
 
   useEffect(() => {
     if (user) {
-      loadCommissionLevel();
+      loadProductCategory();
       loadData();
     }
   }, [user]);
 
-  const loadCommissionLevel = () => {
+  const loadProductCategory = () => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/dropdown/commission-level`)
+      .get(`${Config.ApiUrl}/api/v1/master/product-category/dropdown`)
       .then((response) => {
         let data = response.data.data;
         data = data.map((status) => {
@@ -74,7 +70,7 @@ function Commission() {
           };
         });
 
-        levelsSet(data);
+        categoriesSet(data);
       })
       .catch((error) => console.log("[!] Error :", error));
   };
@@ -82,17 +78,15 @@ function Commission() {
   const loadData = (params) => {
     isLoadingSet(true);
 
-    const levelId = params && params.levelId ? { levelId: params.levelId } : {};
+    const categoryId = params && params.categoryId ? { categoryId: params.categoryId } : {};
     const payload = {
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
-      startDate: params && params.startDate ? params.startDate : startDate,
-      endDate: params && params.endDate ? params.endDate : endDate,
-      ...levelId,
+      ...categoryId,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/manage/commission/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/manage/agen-product/list`, payload)
       .then((response) => {
         const data = response.data;
         let no = 0;
@@ -100,11 +94,10 @@ function Commission() {
           no++;
           return {
             no,
+            name: item.name,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
-            upline: item.Upline?.name,
-            downline: item.Downline?.name,
-            level: item.CommissionLevel?.name,
-            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            stock: item.stock,
+            category: item.ProductCategory?.name,
           };
         });
 
@@ -126,7 +119,7 @@ function Commission() {
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Komisi
+              Daftar Produk Agen
             </MDTypography>
           </MDBox>
 
@@ -134,15 +127,13 @@ function Commission() {
             <Grid container spacing={3}>
               <Grid item xs={12} md={3} lg={3}>
                 <Autocomplete
-                  value={level}
-                  options={levels}
+                  value={category}
+                  options={categories}
                   onChange={(e, value) => {
-                    levelSet(value);
+                    categorySet(value);
                     loadData({
                       currentPage: 1,
-                      startDate,
-                      endDate,
-                      levelId: value ? value.id : null,
+                      categoryId: value ? value.id : null,
                     });
                   }}
                   sx={{
@@ -155,67 +146,9 @@ function Commission() {
                   }}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   renderInput={(params) => (
-                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Level" {...params} />
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Kategori" {...params} />
                   )}
                 />
-              </Grid>
-              {/* Start Date */}
-              <Grid item xs={12} md={3} lg={2}>
-                <MDDatePicker
-                  input={{
-                    id: "startDate",
-                    placeholder: "Tanggal Awal",
-                    fullWidth: true,
-                    sx: {
-                      ".MuiInputBase-input": {
-                        height: "1em !important",
-                      },
-                    },
-                  }}
-                  value={startDate}
-                  onChange={(value) => {
-                    const date = moment(value[0]).format("YYYY-MM-DD");
-                    startDateSet(date);
-                  }}
-                />
-              </Grid>
-              {/* End Date */}
-              <Grid item xs={12} md={3} lg={2}>
-                <MDDatePicker
-                  input={{
-                    id: "endDate",
-                    placeholder: "Tanggal Akhir",
-                    fullWidth: true,
-                    sx: {
-                      ".MuiInputBase-input": {
-                        height: "1em !important",
-                      },
-                    },
-                  }}
-                  value={endDate}
-                  onChange={(value) => {
-                    const date = moment(value[0]).format("YYYY-MM-DD");
-                    endDateSet(date);
-                  }}
-                />
-              </Grid>
-              {/* Button Search */}
-              <Grid item xs={12} md={1} lg={1}>
-                <MDButton
-                  color="info"
-                  variant="gradient"
-                  onClick={() => {
-                    loadData({
-                      currentPage: 1,
-                      startDate,
-                      endDate,
-                      levelId: level ? level.id : null,
-                    });
-                  }}
-                  iconOnly
-                >
-                  <Icon>search</Icon>
-                </MDButton>
               </Grid>
             </Grid>
           </MDBox>
@@ -234,9 +167,7 @@ function Commission() {
                 loadData({
                   rowsPerPage: value,
                   currentPage: 1,
-                  startDate,
-                  endDate,
-                  levelId: level ? level.id : null,
+                  categoryId: category ? category.id : null,
                 });
               }}
               onChangePage={(current) => {
@@ -246,9 +177,7 @@ function Commission() {
                   loadData({
                     rowsPerPage,
                     currentPage: current,
-                    startDate,
-                    endDate,
-                    levelId: level ? level.id : null,
+                    categoryId: category ? category.id : null,
                   });
                 }
               }}
@@ -260,4 +189,4 @@ function Commission() {
   );
 }
 
-export default Commission;
+export default AgenProduct;
