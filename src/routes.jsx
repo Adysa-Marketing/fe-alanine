@@ -87,6 +87,7 @@ import Commission from "contents/Manage/Commission";
 import AgenProduct from "contents/Manage/AgenProduct";
 import Member from "contents/Manage/Member";
 import MemberOverview from "contents/Manage/Member/Overview";
+import Testimoni from "contents/Manage/Testimoni";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -581,7 +582,7 @@ const routes = [
       },
       {
         name: "Tesrimonial",
-        key: "testimoni",
+        key: "add-testimoni",
         route: "/setting/testimoni",
         component: <Container />,
       },
@@ -829,6 +830,13 @@ const routes = [
         key: "detail-member",
         route: "/manage/member/detail/:id",
         component: <MemberOverview />,
+      },
+      // ====================== testiminial ======================
+      {
+        name: "Testimoni",
+        key: "testimoni",
+        route: "/manage/testimoni",
+        component: <Testimoni />,
       },
     ],
   },
