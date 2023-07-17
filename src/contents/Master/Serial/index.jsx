@@ -279,7 +279,6 @@ function Serial() {
                 });
               }}
               onChangePage={(current) => {
-                console.log("change ");
                 if (current !== currentPage) {
                   currentPageSet(current);
                   loadData({

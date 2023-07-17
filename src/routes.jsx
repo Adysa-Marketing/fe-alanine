@@ -56,7 +56,7 @@ import MDAvatar from "components/MDAvatar";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
-
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 // Images
 import profilePicture from "assets/images/team-3.jpg";
 
@@ -88,6 +88,7 @@ import AgenProduct from "contents/Manage/AgenProduct";
 import Member from "contents/Manage/Member";
 import MemberOverview from "contents/Manage/Member/Overview";
 import Testimoni from "contents/Manage/Testimoni";
+import Partnership from "contents/Manage/Partnership";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -818,6 +819,13 @@ const routes = [
         route: "/manage/commission",
         component: <Commission />,
       },
+      // ====================== partnership ======================
+      {
+        name: "Partnership",
+        key: "partnership",
+        route: "/manage/partnership",
+        component: <Partnership />,
+      },
       // ====================== member ======================
       {
         name: "Member",
@@ -831,7 +839,7 @@ const routes = [
         route: "/manage/member/detail/:id",
         component: <MemberOverview />,
       },
-      // ====================== testiminial ======================
+      // ====================== testimonial ======================
       {
         name: "Testimoni",
         key: "testimoni",
@@ -1107,11 +1115,31 @@ const getMenu = (user) => {
       ]
     : [];
 
+  const menuNetwork = [3, 4].includes(roleId)
+    ? [
+        {
+          type: "collapse",
+          name: "Jaringan",
+          key: "network",
+          icon: <AccountTreeIcon></AccountTreeIcon>,
+          collapse: [
+            {
+              name: "Generasi",
+              key: "generation",
+              route: "/network/generation",
+              container: <Container />,
+            },
+          ],
+        },
+      ]
+    : [];
+
   menus = [
     ...menus,
     ...menuSetting,
     ...menuMaster,
     ...menuManage,
+    ...menuNetwork,
     {
       type: "collapse",
       name: "Logout",

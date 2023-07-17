@@ -17,6 +17,7 @@ import MDDatePicker from "components/MDDatePicker";
 // Material Dashboard 2 PRO React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import StokisCard from "contents/Manage/Partnership/StokisCard";
 
 import DataTable from "contents/Components/DataTable";
 import Pagination from "contents/Components/Pagination";
@@ -27,7 +28,7 @@ import Config from "config";
 import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
-function Agen() {
+function Partnership() {
   const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
@@ -37,17 +38,27 @@ function Agen() {
   const [totalData, totalDataSet] = useState(0);
   const [rows, rowsSet] = useState([]);
   const [tableHead, tableHeadSet] = useState([
-    { Header: "Action", accessor: "action", width: "15%" },
-    { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama", accessor: "name", width: "25%" },
-    { Header: "Status", accessor: "status", width: "20%" },
-    { Header: "Tanggal Approve", accessor: "dateApproved", width: "20%" },
-    { Header: "Stokis", accessor: "stokis", width: "20%" },
-    { Header: "Diskon Produk Agen", accessor: "agenDiscount", width: "30%" },
+    { Header: "Aksi", accessor: "action", width: "15%" },
+    { Header: "Kode", accessor: "kode", width: "15%" },
+    { Header: "Stokis", accessor: "stokis", width: "25%" },
+    { Header: "Harga", accessor: "amount", width: "25%" },
+    { Header: "Pembayaran", accessor: "paymentType", width: "25%" },
+    { Header: "Tanggal", accessor: "date", width: "25%" },
+    { Header: "Status", accessor: "status", width: "15%" },
   ]);
 
   const [status, statusSet] = useState(null);
   const [statuses, statusesSet] = useState([]);
+
+  const [paymentType, paymentTypeSet] = useState(null);
+  const [paymentTypes, paymentTypesSet] = useState([
+    { id: 1, label: "CASH" },
+    { id: 2, label: "TRANSFER" },
+  ]);
+
+  const [stokis, stokisSet] = useState(null);
+  const [available, availableSet] = useState(false);
+
   useEffect(() => {
     const userData = secureStorage.getItem("user");
     userSet(userData);
@@ -55,61 +66,77 @@ function Agen() {
 
   useEffect(() => {
     if (user) {
-      loadAgenStatus();
       loadData();
+      loadStokis();
+      loadStatus();
     }
   }, [user]);
 
-  const loadAgenStatus = () => {
+  const loadStokis = () => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/dropdown/agen-status`)
+      .get(`${Config.ApiUrl}/api/v1/master/stokis/dropdown`)
+      .then((response) => {
+        const data = response.data;
+        stokisSet(data.data);
+        availableSet(data.available);
+      })
+      .catch((error) => {
+        console.log("[!] Error : ", error);
+      });
+  };
+
+  const loadStatus = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/dropdown/tr-status`)
       .then((response) => {
         let data = response.data.data;
-        data = data.map((status) => {
-          return {
-            id: status.id,
-            label: status.name,
-          };
-        });
-
+        data = data.map((item) => ({ id: item.id, label: item.name }));
         statusesSet(data);
       })
-      .catch((error) => console.log("[!] Error :", error));
+      .catch((error) => {
+        console.log("[!] Error : ", error);
+      });
   };
 
   const loadData = (params) => {
     isLoadingSet(true);
 
     const statusId = params && params.statusId ? { statusId: params.statusId } : {};
+    const bankId = params && params.bankId ? { bankId: params.bankId } : {};
+    const paymentTypeId =
+      params && params.paymentTypeId ? { paymentTypeId: params.paymentTypeId } : {};
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
       ...statusId,
+      ...bankId,
+      ...paymentTypeId,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/manage/agen/list`, payload)
+      .post(`${Config.ApiUrl}/api/v1/trx/stokis/list`, payload)
       .then((response) => {
         const data = response.data;
-        let no = 0;
         const output = data.data.map((item) => {
-          no++;
           return {
-            no,
+            kode: item.kode,
             name: item.name,
-            status: item.AgenStatus?.name,
-            dateApproved: moment(item.dateApproved).format("YYYY-MM-DD HH:mm:ss"),
             stokis: item.Stoki?.name,
-            agenDiscount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.Stoki?.agenDiscount),
+            amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
+            paymentType: item.PaymentType?.name,
+            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            status: item.TrStatus?.name,
             action:
-              user && [1, 2].includes(user.roleId) ? (
+              user && [3, 4].includes(user.roleId) && [1, 2].includes(item.TrStatus?.id) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/manage/agen"}
+                  urlKey={"/trx/stokis"}
                   refreshData={loadData}
                   edit={true}
                   remove={true}
+                  changeStatus={true}
+                  statusId={item.TrStratus?.id}
                 ></ButtonAction>
               ) : (
                 "-"
@@ -131,47 +158,58 @@ function Agen() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <MDBox mt={5}>
+        <Grid container spacing={3} justifyContent="center">
+          {stokis &&
+            stokis.map((item) => {
+              return (
+                <Grid item xs={12} md={6} lg={4} key={item.id}>
+                  <MDBox mb={1.5} mt={1.5}>
+                    <StokisCard
+                      id={item.id}
+                      title={item.name}
+                      price={item.price}
+                      discount={item.discount}
+                      description={item.description}
+                      buy={available}
+                    />
+                  </MDBox>
+                </Grid>
+              );
+            })}
+        </Grid>
+      </MDBox>
       <MDBox pb={3} my={3}>
-        <MDBox pb={2} mt={{ xs: 2, md: 0 }} display="flex">
-          <MDButton
-            size="medium"
-            color="info"
-            variant="gradient"
-            component={Link}
-            to={{ pathname: "/manage/agen/add" }}
-          >
-            Tambah
-          </MDButton>
-        </MDBox>
         <Card>
           <MDBox p={2} lineHeight={1}>
             <MDTypography variant="h5" fontWeight="medium">
-              Daftar Agen
+              History Pendaftaran
             </MDTypography>
           </MDBox>
 
           <MDBox px={2} width="100%" display="flex" justifyContent="flex-start">
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3} lg={3}>
-                <MDInput
-                  label="Search..."
-                  size="small"
-                  fullWidth
-                  value={keyword}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      loadData({
-                        currentPage: 1,
-                        keyword: e.target.value,
-                        statusId: status ? status.id : null,
-                      });
-                    }
-                  }}
-                  onChange={(e) => keywordSet(e.target.value)}
-                />
-              </Grid>
-              {user && [1, 2].includes(user.roleId) && (
+              {user && [3, 4].includes(user.roleId) && (
                 <>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <MDInput
+                      label="Search..."
+                      size="small"
+                      fullWidth
+                      value={keyword}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          loadData({
+                            currentPage: 1,
+                            keyword: e.target.value,
+                            statusId: status ? status.id : null,
+                            paymentTypeId: paymentType ? paymentType.id : null,
+                          });
+                        }
+                      }}
+                      onChange={(e) => keywordSet(e.target.value)}
+                    />
+                  </Grid>
                   <Grid item xs={12} md={3} lg={3}>
                     <Autocomplete
                       value={status}
@@ -182,6 +220,7 @@ function Agen() {
                           keyword,
                           currentPage: 1,
                           statusId: value ? value.id : null,
+                          paymentTypeId: paymentType ? paymentType.id : null,
                         });
                       }}
                       sx={{
@@ -198,6 +237,38 @@ function Agen() {
                           sx={{ padding: "0px" }}
                           fullWidth
                           label="Pilih Status"
+                          {...params}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <Autocomplete
+                      value={paymentType}
+                      options={paymentTypes}
+                      onChange={(e, value) => {
+                        paymentTypeSet(value);
+                        loadData({
+                          keyword,
+                          currentPage: 1,
+                          paymentTypeId: value ? value.id : null,
+                          statusId: status ? status.id : null,
+                        });
+                      }}
+                      sx={{
+                        ".MuiAutocomplete-input": {
+                          padding: "7.5px 5px 7.5px 8px !important",
+                        },
+                        ".MuiOutlinedInput-root": {
+                          padding: "1.5px !important",
+                        },
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                      renderInput={(params) => (
+                        <MDInput
+                          sx={{ padding: "0px" }}
+                          fullWidth
+                          label="Pilih Pembayaran"
                           {...params}
                         />
                       )}
@@ -224,6 +295,7 @@ function Agen() {
                   currentPage: 1,
                   keyword,
                   statusId: status ? status.id : null,
+                  paymentTypeId: paymentType ? paymentType.id : null,
                 });
               }}
               onChangePage={(current) => {
@@ -234,6 +306,7 @@ function Agen() {
                     currentPage: current,
                     keyword,
                     statusId: status ? status.id : null,
+                    paymentTypeId: paymentType ? paymentType.id : null,
                   });
                 }
               }}
@@ -245,4 +318,4 @@ function Agen() {
   );
 }
 
-export default Agen;
+export default Partnership;

@@ -29,6 +29,7 @@ function ButtonAction({
   changePassword,
   changeStatus,
   statusId,
+  cancel,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -82,9 +83,7 @@ function ButtonAction({
         if (error.response.data) {
           modalNotifRef.current.setShow({
             modalMessage: error.response.data
-              ? error.response.data?.message.length
-                ? error.response.data.message[0].message
-                : error.response.data?.message
+              ? error.response.data?.message
               : "Terjadi kesalahan pada system",
             color: "warning",
           });
@@ -211,6 +210,7 @@ function ButtonAction({
       {changeStatus &&
         ((statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>) ||
           (statusId == 2 && <MenuItem onClick={() => handleStatus(1)}>Activate</MenuItem>))}
+      {cancel && statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Batalkan</MenuItem>}
     </Menu>
   );
 
@@ -283,6 +283,7 @@ ButtonAction.defaultProps = {
   remove: false,
   changeStatus: false,
   changePassword: false,
+  cancel: false,
 };
 
 ButtonAction.propTypes = {
@@ -295,6 +296,7 @@ ButtonAction.propTypes = {
   changePassword: PropTypes.bool,
   changeStatus: PropTypes.bool,
   statusId: PropTypes.number,
+  cancel: PropTypes.bool,
 };
 
 export default ButtonAction;
