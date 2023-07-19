@@ -292,7 +292,6 @@ function FormAdmin() {
           </Grid>
         </Grid>
       </MDBox>
-      <Footer />
     </DashboardLayout>
   );
 }

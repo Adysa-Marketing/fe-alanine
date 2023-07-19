@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -29,191 +29,602 @@ import MDBadgeDot from "components/MDBadgeDot";
 import MDButton from "components/MDButton";
 import MDTypography from "components/MDTypography";
 
+// Meterial Icon
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
+import DevicesOtherIcon from "@mui/icons-material/DevicesOther";
+import MoveDownIcon from "@mui/icons-material/MoveDown";
+import CreditCardOffIcon from "@mui/icons-material/CreditCardOff";
+import LocalAtmIcon from "@mui/icons-material/LocalAtm";
+
 // Material Dashboard 2 PRO React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DefaultStatisticsCard from "examples/Cards/StatisticsCards/DefaultStatisticsCard";
-import DefaultLineChart from "examples/Charts/LineCharts/DefaultLineChart";
-import HorizontalBarChart from "examples/Charts/BarCharts/HorizontalBarChart";
-import SalesTable from "examples/Tables/SalesTable";
-import DataTable from "examples/Tables/DataTable";
-
-// Sales dashboard components
-import ChannelsChart from "layouts/dashboards/sales/components/ChannelsChart";
-
-// Data
-import defaultLineChartData from "layouts/dashboards/sales/data/defaultLineChartData";
-import horizontalBarChartData from "layouts/dashboards/sales/data/horizontalBarChartData";
-import salesTableData from "layouts/dashboards/sales/data/salesTableData";
-import dataTableData from "layouts/dashboards/sales/data/dataTableData";
+import secureStorage from "libs/secureStorage";
+import useAxios from "libs/useAxios";
+import Config from "config";
+import ChartSales from "contents/Dashboards/components/ChartSales";
+import StatisticsCard from "contents/Dashboards/components/StatisticsCard";
+import PieCharts from "contents/Dashboards/components/PieChart";
+import moment from "moment";
 
 function Dashboard() {
-  // DefaultStatisticsCard state for the dropdown value
-  const [salesDropdownValue, setSalesDropdownValue] = useState("6 May - 7 May");
-  const [customersDropdownValue, setCustomersDropdownValue] = useState("6 May - 7 May");
-  const [revenueDropdownValue, setRevenueDropdownValue] = useState("6 May - 7 May");
+  // ADMIN STATS
+  const [datasetSales, datasetSalesSet] = useState({
+    labels: [],
+    datasets: [],
+  });
+  const [product, productSet] = useState(0);
+  const [users, usersSet] = useState({
+    admin: 0,
+    agen: 0,
+    member: 0,
+  });
+  const [newMember, newMemberSet] = useState(0);
+  const [packages, packagesSet] = useState(0);
+  const [stokis, stokisSet] = useState(0);
+  const [sale, saleSet] = useState(0);
+  const [monMutation, monMutationSet] = useState({
+    income: 0,
+    outcome: 0,
+  });
+  const [saleStokis, saleStokisSet] = useState(0);
+  const [monRw, monRwSet] = useState(0);
+  const [monWd, monWdSet] = useState(0);
+  const [monSpendWd, monSpendWdSet] = useState(0);
 
-  // DefaultStatisticsCard state for the dropdown action
-  const [salesDropdown, setSalesDropdown] = useState(null);
-  const [customersDropdown, setCustomersDropdown] = useState(null);
-  const [revenueDropdown, setRevenueDropdown] = useState(null);
+  // AGEN & MEMBER STATS
+  const [agenSale, agenSaleSet] = useState(0);
+  const [agenProduct, agenProductSet] = useState(0);
+  const [agenProfit, agenProfitSet] = useState(0);
+  const [agenMonProfit, agenMonProfitSet] = useState(0);
+  const [monBonus, monBonusSet] = useState(0);
+  const [successWd, successWdSet] = useState(0);
+  const [referral, referralSet] = useState(0);
+  const [trRw, trRwSet] = useState(0);
 
-  // DefaultStatisticsCard handler for the dropdown action
-  const openSalesDropdown = ({ currentTarget }) => setSalesDropdown(currentTarget);
-  const closeSalesDropdown = ({ currentTarget }) => {
-    setSalesDropdown(null);
-    setSalesDropdownValue(currentTarget.innerText || salesDropdownValue);
+  useEffect(() => {
+    const user = secureStorage.getItem("user");
+
+    if (user && [1, 2].includes(user.roleId)) {
+      Promise.all([
+        loadCountUser(),
+        loadCountNewMember(),
+        loadCountProduct(),
+        loadCountPackage(),
+        loadCountStokis(),
+        loadCountTrSale(),
+        loadMonMutation(),
+        loadCountSaleStokis(),
+        loadMonReward(),
+        loadMonWidhraw(),
+        loadMonSpendWd(),
+        loadChart(),
+      ])
+        .then((result) => {
+          usersSet(
+            result[0]
+              ? result[0]
+              : {
+                  admin: 0,
+                  agen: 0,
+                  member: 0,
+                }
+          );
+          newMemberSet(result[1] ? result[1].amount : 0);
+          productSet(result[2] ? result[2].amount : 0);
+          packagesSet(result[3] ? result[3].amount : 0);
+          stokisSet(result[4] ? result[4].amount : 0);
+          saleSet(result[5] ? result[5].amount : 0);
+          monMutationSet(result[6] ? result[6] : { income: 0, outcome: 0 });
+          saleStokisSet(result[7] ? result[7].amount : 0);
+          monRwSet(result[8] ? result[8].amount : 0);
+          monWdSet(result[9] ? result[9].amount : 0);
+          monSpendWdSet(result[10] ? result[10].amount : 0);
+          datasetSalesSet(result[11] ? result[11] : { labels: [], datasets: [] });
+        })
+        .catch((error) => console.log(`[!] Error : ${error}`));
+    }
+    if (user && [3].includes(user.roleId)) {
+      Promise.all([
+        loadCountAgenSale(),
+        loadCountAgenProduct(),
+        loadAgenProfit(),
+        loadMonAgenProfit(),
+      ])
+        .then((result) => {
+          agenSaleSet(result[0] ? result[0].amount : 0);
+          agenProductSet(result[1] ? result[1].amount : 0);
+          agenProfitSet(result[2] ? result[2].amount : 0);
+          agenMonProfitSet(result[3] ? result[3].amount : 0);
+        })
+        .catch((error) => console.log(`[!] Error : ${error}`));
+    }
+
+    if (user && [3, 4].includes(user.roleId)) {
+      Promise.all([loadMonBonus(), loadSuccessWd(), loadCountReferral(), loadCountTrReward()])
+        .then((result) => {
+          monBonusSet(result[0] ? result[0].amount : 0);
+          successWdSet(result[1] ? result[1].amount : 0);
+          referralSet(result[2] ? result[2].amount : 0);
+          trRwSet(result[3] ? result[3].amount : 0);
+        })
+        .catch((error) => console.log(`[!] Error : ${error}`));
+    }
+  }, []);
+
+  // LOAD ADMIN STATS
+  const loadCountUser = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/user`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
   };
-  const openCustomersDropdown = ({ currentTarget }) => setCustomersDropdown(currentTarget);
-  const closeCustomersDropdown = ({ currentTarget }) => {
-    setCustomersDropdown(null);
-    setCustomersDropdownValue(currentTarget.innerText || salesDropdownValue);
-  };
-  const openRevenueDropdown = ({ currentTarget }) => setRevenueDropdown(currentTarget);
-  const closeRevenueDropdown = ({ currentTarget }) => {
-    setRevenueDropdown(null);
-    setRevenueDropdownValue(currentTarget.innerText || salesDropdownValue);
+
+  const loadCountNewMember = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/new-member`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
   };
 
-  // Dropdown menu template for the DefaultStatisticsCard
-  const renderMenu = (state, close) => (
-    <Menu
-      anchorEl={state}
-      transformOrigin={{ vertical: "top", horizontal: "center" }}
-      open={Boolean(state)}
-      onClose={close}
-      keepMounted
-      disableAutoFocusItem
-    >
-      <MenuItem onClick={close}>Last 7 days</MenuItem>
-      <MenuItem onClick={close}>Last week</MenuItem>
-      <MenuItem onClick={close}>Last 30 days</MenuItem>
-    </Menu>
-  );
+  const loadCountProduct = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/product`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
 
+  const loadCountPackage = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/package`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountStokis = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/stokis`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountTrSale = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/sale`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonMutation = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/mon-mutation`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountSaleStokis = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/sale-stokis`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonReward = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/mon-rw`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonWidhraw = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/mon-wd`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonSpendWd = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/mon-spend-wd`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadChart = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat?byView=month`)
+      .then((res) => {
+        const data = res.data.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  // LOAD AGEN & MEMBER STATS
+  const loadCountAgenSale = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/agen-sale`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountAgenProduct = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/agen-product`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadAgenProfit = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/agen-profit`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonAgenProfit = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/agen-mon-profit`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadMonBonus = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/mon-bonus`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadSuccessWd = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/success-wd`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountReferral = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/referral`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const loadCountTrReward = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/tr-reward`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
+  const user = secureStorage.getItem("user");
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={4}>
-              <DefaultStatisticsCard
-                title="sales"
-                count="$230,220"
-                percentage={{
-                  color: "success",
-                  value: "+55%",
-                  label: "since last month",
-                }}
-                dropdown={{
-                  action: openSalesDropdown,
-                  menu: renderMenu(salesDropdown, closeSalesDropdown),
-                  value: salesDropdownValue,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <DefaultStatisticsCard
-                title="customers"
-                count="3.200"
-                percentage={{
-                  color: "success",
-                  value: "+12%",
-                  label: "since last month",
-                }}
-                dropdown={{
-                  action: openCustomersDropdown,
-                  menu: renderMenu(customersDropdown, closeCustomersDropdown),
-                  value: customersDropdownValue,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <DefaultStatisticsCard
-                title="avg. revenue"
-                count="$1.200"
-                percentage={{
-                  color: "secondary",
-                  value: "+$213",
-                  label: "since last month",
-                }}
-                dropdown={{
-                  action: openRevenueDropdown,
-                  menu: renderMenu(revenueDropdown, closeRevenueDropdown),
-                  value: revenueDropdownValue,
-                }}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} lg={4}>
-              <ChannelsChart />
-            </Grid>
-            <Grid item xs={12} sm={6} lg={8}>
-              <DefaultLineChart
-                title="Revenue"
-                description={
-                  <MDBox display="flex" justifyContent="space-between">
-                    <MDBox display="flex" ml={-1}>
-                      <MDBadgeDot color="info" size="sm" badgeContent="Facebook Ads" />
-                      <MDBadgeDot color="dark" size="sm" badgeContent="Google Ads" />
-                    </MDBox>
-                    <MDBox mt={-4} mr={-1} position="absolute" right="1.5rem">
-                      <Tooltip title="See which ads perform better" placement="left" arrow>
-                        <MDButton
-                          variant="outlined"
-                          color="secondary"
-                          size="small"
-                          circular
-                          iconOnly
-                        >
-                          <Icon>priority_high</Icon>
-                        </MDButton>
-                      </Tooltip>
-                    </MDBox>
-                  </MDBox>
-                }
-                chart={defaultLineChartData}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox mb={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={8}>
-              <HorizontalBarChart title="Sales by age" chart={horizontalBarChartData} />
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <SalesTable title="Sales by Country" rows={salesTableData} />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Card>
-              <MDBox pt={3} px={3}>
-                <MDTypography variant="h6" fontWeight="medium">
-                  Top Selling Products
-                </MDTypography>
-              </MDBox>
-              <MDBox py={1}>
-                <DataTable
-                  table={dataTableData}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  isSorted={false}
-                  noEndBorder
+        <Grid container spacing={3} mb={5}>
+          {user && [1, 2].includes(user.roleId) && (
+            <>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={users.admin}
+                  color="info"
+                  icon={<ManageAccountsIcon />}
+                  title={"Admin"}
+                  description={"Total Admin"}
                 />
-              </MDBox>
-            </Card>
-          </Grid>
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={users.agen}
+                  color="secondary"
+                  icon="person"
+                  title={"Agen"}
+                  description={"Total Agen"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={users.member}
+                  color="dark"
+                  icon="group"
+                  title={"Member"}
+                  description={"Total Member"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={newMember}
+                  color="success"
+                  icon={<HowToRegIcon />}
+                  title={"Register"}
+                  description={"Member Baru"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={product}
+                  color="primary"
+                  icon="inventory"
+                  title={"Produk"}
+                  description={"Total Produk"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={packages}
+                  color="warning"
+                  icon="category"
+                  title={"Paket"}
+                  description={"Total Paket"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={stokis}
+                  color="secondary"
+                  icon="layers"
+                  title={"Stokis"}
+                  description={"Jenis Stokis"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={sale}
+                  color="error"
+                  icon="shoppingcart"
+                  title={"Penjualan"}
+                  description={"Total Penjualan"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(monMutation.income)}
+                  color="success"
+                  icon="paid"
+                  title={"Dana Masuk"}
+                  description={"Dana Masuk"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(monMutation.outcome)}
+                  color="error"
+                  icon="southeast"
+                  title={"Dana Keluar"}
+                  description={"Dana Keluar"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={saleStokis}
+                  color="info"
+                  icon={<PersonAddAltIcon />}
+                  title={"Regis Agen"}
+                  description={"Pendaftaran Agen"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={monRw}
+                  color="warning"
+                  icon={<DevicesOtherIcon />}
+                  title={"Reward"}
+                  description={"Pengajuan Reward"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={monWd}
+                  color="primary"
+                  icon={<MoveDownIcon />}
+                  title={"Widhraw"}
+                  description={"Pengajuan Widhraw"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(monSpendWd)}
+                  color="error"
+                  icon={<CreditCardOffIcon />}
+                  title={"Pencairan"}
+                  description={"Pencairan WD"}
+                />
+              </Grid>
+            </>
+          )}
+          {user && [3, 4].includes(user.roleId) && (
+            <>
+              {user && [3].includes(user.roleId) && (
+                <>
+                  <Grid item xs={6} md={3} lg={2}>
+                    <StatisticsCard
+                      count={agenSale}
+                      color="success"
+                      icon="sell"
+                      title={"Penjualan"}
+                      description={"Total Penjualan"}
+                    />
+                  </Grid>
+                  <Grid item xs={6} md={3} lg={2}>
+                    <StatisticsCard
+                      count={agenProduct}
+                      color="primary"
+                      icon="inventory"
+                      title={"Produk Item"}
+                      description={"Total Item"}
+                    />
+                  </Grid>
+                  <Grid item xs={6} md={3} lg={2}>
+                    <StatisticsCard
+                      count={new Intl.NumberFormat("id-ID").format(agenProfit)}
+                      color="info"
+                      icon={<LocalAtmIcon />}
+                      title={"Profit"}
+                      description={"Total Profit"}
+                    />
+                  </Grid>
+                  <Grid item xs={6} md={3} lg={2}>
+                    <StatisticsCard
+                      count={new Intl.NumberFormat("id-ID").format(agenMonProfit)}
+                      color="warning"
+                      icon="shoppingcart"
+                      title={"Profit Bulanan"}
+                      description={"Profit Bulanan"}
+                    />
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={user.point}
+                  color="secondary"
+                  icon="timeline"
+                  title={"Poin"}
+                  description={"Total Poin"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(user.wallet)}
+                  color="success"
+                  icon="wallet"
+                  title={"Dompet"}
+                  description={"Total Saldo"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(monBonus)}
+                  color="secondary"
+                  icon="sell"
+                  title={"Bonus Bulanan"}
+                  description={"Bonus Bulan ini"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={new Intl.NumberFormat("id-ID").format(successWd)}
+                  color="success"
+                  icon="paid"
+                  title={"Widhraw"}
+                  description={"Total Widhraw"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={referral}
+                  color="dark"
+                  icon="group"
+                  title={"Referral"}
+                  description={"Total Referral"}
+                />
+              </Grid>
+              <Grid item xs={6} md={3} lg={2}>
+                <StatisticsCard
+                  count={trRw}
+                  color="info"
+                  icon={<DevicesOtherIcon />}
+                  title={"Reward"}
+                  description={"Klaim Reward"}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
+        {user && [1, 2].includes(user.roleId) && (
+          <>
+            <Grid container spacing={3} mb={2}>
+              <Grid item xs={12} md={12} lg={8}>
+                <MDBox mb={3}>
+                  <ChartSales
+                    title={`Statistik Transaksi Bulanan ${moment().format("YYYY")}`}
+                    height={"22.19rem"}
+                    chart={datasetSales}
+                  />
+                </MDBox>
+              </Grid>
+              <Grid item xs={12} md={12} lg={4}>
+                <MDBox mb={2}>
+                  <PieCharts
+                    title="Statistik Keuangan Bulanan"
+                    height="325px"
+                    description={"Laporan Dana Masuk dan Dana Keluar Bulan ini"}
+                    chart={{
+                      labels: ["Dana Masuk", "Dana Keluar"],
+                      datasets: {
+                        label: "Statistik Keuangan",
+                        backgroundColors: ["success", "error"],
+                        data: [monMutation.income, monMutation.outcome],
+                      },
+                    }}
+                  />
+                </MDBox>
+              </Grid>
+            </Grid>
+          </>
+        )}
       </MDBox>
-      <Footer />
     </DashboardLayout>
   );
 }
