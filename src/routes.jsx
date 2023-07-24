@@ -91,6 +91,7 @@ import Testimoni from "contents/Manage/Testimoni";
 import Partnership from "contents/Manage/Partnership";
 import Referral from "contents/Manage/Referral";
 import SettingAccount from "contents/Settings/Account";
+import Generation from "contents/Network/Generation";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -854,6 +855,24 @@ const routes = [
         key: "testimoni",
         route: "/manage/testimoni",
         component: <Testimoni />,
+      },
+    ],
+  },
+  // ============================================= MASTER =============================================
+
+  {
+    type: "collapse",
+    name: "Jaringan",
+    key: "network",
+    route: "/network",
+    icon: <AccountTreeIcon></AccountTreeIcon>,
+    collapse: [
+      // ====================== agen ======================
+      {
+        name: "Generasi",
+        key: "generation",
+        route: "/network/generation",
+        component: <Generation />,
       },
     ],
   },
