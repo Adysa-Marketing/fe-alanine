@@ -311,7 +311,7 @@ function FormArticle() {
                               renderInput={(params) => (
                                 <MDInput
                                   {...params}
-                                  label="Status Artikel"
+                                  label="Status"
                                   success={success ? success.status : false}
                                   error={error ? error.status : false}
                                   variant="standard"

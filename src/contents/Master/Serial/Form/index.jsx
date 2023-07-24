@@ -134,14 +134,11 @@ function FormSeri() {
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
-            modalMessage:
-              err.response && err.response.data
-                ? err.response.data?.message.length
-                  ? err.response.data.message[0].message
-                  : err.response.data.message
+            modalMessage: err.response.data
+              ? Array.isArray(err.response.data.message)
+                ? err.response.data.message[0].message
                 : err.response.data.message
-                ? err.response.message
-                : "Terjadi kesalahan pada system",
+              : "Terjadi kesalahan pada system",
             color: "warning",
           });
         } else {
