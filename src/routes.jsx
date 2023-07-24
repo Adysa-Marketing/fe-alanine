@@ -90,6 +90,7 @@ import MemberOverview from "contents/Manage/Member/Overview";
 import Testimoni from "contents/Manage/Testimoni";
 import Partnership from "contents/Manage/Partnership";
 import Referral from "contents/Manage/Referral";
+import SettingAccount from "contents/Settings/Account";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -568,7 +569,7 @@ const routes = [
         name: "Account",
         key: "account",
         route: "/setting/account",
-        component: <Container />,
+        component: <SettingAccount />,
       },
       {
         name: "Bank",
