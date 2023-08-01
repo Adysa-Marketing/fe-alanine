@@ -26,6 +26,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
+import { Link } from "react-router-dom";
 
 // Custom styles for ComplexProjectCard
 function ComplexProjectCard({ color, id, title, price, discount, description, buy }) {
@@ -65,7 +66,12 @@ function ComplexProjectCard({ color, id, title, price, discount, description, bu
         <Divider />
         <MDBox textAlign="center">
           {buy && (
-            <MDButton variant="gradient" color="info">
+            <MDButton
+              variant="gradient"
+              color="info"
+              component={Link}
+              to={{ pathname: `/trx/stokis/create/${id}` }}
+            >
               Pesan Sekarang
             </MDButton>
           )}

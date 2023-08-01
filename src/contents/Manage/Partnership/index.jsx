@@ -44,6 +44,7 @@ function Partnership() {
     { Header: "Harga", accessor: "amount", width: "25%" },
     { Header: "Pembayaran", accessor: "paymentType", width: "25%" },
     { Header: "Tanggal", accessor: "date", width: "25%" },
+    { Header: "Area", accessor: "area", width: "25%" },
     { Header: "Status", accessor: "status", width: "15%" },
   ]);
 
@@ -127,6 +128,7 @@ function Partnership() {
             paymentType: item.PaymentType?.name,
             date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
             status: item.TrStatus?.name,
+            area: `${item.Province?.name} - ${item.District?.name}`,
             action:
               user && [3, 4].includes(user.roleId) && [1, 2].includes(item.TrStatus?.id) ? (
                 <ButtonAction
@@ -134,9 +136,9 @@ function Partnership() {
                   urlKey={"/trx/stokis"}
                   refreshData={loadData}
                   edit={true}
-                  remove={true}
-                  changeStatus={true}
-                  statusId={item.TrStratus?.id}
+                  remove={[1, 2, 3].includes(item.TrStatus?.id) ? true : false}
+                  cancel={[1].includes(item.TrStatus?.id) ? true : false}
+                  statusId={item.TrStatus?.id}
                 ></ButtonAction>
               ) : (
                 "-"
@@ -168,8 +170,8 @@ function Partnership() {
                     <StokisCard
                       id={item.id}
                       title={item.name}
-                      price={item.price}
-                      discount={item.discount}
+                      price={parseInt(item.price)}
+                      discount={parseInt(item.discount)}
                       description={item.description}
                       buy={available}
                     />

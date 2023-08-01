@@ -92,6 +92,7 @@ import Partnership from "contents/Manage/Partnership";
 import Referral from "contents/Manage/Referral";
 import SettingAccount from "contents/Settings/Account";
 import Generation from "contents/Network/Generation";
+import FormPartnership from "contents/Manage/Partnership/Form";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -859,7 +860,6 @@ const routes = [
     ],
   },
   // ============================================= MASTER =============================================
-
   {
     type: "collapse",
     name: "Jaringan",
@@ -873,6 +873,29 @@ const routes = [
         key: "generation",
         route: "/network/generation",
         component: <Generation />,
+      },
+    ],
+  },
+  // ============================================= TRANSACTION =============================================
+  {
+    type: "collapse",
+    name: "Transaksi",
+    key: "trx",
+    route: "/trx",
+    icon: <AccountTreeIcon></AccountTreeIcon>,
+    collapse: [
+      // ====================== stokis ======================
+      {
+        name: "Join Partnership",
+        key: "join",
+        route: "/trx/stokis/create/:id",
+        component: <FormPartnership />,
+      },
+      {
+        name: "Stokis",
+        key: "edit-stokis",
+        route: "/trx/stokis/edit/:id",
+        component: <FormPartnership />,
       },
     ],
   },
