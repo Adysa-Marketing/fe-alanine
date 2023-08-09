@@ -19,6 +19,8 @@ import Confirm from "contents/Components/Confirm";
 import ModalNotif from "contents/Components/ModalNotif";
 import DialogForm from "contents/Components/DialogForm";
 
+import MDTypography from "components/MDTypography";
+
 function ButtonAction({
   id,
   urlKey,
@@ -30,16 +32,26 @@ function ButtonAction({
   changeStatus,
   statusId,
   cancel,
+  cancelTrx,
+  reject,
+  process,
+  transfered,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
   const dialogFormRef = useRef();
+  const dialogTrfRef = useRef();
+  const imageRef = useRef();
 
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
   const [password, passwordSet] = useState("");
   const [repassword, repasswordSet] = useState("");
-  const [disabledSubmit, setDisabledSubmit] = useState(false);
+  const [image, imageSet] = useState(null);
+  const [imageFilename, imageFilenameSet] = useState("");
+  const [remark, remarkSet] = useState("");
+  const [alertInfo, alertInfoSet] = useState("");
+  const [disabledSubmit, disabledSubmitSet] = useState(false);
 
   const openMenu = (event) => setMenu(event.currentTarget);
   const closeMenu = () => setMenu(null);
@@ -113,6 +125,7 @@ function ButtonAction({
         modalMessage: "Password minimal 5 karakter",
       });
     } else {
+      disabledSubmitSet(true);
       useAxios()
         .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-pass`, {
           id,
@@ -129,6 +142,7 @@ function ButtonAction({
           });
         })
         .catch((err) => {
+          disabledSubmitSet(false);
           if (err.response?.data) {
             modalNotifRef.current.setShow({
               modalTitle: "Gagal",
@@ -160,11 +174,11 @@ function ButtonAction({
     });
   };
 
-  const submitStatus = () => {
+  const submitStatus = (status) => {
     useAxios()
       .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, {
         id,
-        statusId: statusId == 1 ? 2 : 1,
+        statusId: status,
       })
       .then((response) => {
         modalNotifRef.current.setShow({
@@ -181,7 +195,12 @@ function ButtonAction({
         if (err.response) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
-            modalMessage: err.response ? err.response.message : "Terjadi kesalahan pada system",
+            modalMessage: err.response.data
+              ? Array.isArray(err.response.data.message)
+                ? err.response.data.message[0].message
+                : err.response.data.message
+              : "Terjadi kesalahan pada system",
+            color: "warning",
           });
         }
         // eslint-disable-next-line no-empty
@@ -192,6 +211,70 @@ function ButtonAction({
           });
         }
       });
+  };
+
+  const handleStatusTrx = (status) => {
+    closeMenu();
+    confirmRef.current.setShow({
+      title: "Konfirmasi",
+      message: "Apakah anda yakin ingin merubah status data ?",
+      onAction: () => {
+        submitStatusTrx(status);
+      },
+    });
+  };
+
+  const handleTransfer = () => {
+    closeMenu();
+    dialogTrfRef.current.setShow({ show: true, title: "Upload Bukti Transfer" });
+  };
+
+  const submitTransfer = () => {
+    submitStatusTrx(5);
+  };
+
+  const submitStatusTrx = (status) => {
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("statusId", status);
+    formData.append("image", image);
+    formData.append("remark", remark);
+
+    if ([5].includes(status) && !image) {
+      alertInfoSet("Tolong Upload Bukti Transfer");
+    } else {
+      useAxios()
+        .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, formData)
+        .then((response) => {
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: response.data.message,
+            onClose: () => {
+              console.log("[REFRESH]");
+              refreshData();
+            },
+          });
+        })
+        .catch((err) => {
+          disabledSubmitSet(false);
+          if (err.response?.data) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        });
+    }
   };
 
   const renderMenu = (
@@ -211,6 +294,14 @@ function ButtonAction({
         ((statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>) ||
           (statusId == 2 && <MenuItem onClick={() => handleStatus(1)}>Activate</MenuItem>))}
       {cancel && statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Batalkan</MenuItem>}
+      {cancelTrx && statusId == 1 && (
+        <MenuItem onClick={() => handleStatusTrx(2)}>Batalkan</MenuItem>
+      )}
+      {reject && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(3)}>Reject</MenuItem>}
+      {process && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(4)}>Process</MenuItem>}
+      {transfered && statusId == 4 && (
+        <MenuItem onClick={() => handleTransfer(5)}>Transfered</MenuItem>
+      )}
     </Menu>
   );
 
@@ -268,6 +359,73 @@ function ButtonAction({
         </Grid>
       </DialogForm>
 
+      <DialogForm ref={dialogTrfRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            {alertInfo !== "" && (
+              <MDTypography mb={3} color="error" fontWeight="lighter" mx="auto">
+                {alertInfo}
+              </MDTypography>
+            )}
+            <MDBox mb={2}>
+              <input
+                type="file"
+                name="image"
+                ref={imageRef}
+                onChange={(e) => {
+                  if (e.target.files.length === 1) {
+                    const file = e.target.files[0];
+                    const filename = file.name;
+                    const ext = filename.split(".")[1];
+                    imageSet(file);
+                    imageFilenameSet(filename);
+                  }
+                }}
+                hidden
+              />
+              <MDInput
+                fullWidth
+                value={imageFilename}
+                label="Upload Bukti Transfer"
+                onClick={() => {
+                  imageRef.current.click();
+                }}
+                readOnly
+              />
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => {
+                  dialogTrfRef.current.setShow({ show: false, title: "" });
+                  imageSet(null);
+                  imageFilenameSet("");
+                  alertInfoSet("");
+                }}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={submitTransfer}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
       <MDButton variant="contained" color="info" size="small" onClick={openMenu}>
         actions&nbsp;
         <Icon>keyboard_arrow_down</Icon>
@@ -284,6 +442,10 @@ ButtonAction.defaultProps = {
   changeStatus: false,
   changePassword: false,
   cancel: false,
+  cancelTrx: false,
+  reject: false,
+  process: false,
+  transfered: false,
 };
 
 ButtonAction.propTypes = {
@@ -297,6 +459,10 @@ ButtonAction.propTypes = {
   changeStatus: PropTypes.bool,
   statusId: PropTypes.number,
   cancel: PropTypes.bool,
+  cancelTrx: PropTypes.bool,
+  reject: PropTypes.bool,
+  process: PropTypes.bool,
+  transfered: PropTypes.bool,
 };
 
 export default ButtonAction;

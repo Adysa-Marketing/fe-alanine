@@ -93,6 +93,7 @@ import Referral from "contents/Manage/Referral";
 import SettingAccount from "contents/Settings/Account";
 import Generation from "contents/Network/Generation";
 import FormPartnership from "contents/Manage/Partnership/Form";
+import Widhraw from "contents/Transaction/Widhraw";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -942,7 +943,7 @@ const routes = [
         name: "Widhraw",
         key: "widhraw",
         route: "/trx/widhraw",
-        component: <Container />,
+        component: <Widhraw />,
       },
     ],
   },
