@@ -14,7 +14,7 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
 // Authentication layout components
-import CoverLayout from "layouts/authentication/components/CoverLayout";
+import CoverLayout from "contents/Authentication/components/CoverLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-cover.jpeg";
@@ -84,14 +84,22 @@ function Login() {
         .catch((error) => {
           console.log("[!] Error : ", error);
           submitDisabledSet(false);
-          notifRef.current.setShow({
-            show: true,
-            message:
-              error.response && error.response.data
-                ? error.response.data?.message
-                : "Terjadi kesalahan pada system",
-            color: "warning",
-          });
+          if (error.response.data) {
+            notifRef.current.setShow({
+              show: true,
+              message:
+                error.response && error.response.data
+                  ? error.response.data?.message
+                  : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            notifRef.current.setShow({
+              show: true,
+              message: "Koneksi jaringan terputus",
+              color: "success",
+            });
+          }
         });
     }
   };
@@ -171,6 +179,7 @@ function Login() {
                 color="info"
                 // disabled={false}
                 onClick={handleLogin}
+                disabled={submitDisabled}
                 fullWidth
               >
                 Login
@@ -178,16 +187,16 @@ function Login() {
             </MDBox>
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Don&apos;t have an account?{" "}
+                Belum Punya Akun?{" "}
                 <MDTypography
                   component={Link}
-                  to="/authentication/sign-up/cover"
+                  to="/register"
                   variant="button"
                   color="info"
                   fontWeight="medium"
                   textGradient
                 >
-                  Register
+                  Daftar
                 </MDTypography>
               </MDTypography>
             </MDBox>

@@ -46,6 +46,7 @@ import {
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
+import Register from "contents/Authentication/Register";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -150,6 +151,7 @@ export default function App() {
       {/* {layout === "vr" && <Configurator />} */}
       <Routes>
         <Route exact path="/login" element={<Login />} key="login" />
+        <Route exact path="/register" element={<Register />} key="register" />
         <Route element={<Layout key="layout" />}>{getRoutes(routes)}</Route>
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
