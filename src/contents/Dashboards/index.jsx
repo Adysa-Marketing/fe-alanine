@@ -84,6 +84,10 @@ function Dashboard() {
   const [successWd, successWdSet] = useState(0);
   const [referral, referralSet] = useState(0);
   const [trRw, trRwSet] = useState(0);
+  const [selfInfo, selfInfoSet] = useState({
+    point: 0,
+    wallet: 0,
+  });
 
   useEffect(() => {
     const user = secureStorage.getItem("user");
@@ -144,12 +148,26 @@ function Dashboard() {
     }
 
     if (user && [3, 4].includes(user.roleId)) {
-      Promise.all([loadMonBonus(), loadSuccessWd(), loadCountReferral(), loadCountTrReward()])
+      Promise.all([
+        loadMonBonus(),
+        loadSuccessWd(),
+        loadCountReferral(),
+        loadCountTrReward(),
+        loadSelfInfo(),
+      ])
         .then((result) => {
           monBonusSet(result[0] ? result[0].amount : 0);
           successWdSet(result[1] ? result[1].amount : 0);
           referralSet(result[2] ? result[2].amount : 0);
           trRwSet(result[3] ? result[3].amount : 0);
+          selfInfoSet(
+            result[4]
+              ? result[4]
+              : {
+                  point: 0,
+                  wallet: 0,
+                }
+          );
         })
         .catch((error) => console.log(`[!] Error : ${error}`));
     }
@@ -357,6 +375,16 @@ function Dashboard() {
       .catch((err) => console.log(`[!] Error : ${err}`));
   };
 
+  const loadSelfInfo = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/self-info`)
+      .then((res) => {
+        const data = res.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
   const user = secureStorage.getItem("user");
   return (
     <DashboardLayout>
@@ -537,7 +565,7 @@ function Dashboard() {
               )}
               <Grid item xs={6} md={3} lg={2}>
                 <StatisticsCard
-                  count={user.point}
+                  count={selfInfo.point}
                   color="secondary"
                   icon="timeline"
                   title={"Poin"}
@@ -546,7 +574,7 @@ function Dashboard() {
               </Grid>
               <Grid item xs={6} md={3} lg={2}>
                 <StatisticsCard
-                  count={new Intl.NumberFormat("id-ID").format(user.wallet)}
+                  count={new Intl.NumberFormat("id-ID").format(selfInfo.wallet)}
                   color="success"
                   icon="wallet"
                   title={"Dompet"}
