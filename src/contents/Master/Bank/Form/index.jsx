@@ -201,7 +201,7 @@ function FormAccountBank() {
           ...prev,
           disabledSubmit: false,
         }));
-        if (err.response.data) {
+        if (err.response?.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
             modalMessage: err.response.data

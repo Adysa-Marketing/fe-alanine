@@ -360,7 +360,7 @@ function FormPartnership() {
       })
       .catch((err) => {
         disabledSubmitSet(false);
-        if (err.response.data) {
+        if (err.response?.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
             modalMessage: err.response.data
