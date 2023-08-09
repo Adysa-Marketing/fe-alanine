@@ -60,6 +60,7 @@ function FormArticle() {
 
   const [error, errorSet] = useState([]);
   const [success, successSet] = useState([]);
+  const [disabledSubmit, disabledSubmitSet] = useState(false);
 
   const params = useParams();
   const imageRef = useRef();
@@ -154,6 +155,7 @@ function FormArticle() {
   };
 
   const sendData = () => {
+    disabledSubmitSet(true);
     const formData = new FormData();
     formData.append("id", id);
     formData.append("title", name);
@@ -175,6 +177,7 @@ function FormArticle() {
         });
       })
       .catch((err) => {
+        disabledSubmitSet(false);
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
@@ -334,7 +337,7 @@ function FormArticle() {
                                     imageSet(file);
                                     imageFilenameSet(filename);
                                     successSet({ ...success, image: true });
-                                    errorSet({ ...error, error: false });
+                                    errorSet({ ...error, image: false });
                                   }
                                 }}
                                 hidden
@@ -376,7 +379,13 @@ function FormArticle() {
                   </MDBox>
                   <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
                     <ButtonBack label={"KEMBALI"} />
-                    <MDButton variant="gradient" type="button" color="dark" onClick={handleSubmit}>
+                    <MDButton
+                      variant="gradient"
+                      type="button"
+                      color="dark"
+                      onClick={handleSubmit}
+                      disabled={disabledSubmit}
+                    >
                       {action == "create" ? "Submit" : "Update"}
                     </MDButton>
                   </MDBox>

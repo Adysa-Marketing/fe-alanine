@@ -202,6 +202,10 @@ function FormStokis() {
   };
 
   const sendData = () => {
+    setState((prev) => ({
+      ...prev,
+      disabledSubmit: true,
+    }));
     const payload = {
       id: state.id,
       name: state.name,
@@ -226,6 +230,10 @@ function FormStokis() {
         });
       })
       .catch((err) => {
+        setState((prev) => ({
+          ...prev,
+          disabledSubmit: false,
+        }));
         console.log("error : ", err);
         if (err.response.data) {
           modalNotifRef.current.setShow({
@@ -370,6 +378,7 @@ function FormStokis() {
                     color="info"
                     onKeyDown={handleKeyDown}
                     onClick={handleSubmit}
+                    disabled={state.disabledSubmit}
                   >
                     {state.action == "create" ? "Submit" : "Update"}
                   </MDButton>

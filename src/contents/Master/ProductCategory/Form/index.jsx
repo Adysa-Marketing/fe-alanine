@@ -167,6 +167,10 @@ function FormProductCategory() {
   };
 
   const sendData = () => {
+    setState((prev) => ({
+      ...prev,
+      disabledSubmit: true,
+    }));
     const payload = {
       id: state.id,
       name: state.name,
@@ -188,6 +192,10 @@ function FormProductCategory() {
         });
       })
       .catch((err) => {
+        setState((prev) => ({
+          ...prev,
+          disabledSubmit: false,
+        }));
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
@@ -291,6 +299,7 @@ function FormProductCategory() {
                     color="info"
                     onKeyDown={handleKeyDown}
                     onClick={handleSubmit}
+                    disabled={state.disabledSubmit}
                   >
                     {state.action == "create" ? "Submit" : "Update"}
                   </MDButton>

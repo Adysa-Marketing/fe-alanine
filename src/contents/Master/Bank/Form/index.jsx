@@ -171,6 +171,10 @@ function FormAccountBank() {
   };
 
   const sendData = () => {
+    setState((prev) => ({
+      ...prev,
+      disabledSubmit: true,
+    }));
     const payload = {
       id: state.id,
       name: state.name,
@@ -193,6 +197,10 @@ function FormAccountBank() {
         });
       })
       .catch((err) => {
+        setState((prev) => ({
+          ...prev,
+          disabledSubmit: false,
+        }));
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
@@ -281,6 +289,7 @@ function FormAccountBank() {
                     color="info"
                     onKeyDown={handleKeyDown}
                     onClick={handleSubmit}
+                    disabled={state.disabledSubmit}
                   >
                     {state.action == "create" ? "Submit" : "Update"}
                   </MDButton>

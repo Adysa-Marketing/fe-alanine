@@ -110,6 +110,10 @@ function FormSeri() {
   };
 
   const sendData = () => {
+    setState((prev) => ({
+      ...prev,
+      disabledSubmit: true,
+    }));
     const payload = {
       amount: parseInt(state.amount),
       remark: state.remark,
@@ -130,6 +134,10 @@ function FormSeri() {
         });
       })
       .catch((err) => {
+        setState((prev) => ({
+          ...prev,
+          disabledSubmit: false,
+        }));
         console.log("error : ", err);
         if (err.response.data) {
           modalNotifRef.current.setShow({
@@ -205,6 +213,7 @@ function FormSeri() {
                     color="info"
                     onKeyDown={handleKeyDown}
                     onClick={handleSubmit}
+                    disabled={state.disabledSubmit}
                   >
                     Submit
                   </MDButton>

@@ -232,6 +232,10 @@ function FormProduct() {
   };
 
   const sendData = () => {
+    setState((prev) => ({
+      ...prev,
+      disabledSubmit: true,
+    }));
     const formData = new FormData();
     formData.append("id", state.id);
     formData.append("name", state.name);
@@ -257,6 +261,10 @@ function FormProduct() {
         });
       })
       .catch((err) => {
+        setState((prev) => ({
+          ...prev,
+          disabledSubmit: false,
+        }));
         if (err.response.data) {
           modalNotifRef.current.setShow({
             modalTitle: "Gagal",
@@ -485,7 +493,13 @@ function FormProduct() {
                   </MDBox>
                   <MDBox mt={3} width="100%" display="flex" justifyContent="space-between">
                     <ButtonBack label={"KEMBALI"} />
-                    <MDButton variant="gradient" type="button" color="dark" onClick={handleSubmit}>
+                    <MDButton
+                      variant="gradient"
+                      type="button"
+                      color="dark"
+                      onClick={handleSubmit}
+                      disabled={state.disabledSubmit}
+                    >
                       {state.action == "create" ? "Submit" : "Update"}
                     </MDButton>
                   </MDBox>
