@@ -859,7 +859,7 @@ const routes = [
       },
     ],
   },
-  // ============================================= MASTER =============================================
+  // ============================================= NETWORK =============================================
   {
     type: "collapse",
     name: "Jaringan",
@@ -882,9 +882,49 @@ const routes = [
     name: "Transaksi",
     key: "trx",
     route: "/trx",
-    icon: <AccountTreeIcon></AccountTreeIcon>,
+    icon: <Icon fontSize="medium">shoppingcart</Icon>,
     collapse: [
+      // ====================== mutasi ======================
+      {
+        name: "Mutasi",
+        key: "mutation",
+        route: "/trx/mutation",
+        component: <Container />,
+      },
       // ====================== stokis ======================
+      {
+        name: "Agen Order",
+        key: "agen-order",
+        route: "/trx/agen-order",
+        component: <Container />,
+      },
+      {
+        name: "Agen Sale",
+        key: "agen-sale",
+        route: "/trx/agen-sale",
+        component: <Container />,
+      },
+      // ====================== product ======================
+      {
+        name: "Product",
+        key: "product",
+        route: "/trx/product",
+        component: <Container />,
+      },
+      // ====================== reward ======================
+      {
+        name: "Reward",
+        key: "reward",
+        route: "/trx/reward",
+        component: <Container />,
+      },
+      // ====================== stokis ======================
+      {
+        name: "Stokis",
+        key: "stokis",
+        route: "/trx/stokis",
+        component: <Container />,
+      },
       {
         name: "Join Partnership",
         key: "join",
@@ -896,6 +936,13 @@ const routes = [
         key: "edit-stokis",
         route: "/trx/stokis/edit/:id",
         component: <FormPartnership />,
+      },
+      // ====================== widhraw ======================
+      {
+        name: "Widhraw",
+        key: "widhraw",
+        route: "/trx/widhraw",
+        component: <Container />,
       },
     ],
   },
@@ -1086,17 +1133,6 @@ const getMenu = (user) => {
       ]
     : [];
 
-  const subManageReward = [3, 4].includes(roleId)
-    ? [
-        {
-          name: "Reward",
-          key: "reward",
-          route: "/manage/reward",
-          component: <Container />,
-        },
-      ]
-    : [];
-
   const subManageTestimoni = [1, 2].includes(roleId)
     ? [
         {
@@ -1133,13 +1169,13 @@ const getMenu = (user) => {
               route: "/manage/referral",
               component: <Container />,
             },
-            ...subManageReward,
             ...subManageTestimoni,
           ],
         },
       ]
     : [];
 
+  // ============================================= MENU NETWORK =============================================
   const menuNetwork = [3, 4].includes(roleId)
     ? [
         {
@@ -1159,12 +1195,93 @@ const getMenu = (user) => {
       ]
     : [];
 
+  // ============================================= MENU TRX =============================================
+  const subTrxMutation = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Mutasi",
+          key: "mutation",
+          route: "/trx/mutation",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subTrxAgenOrderSale = [3].includes(roleId)
+    ? [
+        {
+          name: "Pemesanan Paket",
+          key: "agen-order",
+          route: "/trx/agen-order",
+          component: <Container />,
+        },
+        {
+          name: "Penjualan Paket",
+          key: "agen-sale",
+          route: "/trx/agen-sale",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subTrxProduct = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Produk",
+          key: "product",
+          route: "/trx/product",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const subTrxStokis = [1, 2].includes(roleId)
+    ? [
+        {
+          name: "Stokis",
+          key: "stokis",
+          route: "/trx/stokis",
+          component: <Container />,
+        },
+      ]
+    : [];
+
+  const menuTrx = [1, 2, 3, 4].includes(roleId)
+    ? [
+        {
+          type: "collapse",
+          name: "Transaksi",
+          key: "trx",
+          icon: <Icon fontSize="medium">shoppingcart</Icon>,
+          collapse: [
+            ...subTrxMutation,
+            ...subTrxAgenOrderSale,
+            ...subTrxProduct,
+            {
+              name: "Reward",
+              key: "reward",
+              route: "/trx/reward",
+              component: <Container />,
+            },
+            ...subTrxStokis,
+            {
+              name: "Widhraw",
+              key: "widhraw",
+              route: "/trx/widhraw",
+              component: <Container />,
+            },
+          ],
+        },
+      ]
+    : [];
+
   menus = [
     ...menus,
     ...menuSetting,
     ...menuMaster,
     ...menuManage,
     ...menuNetwork,
+    ...menuTrx,
     {
       type: "collapse",
       name: "Logout",
