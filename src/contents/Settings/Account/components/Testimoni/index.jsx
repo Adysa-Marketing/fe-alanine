@@ -23,15 +23,18 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import { useEffect, useRef, useState } from "react";
-import ModalNotif from "contents/Components/ModalNotif";
 import useAxios from "libs/useAxios";
 import Config from "config";
+import ModalNotif from "contents/Components/ModalNotif";
 
-function ChangePassword() {
+function Testimoni() {
   const [state, setState] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    id: "",
+    rating: 0,
+    testimonial: "",
+    remark: "",
+
+    action: "create",
 
     error: [],
     success: [],
@@ -40,18 +43,30 @@ function ChangePassword() {
   const modalNotifRef = useRef();
 
   useEffect(() => {
-    loadEmpty();
+    loadTestimoni();
   }, []);
 
-  const loadEmpty = () => {
-    setState(() => ({
-      oldPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-
-      error: [],
-      success: [],
-    }));
+  const loadTestimoni = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/setting/testimoni/get`)
+      .then((result) => {
+        const data = result.data.data;
+        if (data) {
+          setState((prev) => ({
+            ...prev,
+            id: data.id,
+            action: "update",
+            rating: data.rating,
+            testimonial: data.testimonial,
+            success: {
+              ...prev.success,
+              rating: data.rating ? true : false,
+              testimonial: data.testimonial ? true : false,
+            },
+          }));
+        }
+      })
+      .catch((error) => console.log(`[!] Error : ${error}`));
   };
 
   const handleChange = (e) => {
@@ -84,25 +99,19 @@ function ChangePassword() {
   };
 
   const handleSubmit = () => {
-    if (state.success.oldPassword && state.success.newPassword && state.success.confirmPassword) {
-      if (state.newPassword.length < 5) {
+    if (state.success.rating && state.success.testimonial) {
+      if (state.rating < 1 || state.rating > 5) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: `Password minimal 5 karakter`,
-        });
-      } else if (state.newPassword !== state.confirmPassword) {
-        modalNotifRef.current.setShow({
-          modalTitle: "Gagal",
-          modalMessage: `Password baru harus sama dengan password konfirmasi `,
+          modalMessage: `Rating harus antara 1 - 5`,
         });
       } else {
         sendData();
       }
     } else {
       let input = "";
-      !state.success.confirmPassword && (input = "Password Konfirmasi");
-      !state.success.newPassword && (input = "Password Baru");
-      !state.success.oldPassword && (input = "Password Lama");
+      !state.success.testimonial && (input = "Testimonial");
+      !state.success.rating && (input = "Rating");
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
         modalMessage: `Data "${input}" masih kosong, Silahkan di cek kembali !`,
@@ -112,18 +121,19 @@ function ChangePassword() {
 
   const sendData = () => {
     const payload = {
-      oldPassword: state.oldPassword,
-      password: state.newPassword,
+      id: state.id,
+      rating: parseInt(state.rating),
+      testimonial: state.testimonial,
     };
 
     useAxios()
-      .put(`${Config.ApiUrl}/api/v1/setting/user/change-pass`, payload)
+      .post(`${Config.ApiUrl}/api/v1/setting/testimoni/${state.action}`, payload)
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
           modalMessage: response.data.message,
           onClose: () => {
-            loadEmpty();
+            loadTestimoni();
           },
         });
       })
@@ -148,91 +158,45 @@ function ChangePassword() {
       });
   };
 
-  const passwordRequirements = [
-    "Min 5 karakter",
-    "Direkomendasikan menggukan gabungan huruf, angka dan simbol",
-    "Disarankan untuk sering merubah password demi menjaga keamanan akun anda",
-  ];
-
-  const renderPasswordRequirements = passwordRequirements.map((item, key) => {
-    const itemKey = `element-${key}`;
-
-    return (
-      <MDBox key={itemKey} component="li" color="text" fontSize="1.25rem" lineHeight={1}>
-        <MDTypography variant="button" color="text" fontWeight="regular" verticalAlign="middle">
-          {item}
-        </MDTypography>
-      </MDBox>
-    );
-  });
-
   return (
-    <Card id="change-password">
+    <Card id="testimoni">
       <ModalNotif ref={modalNotifRef} />
       <MDBox p={3}>
-        <MDTypography variant="h5">Ganti Password</MDTypography>
+        <MDTypography variant="h5">Testimonial</MDTypography>
       </MDBox>
       <MDBox component="form" pb={3} px={3}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <MDInput
               fullWidth
-              id="oldPassword"
-              label="Password Lama"
-              value={state.oldPassword}
+              id="rating"
+              value={state.rating}
               onChange={handleChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              success={state.success ? state.success.oldPassword : false}
-              error={state.error ? state.error.oldPassword : false}
-              inputProps={{ type: "password", autoComplete: "" }}
+              label="Rating ( 1 - 5 )"
+              success={state.success ? state.success.rating : false}
+              error={state.error ? state.error.rating : false}
+              inputProps={{ type: "number", autoComplete: "" }}
             />
           </Grid>
           <Grid item xs={12}>
             <MDInput
               fullWidth
-              id="newPassword"
-              label="Password Baru"
-              value={state.newPassword}
+              id="testimonial"
+              value={state.testimonial}
               onChange={handleChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              success={state.success ? state.success.newPassword : false}
-              error={state.error ? state.error.newPassword : false}
-              inputProps={{ type: "password", autoComplete: "" }}
+              label="Testimonial"
+              success={state.success ? state.success.testimonial : false}
+              error={state.error ? state.error.testimonial : false}
+              inputProps={{ type: "text", autoComplete: "" }}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <MDInput
-              fullWidth
-              id="confirmPassword"
-              label="Password Konfirmasi"
-              value={state.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              success={state.success ? state.success.confirmPassword : false}
-              error={state.error ? state.error.confirmPassword : false}
-              inputProps={{ type: "password", autoComplete: "" }}
-            />
-            <MDTypography variant="button" color="error">
-              Password Konfirmasi harus sama dengan password baru
-            </MDTypography>
           </Grid>
         </Grid>
-        <MDBox mt={6} mb={1}>
-          <MDTypography variant="h5">Ketentuan Password</MDTypography>
-        </MDBox>
-        <MDBox mb={1}>
-          <MDTypography variant="body2" color="text">
-            Silakan ikuti panduan ini untuk kata sandi yang kuat
-          </MDTypography>
-        </MDBox>
         <MDBox display="flex" justifyContent="space-between" alignItems="flex-end" flexWrap="wrap">
-          <MDBox component="ul" m={0} pl={3.25} mb={{ xs: 8, sm: 0 }}>
-            {renderPasswordRequirements}
-          </MDBox>
-          <MDBox ml="auto">
+          <MDBox ml="auto" mt={3}>
             <MDButton
               variant="gradient"
               color="dark"
@@ -240,7 +204,7 @@ function ChangePassword() {
               onKeyDown={handleKeyDown}
               onClick={handleSubmit}
             >
-              update password
+              simpan
             </MDButton>
           </MDBox>
         </MDBox>
@@ -249,4 +213,4 @@ function ChangePassword() {
   );
 }
 
-export default ChangePassword;
+export default Testimoni;

@@ -928,32 +928,12 @@ const getMenu = (user) => {
         },
       ]
     : [];
-  const subSettingBank = [3, 4].includes(roleId)
-    ? [
-        {
-          name: "Bank",
-          key: "bank",
-          route: "/setting/bank",
-          component: <Container />,
-        },
-      ]
-    : [];
   const subSettingCompany = [1, 2].includes(roleId)
     ? [
         {
           name: "Pofile Perusahaan",
           key: "company",
           route: "/setting/company",
-          component: <Container />,
-        },
-      ]
-    : [];
-  const subSettingTestimoni = [3, 4].includes(roleId)
-    ? [
-        {
-          name: "Testominial",
-          key: "testimoni",
-          route: "/setting/testimoni",
           component: <Container />,
         },
       ]
@@ -976,13 +956,7 @@ const getMenu = (user) => {
           key: "setting",
           route: "/setting",
           icon: <Icon fontSize="medium">settingsApplication</Icon>,
-          collapse: [
-            ...subSettingAccount,
-            ...subSettingBank,
-            ...subSettingCompany,
-            ...subSettingTestimoni,
-            ...subSettingWebConfig,
-          ],
+          collapse: [...subSettingAccount, ...subSettingCompany, ...subSettingWebConfig],
         },
       ]
     : [];

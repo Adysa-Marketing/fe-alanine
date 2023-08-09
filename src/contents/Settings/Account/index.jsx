@@ -26,6 +26,7 @@ import ChangePassword from "contents/Settings/Account/components/ChangePassword"
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import UserBank from "./components/UserBank";
+import Testimoni from "./components/Testimoni";
 
 function SettingAccount() {
   return (
@@ -47,6 +48,9 @@ function SettingAccount() {
                 </Grid>
                 <Grid item xs={12}>
                   <UserBank />
+                </Grid>
+                <Grid item xs={12}>
+                  <Testimoni />
                 </Grid>
               </Grid>
             </MDBox>

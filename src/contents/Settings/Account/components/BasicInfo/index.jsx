@@ -358,7 +358,7 @@ function BasicInfo() {
                       </MDTypography>
                       <br />
                       <MDTypography variant="button" fontWeight="regular">
-                        Wallet : Rp. {new Intl.NumberFormat("id-ID").format(state.wallet)}
+                        Dompet : Rp. {new Intl.NumberFormat("id-ID").format(state.wallet)}
                       </MDTypography>
                     </MDBox>
                   </MDBox>

@@ -17,6 +17,7 @@ Coded by www.creative-tim.com
 import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 
 // Material Dashboard 2 PRO React components
 import MDBox from "components/MDBox";
@@ -34,6 +35,7 @@ function Sidenav() {
     { icon: "receipt_long", label: "Informasi Umum", href: "basic-info" },
     { icon: "lock", label: "Ganti Password", href: "change-password" },
     { icon: <AccountBalanceIcon />, label: "Data Bank", href: "user-bank" },
+    { icon: <RateReviewIcon />, label: "Testimoni", href: "testimoni" },
     // { icon: "security", label: "2FA", href: "2fa" },
     // { icon: "badge", label: "accounts", href: "accounts" },
     // { icon: "campaign", label: "notifications", href: "notifications" },
