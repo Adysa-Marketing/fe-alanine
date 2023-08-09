@@ -140,7 +140,7 @@ function FormAdmin() {
       .catch((err) => {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: err.response ? err.response.message : "Koneksi jaringan terputus",
+          modalMessage: err.response ? err.response.data?.message : "Koneksi jaringan terputus",
           onClose: () => {
             redirectSet("/master/admin");
           },
