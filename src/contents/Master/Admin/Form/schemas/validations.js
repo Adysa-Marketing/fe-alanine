@@ -43,7 +43,7 @@ let validations = [
       .matches(/^[^\s]*$/, "Username tidak boleh menggunakan spasi")
       .required(userName.errorMsg),
     [phoneNumber.name]: Yup.string()
-      .matches(/^(08|628)[0-9]{9,12}$/, "Nomot telpon tidak valid")
+      .matches(/^(08|628)[0-9]{9,13}$/, "Nomor telpon tidak valid")
       .required(phoneNumber.errorMsg),
     [email.name]: Yup.string().required(email.errorMsg).email(email.invalidMsg),
     [password.name]: Yup.string().required(password.errorMsg).min(5, password.invalidMsg),
