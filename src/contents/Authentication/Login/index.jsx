@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -25,21 +26,28 @@ import Notif from "contents/Components/Notif";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 import axios from "axios";
-function Login() {
+function Login({ status }) {
   const [rememberMe, setRememberMe] = useState(true);
   const [username, usernameSet] = useState("");
   const [password, passwordSet] = useState("");
   const [isLogin, isLoginSet] = useState(false);
   const [submitDisabled, submitDisabledSet] = useState(false);
+  const [redirect, redirectSet] = useState(null);
 
   const notifRef = useRef();
   useEffect(() => {
-    const user = secureStorage.getItem("user");
-    if (user) isLoginSet(true);
-    else {
-      isLoginSet(false);
+    if (status == "signout") {
       secureStorage.removeItem("token");
       secureStorage.removeItem("user");
+      redirectSet("/login");
+    } else {
+      const user = secureStorage.getItem("user");
+      if (user) isLoginSet(true);
+      else {
+        isLoginSet(false);
+        secureStorage.removeItem("token");
+        secureStorage.removeItem("user");
+      }
     }
   }, []);
 
@@ -104,6 +112,9 @@ function Login() {
     }
   };
 
+  if (redirect) {
+    return <Navigate to="/login" />;
+  }
   if (isLogin) {
     return <Navigate to="/dashboard" />;
   }
@@ -206,5 +217,13 @@ function Login() {
     </CoverLayout>
   );
 }
+
+Login.defaultProps = {
+  status: "signin",
+};
+
+Login.propTypes = {
+  status: PropTypes.string,
+};
 
 export default Login;

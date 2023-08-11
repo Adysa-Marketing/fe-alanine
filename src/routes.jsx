@@ -95,12 +95,7 @@ import Generation from "contents/Network/Generation";
 import FormPartnership from "contents/Manage/Partnership/Form";
 import Widhraw from "contents/Transaction/Widhraw";
 import DetailWidhraw from "contents/Transaction/Widhraw/components/Detail";
-
-const logout = () => {
-  secureStorage.removeItem("token");
-  secureStorage.removeItem("user");
-  window.location.href = "/login";
-};
+import Login from "contents/Authentication/Login";
 
 const routes = [
   // ==========================================================================================
@@ -954,6 +949,17 @@ const routes = [
       },
     ],
   },
+  // ============================================= Logout =============================================
+  {
+    type: "collapse",
+    name: "Logout",
+    index: true,
+    key: "logout",
+    route: "/logout",
+    icon: <Icon fontSize="medium">logout</Icon>,
+    component: <Login status="signout" />,
+    noCollapse: true,
+  },
 ];
 
 // ============================================= MENUS =============================================
@@ -1294,7 +1300,7 @@ const getMenu = (user) => {
       type: "collapse",
       name: "Logout",
       key: "logout",
-      href: logout,
+      route: "/logout",
       noCollapse: true,
       icon: <Icon fontSize="medium">logout</Icon>,
       component: <Container />,
