@@ -94,6 +94,7 @@ import SettingAccount from "contents/Settings/Account";
 import Generation from "contents/Network/Generation";
 import FormPartnership from "contents/Manage/Partnership/Form";
 import Widhraw from "contents/Transaction/Widhraw";
+import DetailWidhraw from "contents/Transaction/Widhraw/components/Detail";
 
 const logout = () => {
   secureStorage.removeItem("token");
@@ -944,6 +945,12 @@ const routes = [
         key: "widhraw",
         route: "/trx/widhraw",
         component: <Widhraw />,
+      },
+      {
+        name: "Widhraw",
+        key: "detail-widhraw",
+        route: "/trx/widhraw/detail/:id",
+        component: <DetailWidhraw />,
       },
     ],
   },

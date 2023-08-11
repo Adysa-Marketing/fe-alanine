@@ -79,18 +79,14 @@ function Widhraw() {
     userSet(userData);
     loadUserBank();
     loadWdStatus();
+    loadData();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]);
 
   const refreshData = () => {
     loadUserBank();
     loadWdStatus();
     loadData();
+    resetForm();
   };
 
   const loadUserBank = () => {
@@ -115,6 +111,9 @@ function Widhraw() {
               bankName: data.name ? true : false,
               noRekening: data.noRekening ? true : false,
               accountName: data.accountName ? true : false,
+              amount: false,
+              imageKtp: false,
+              password: false,
             });
 
             errorSet({
@@ -123,6 +122,9 @@ function Widhraw() {
               bankName: !data.name ? true : false,
               noRekening: !data.noRekening ? true : false,
               accountName: !data.accountName ? true : false,
+              amount: true,
+              imageKtp: true,
+              password: true,
             });
           })
           .catch((error) => console.log("[!] Error : ", error));
@@ -152,6 +154,7 @@ function Widhraw() {
 
     const statusId = params && params.statusId ? { statusId: params.statusId } : {};
     const payload = {
+      keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
       startDate: params && params.startDate ? params.startDate : startDate,
@@ -162,6 +165,7 @@ function Widhraw() {
     useAxios()
       .post(`${Config.ApiUrl}/api/v1/trx/widhraw/list`, payload)
       .then((response) => {
+        const user = secureStorage.getItem("user");
         const data = response.data;
         const output = data.data.map((item) => {
           const wdStatus = item.WdStatus ? item.WdStatus : null;
@@ -195,32 +199,31 @@ function Widhraw() {
             ) : (
               "-"
             ),
-            action:
-              [1, 2].includes(user.roleId) && [1, 4].includes(wdStatus.id) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/trx/widhraw"}
-                  refreshData={refreshData}
-                  statusId={wdStatus.id}
-                  detail={true}
-                  reject={true}
-                  process={true}
-                  transfered={true}
-                ></ButtonAction>
-              ) : [3, 4].includes(user.roleId) && [1, 2, 3].includes(wdStatus.id) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/trx/widhraw"}
-                  refreshData={refreshData}
-                  statusId={wdStatus.id}
-                  detail={true}
-                  edit={[1].includes(wdStatus.id ? true : false)}
-                  cancelTrx={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: [1, 2].includes(user.roleId) ? (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/trx/widhraw"}
+                refreshData={refreshData}
+                statusId={wdStatus.id}
+                detail={true}
+                reject={true}
+                process={true}
+                transfered={true}
+              ></ButtonAction>
+            ) : [3, 4].includes(user.roleId) ? (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/trx/widhraw"}
+                refreshData={refreshData}
+                statusId={wdStatus.id}
+                detail={true}
+                edit={[1].includes(wdStatus.id ? true : false)}
+                cancelTrx={true}
+                remove={[1, 2, 3].includes(wdStatus.id) ? true : false}
+              ></ButtonAction>
+            ) : (
+              "-"
+            ),
           };
         });
 
@@ -248,6 +251,27 @@ function Widhraw() {
       successSet({ ...success, [id]: false });
       errorSet({ ...error, [id]: true });
     }
+  };
+
+  const resetForm = () => {
+    amountSet(0);
+    imageKtpSet(null);
+    imageKtpFilenameSet("");
+    passwordSet("");
+
+    successSet({
+      ...success,
+      amount: false,
+      imageKtp: false,
+      password: false,
+    });
+
+    errorSet({
+      ...success,
+      amount: true,
+      imageKtp: true,
+      password: true,
+    });
   };
 
   const handleSubmit = () => {
@@ -289,23 +313,10 @@ function Widhraw() {
     }
   };
 
-  const resetForm = () => {
-    amountSet(0);
-    imageKtpSet(null);
-    imageKtpFilenameSet("");
-    passwordSet("");
-
-    successSet({
-      ...success,
-      amount: false,
-      imageKtp: false,
-      password: false,
-    });
-  };
-
   const sendData = () => {
     disabledSubmitSet(true);
     const formData = new FormData();
+    formData.append("kk", kk);
     formData.append("amount", amount);
     formData.append("noRekening", noRekening);
     formData.append("bankName", bankName);
@@ -321,7 +332,6 @@ function Widhraw() {
           modalMessage: response.data.message,
           onClose: () => {
             refreshData();
-            resetForm();
             disabledSubmitSet(false);
           },
         });
@@ -545,7 +555,9 @@ function Widhraw() {
                         <li style={{ margin: "5px 0px" }}>
                           Biaya Admin dipotong dari total widhraw
                         </li>
-                        <li style={{ margin: "5px 0px" }}>Pastikan data anda sesuai dengan KTP</li>
+                        <li style={{ margin: "5px 0px" }}>
+                          Pastikan data anda sesuai dengan KTP agar widhraw tidak ditolak
+                        </li>
                       </ol>
                     </MDBox>
                   </MDBox>
@@ -564,6 +576,26 @@ function Widhraw() {
 
               <MDBox px={2} width="100%" display="flex" justifyContent="flex-start">
                 <Grid container spacing={3}>
+                  {[1, 2].includes(userData.roleId) && (
+                    <Grid item xs={12} md={3} lg={3}>
+                      <MDInput
+                        label="Search..."
+                        size="small"
+                        fullWidth
+                        value={keyword}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            loadData({
+                              currentPage: 1,
+                              keyword: e.target.value,
+                              statusId: status ? status.id : null,
+                            });
+                          }
+                        }}
+                        onChange={(e) => keywordSet(e.target.value)}
+                      />
+                    </Grid>
+                  )}
                   <Grid item xs={12} md={3} lg={3}>
                     <Autocomplete
                       value={status}
@@ -571,6 +603,7 @@ function Widhraw() {
                       onChange={(e, value) => {
                         statusSet(value);
                         loadData({
+                          keyword,
                           currentPage: 1,
                           startDate,
                           endDate,
@@ -643,6 +676,7 @@ function Widhraw() {
                       variant="gradient"
                       onClick={() => {
                         loadData({
+                          keyword,
                           currentPage: 1,
                           startDate,
                           endDate,
@@ -669,6 +703,7 @@ function Widhraw() {
                     rowsPerPageSet(value);
                     currentPageSet(1);
                     loadData({
+                      keyword,
                       rowsPerPage: value,
                       currentPage: 1,
                       startDate,
@@ -680,6 +715,7 @@ function Widhraw() {
                     if (current !== currentPage) {
                       currentPageSet(current);
                       loadData({
+                        keyword,
                         rowsPerPage,
                         currentPage: current,
                         startDate,
