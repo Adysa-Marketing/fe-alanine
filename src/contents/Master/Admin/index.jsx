@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function Admin() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -55,14 +54,17 @@ function Admin() {
     { key: "Female", label: "Wanita" },
   ]);
 
-  useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    if (user) loadData();
-  }, [user]);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
+  }, []);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -98,22 +100,19 @@ function Admin() {
             ) : (
               <MDBadge badgeContent="Tidak Aktif" container color="error" />
             ),
-            action:
-              user && [1].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/admin"}
-                  refreshData={loadData}
-                  detail={true}
-                  edit={true}
-                  remove={true}
-                  changePassword={true}
-                  changeStatus={true}
-                  statusId={statusId}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/admin"}
+                refreshData={loadData}
+                detail={true}
+                edit={true}
+                remove={true}
+                changePassword={true}
+                changeStatus={true}
+                statusId={statusId}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -127,6 +126,10 @@ function Admin() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>
@@ -172,66 +175,61 @@ function Admin() {
                 />
               </Grid>
               {/* Status */}
-              {user && [1].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={status}
-                    options={statuses}
-                    onChange={(e, value) => {
-                      statusSet(value);
-                      loadData({
-                        keyword,
-                        gender: gender ? gender.key : null,
-                        currentPage: 1,
-                        status: value ? value.id : null,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
-
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={status}
+                  options={statuses}
+                  onChange={(e, value) => {
+                    statusSet(value);
+                    loadData({
+                      keyword,
+                      gender: gender ? gender.key : null,
+                      currentPage: 1,
+                      status: value ? value.id : null,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
+                  )}
+                />
+              </Grid>
               {/* Gender */}
-              {user && [1].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={gender}
-                    options={genders}
-                    onChange={(e, value) => {
-                      genderSet(value);
-                      loadData({
-                        keyword,
-                        status: status ? status.id : null,
-                        gender: value ? value.key : null,
-                        currentPage: 1,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.key === value.key}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Gender" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={gender}
+                  options={genders}
+                  onChange={(e, value) => {
+                    genderSet(value);
+                    loadData({
+                      keyword,
+                      status: status ? status.id : null,
+                      gender: value ? value.key : null,
+                      currentPage: 1,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.key === value.key}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Gender" {...params} />
+                  )}
+                />
+              </Grid>
             </Grid>
           </MDBox>
           <MDBox p={2}>

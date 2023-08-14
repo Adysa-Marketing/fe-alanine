@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function Article() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -52,13 +51,14 @@ function Article() {
   ]);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
   }, []);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -109,20 +109,17 @@ function Article() {
             ) : (
               <MDBadge badgeContent="Draff" container color="warning" />
             ),
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/article"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                  changeStatus={true}
-                  statusId={statusId}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/article"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+                changeStatus={true}
+                statusId={statusId}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -136,6 +133,10 @@ function Article() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>
@@ -180,34 +181,32 @@ function Article() {
                 />
               </Grid>
               {/* Status */}
-              {user && [1, 2].includes(user.roleId) && (
-                <Grid item xs={12} md={3} lg={3}>
-                  <Autocomplete
-                    value={status}
-                    options={statuses}
-                    onChange={(e, value) => {
-                      statusSet(value);
-                      loadData({
-                        keyword,
-                        currentPage: 1,
-                        status: value ? value.id : null,
-                      });
-                    }}
-                    sx={{
-                      ".MuiAutocomplete-input": {
-                        padding: "7.5px 5px 7.5px 8px !important",
-                      },
-                      ".MuiOutlinedInput-root": {
-                        padding: "1.5px !important",
-                      },
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    renderInput={(params) => (
-                      <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
-                    )}
-                  />
-                </Grid>
-              )}
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={status}
+                  options={statuses}
+                  onChange={(e, value) => {
+                    statusSet(value);
+                    loadData({
+                      keyword,
+                      currentPage: 1,
+                      status: value ? value.id : null,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
+                  )}
+                />
+              </Grid>
             </Grid>
           </MDBox>
           <MDBox p={2}>

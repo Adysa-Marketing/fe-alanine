@@ -39,6 +39,7 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import { Navigate, useParams } from "react-router-dom";
 import ButtonBack from "contents/Components/ButtonBack";
+import secureStorage from "libs/secureStorage";
 
 function FormArticle() {
   const [statuses, statusesSet] = useState([
@@ -67,7 +68,13 @@ function FormArticle() {
   const modalNotifRef = useRef();
 
   useEffect(() => {
-    loadPath();
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadPath();
+    }
   }, []);
 
   const loadPath = () => {

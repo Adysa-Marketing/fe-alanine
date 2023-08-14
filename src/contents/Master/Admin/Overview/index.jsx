@@ -42,6 +42,7 @@ import { Navigate, useParams } from "react-router-dom";
 import useAxios from "libs/useAxios";
 import Config from "config";
 import ModalNotif from "contents/Components/ModalNotif";
+import secureStorage from "libs/secureStorage";
 
 function ProfileOverview() {
   const [name, nameSet] = useState("");
@@ -66,7 +67,13 @@ function ProfileOverview() {
 
   const modalNotifRef = useRef();
   useEffect(() => {
-    loadDetail(params.id);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadDetail(params.id);
+    }
   }, []);
 
   const loadDetail = (id) => {

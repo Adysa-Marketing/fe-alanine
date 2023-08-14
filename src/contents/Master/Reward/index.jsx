@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function Reward() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -42,15 +41,17 @@ function Reward() {
     { Header: "Minimal Kaki", accessor: "minFoot", width: "25%" },
     { Header: "Deskripsi", accessor: "description", width: "35%" },
   ]);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
   }, []);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -77,18 +78,15 @@ function Reward() {
             description: (
               <p style={{ wordWrap: "break-word", width: "25em" }}>{item.description}</p>
             ),
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/reward"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/reward"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -102,6 +100,10 @@ function Reward() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

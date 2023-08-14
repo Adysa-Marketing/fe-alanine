@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function Package() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -42,14 +41,17 @@ function Package() {
     { Header: "Kutipan", accessor: "description", width: "35%" },
   ]);
 
-  useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    if (user) loadData();
-  }, [user]);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
+  }, []);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -75,18 +77,15 @@ function Package() {
             description: (
               <p style={{ wordWrap: "break-word", width: "25em" }}>{item.description}</p>
             ),
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/package"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/package"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -100,6 +99,10 @@ function Package() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

@@ -60,9 +60,11 @@ function Generation() {
   const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    if (userData) {
-      userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![3, 4].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
       loadData();
     }
   }, []);

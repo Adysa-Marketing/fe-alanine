@@ -45,6 +45,7 @@ function Serial() {
     { Header: "Deskripsi", accessor: "description", width: "20%" },
   ]);
 
+  const [redirect, redirectSet] = useState(null);
   const [status, statusSet] = useState(null);
   const [statuses, statusesSet] = useState([
     { id: 1, label: "Pending" },
@@ -53,13 +54,14 @@ function Serial() {
   const [startDate, startDateSet] = useState("");
   const [endDate, endDateSet] = useState("");
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
   }, []);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -160,102 +162,93 @@ function Serial() {
                   onChange={(e) => keywordSet(e.target.value)}
                 />
               </Grid>
-              {user && [1, 2].includes(user.roleId) && (
-                <>
-                  <Grid item xs={12} md={3} lg={3}>
-                    <Autocomplete
-                      value={status}
-                      options={statuses}
-                      onChange={(e, value) => {
-                        statusSet(value);
-                        loadData({
-                          keyword,
-                          currentPage: 1,
-                          statusId: value ? value.id : null,
-                          startDate,
-                          endDate,
-                        });
-                      }}
-                      sx={{
-                        ".MuiAutocomplete-input": {
-                          padding: "7.5px 5px 7.5px 8px !important",
-                        },
-                        ".MuiOutlinedInput-root": {
-                          padding: "1.5px !important",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      renderInput={(params) => (
-                        <MDInput
-                          sx={{ padding: "0px" }}
-                          fullWidth
-                          label="Pilih Status"
-                          {...params}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  {/* Start Date */}
-                  <Grid item xs={12} md={3} lg={2}>
-                    <MDDatePicker
-                      input={{
-                        id: "startDate",
-                        placeholder: "Tanggal Awal",
-                        fullWidth: true,
-                        sx: {
-                          ".MuiInputBase-input": {
-                            height: "1em !important",
-                          },
-                        },
-                      }}
-                      value={startDate}
-                      onChange={(value) => {
-                        const date = moment(value[0]).format("YYYY-MM-DD");
-                        startDateSet(date);
-                      }}
-                    />
-                  </Grid>
-                  {/* End Date */}
-                  <Grid item xs={12} md={3} lg={2}>
-                    <MDDatePicker
-                      input={{
-                        id: "endDate",
-                        placeholder: "Tanggal Akhir",
-                        fullWidth: true,
-                        sx: {
-                          ".MuiInputBase-input": {
-                            height: "1em !important",
-                          },
-                        },
-                      }}
-                      value={endDate}
-                      onChange={(value) => {
-                        const date = moment(value[0]).format("YYYY-MM-DD");
-                        endDateSet(date);
-                      }}
-                    />
-                  </Grid>
-                  {/* Button Search */}
-                  <Grid item xs={12} md={1} lg={1}>
-                    <MDButton
-                      color="info"
-                      variant="gradient"
-                      onClick={() => {
-                        loadData({
-                          currentPage: 1,
-                          startDate,
-                          endDate,
-                          keyword,
-                          statusId: status ? status.id : null,
-                        });
-                      }}
-                      iconOnly
-                    >
-                      <Icon>search</Icon>
-                    </MDButton>
-                  </Grid>
-                </>
-              )}
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={status}
+                  options={statuses}
+                  onChange={(e, value) => {
+                    statusSet(value);
+                    loadData({
+                      keyword,
+                      currentPage: 1,
+                      statusId: value ? value.id : null,
+                      startDate,
+                      endDate,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
+                  )}
+                />
+              </Grid>
+              {/* Start Date */}
+              <Grid item xs={12} md={3} lg={2}>
+                <MDDatePicker
+                  input={{
+                    id: "startDate",
+                    placeholder: "Tanggal Awal",
+                    fullWidth: true,
+                    sx: {
+                      ".MuiInputBase-input": {
+                        height: "1em !important",
+                      },
+                    },
+                  }}
+                  value={startDate}
+                  onChange={(value) => {
+                    const date = moment(value[0]).format("YYYY-MM-DD");
+                    startDateSet(date);
+                  }}
+                />
+              </Grid>
+              {/* End Date */}
+              <Grid item xs={12} md={3} lg={2}>
+                <MDDatePicker
+                  input={{
+                    id: "endDate",
+                    placeholder: "Tanggal Akhir",
+                    fullWidth: true,
+                    sx: {
+                      ".MuiInputBase-input": {
+                        height: "1em !important",
+                      },
+                    },
+                  }}
+                  value={endDate}
+                  onChange={(value) => {
+                    const date = moment(value[0]).format("YYYY-MM-DD");
+                    endDateSet(date);
+                  }}
+                />
+              </Grid>
+              {/* Button Search */}
+              <Grid item xs={12} md={1} lg={1}>
+                <MDButton
+                  color="info"
+                  variant="gradient"
+                  onClick={() => {
+                    loadData({
+                      currentPage: 1,
+                      startDate,
+                      endDate,
+                      keyword,
+                      statusId: status ? status.id : null,
+                    });
+                  }}
+                  iconOnly
+                >
+                  <Icon>search</Icon>
+                </MDButton>
+              </Grid>
             </Grid>
           </MDBox>
           <MDBox p={2}>

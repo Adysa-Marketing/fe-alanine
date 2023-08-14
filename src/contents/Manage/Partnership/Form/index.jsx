@@ -87,8 +87,14 @@ function FormPartnership() {
   const modalNotifRef = useRef();
 
   useEffect(() => {
-    loadPath();
-    loadBank();
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![4].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadPath();
+      loadBank();
+    }
   }, []);
 
   const loadPath = () => {

@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function ProductCategory() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -39,15 +38,17 @@ function ProductCategory() {
     { Header: "Nama Kategori", accessor: "name", width: "25%" },
     { Header: "Catatan", accessor: "remark", width: "25%" },
   ]);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
   }, []);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -69,18 +70,15 @@ function ProductCategory() {
             no,
             name: item.name,
             remark: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/product-category"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/product-category"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -94,6 +92,10 @@ function ProductCategory() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

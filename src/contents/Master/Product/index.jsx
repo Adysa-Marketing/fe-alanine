@@ -42,21 +42,20 @@ function Product() {
     { Header: "Stok", accessor: "stock", width: "15%" },
     { Header: "Deskripsi", accessor: "description", width: "35%" },
   ]);
-
+  const [redirect, redirectSet] = useState(null);
   const [category, categorySet] = useState(null);
   const [categories, categoriesSet] = useState([]);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
-
-  useEffect(() => {
+    const user = secureStorage.getItem("user");
     if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
       loadCategory();
       loadData();
     }
-  }, [user]);
+  }, []);
 
   const loadCategory = () => {
     useAxios()
@@ -96,18 +95,15 @@ function Product() {
             description: (
               <p style={{ wordWrap: "break-word", width: "25em" }}>{item.description}</p>
             ),
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/product"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/product"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -121,6 +117,10 @@ function Product() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

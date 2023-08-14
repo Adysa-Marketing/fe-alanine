@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function AccountBank() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -40,15 +39,17 @@ function AccountBank() {
     { Header: "Nama Pemilik", accessor: "name", width: "25%" },
     { Header: "No Rekening", accessor: "norek", width: "20%" },
   ]);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadData();
+    }
   }, []);
-
-  useEffect(() => {
-    if (user) loadData();
-  }, [user]);
 
   const loadData = (params) => {
     isLoadingSet(true);
@@ -71,18 +72,15 @@ function AccountBank() {
             bank: item.name,
             name: item.accountName,
             norek: item.noRekening,
-            action:
-              user && [1, 2].includes(user.roleId) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/master/bank"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={true}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/master/bank"}
+                refreshData={loadData}
+                edit={true}
+                remove={true}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -96,6 +94,10 @@ function AccountBank() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

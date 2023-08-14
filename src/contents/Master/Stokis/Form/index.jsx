@@ -41,6 +41,7 @@ import { Navigate, useParams } from "react-router-dom";
 
 import MiniFormCard from "contents/Components/FormCard/MiniFormCard";
 import ButtonBack from "contents/Components/ButtonBack";
+import secureStorage from "libs/secureStorage";
 
 function FormStokis() {
   const [state, setState] = useState({
@@ -64,7 +65,16 @@ function FormStokis() {
   const modalNotifRef = useRef();
 
   useEffect(() => {
-    loadPath();
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        setState((prev) => ({
+          ...prev,
+          redirect: "/dashboard",
+        }));
+      }
+      loadPath();
+    }
   }, []);
 
   const loadPath = () => {

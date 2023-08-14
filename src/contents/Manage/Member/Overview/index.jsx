@@ -68,7 +68,13 @@ function MemberOverview() {
 
   const modalNotifRef = useRef();
   useEffect(() => {
-    loadDetail(params.id);
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1, 2].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadDetail(params.id);
+    }
   }, []);
 
   const loadDetail = (id) => {

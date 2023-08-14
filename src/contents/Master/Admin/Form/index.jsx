@@ -49,6 +49,7 @@ import ModalNotif from "contents/Components/ModalNotif";
 import { actions } from "react-table";
 import { Navigate, useParams } from "react-router-dom";
 import MDTypography from "components/MDTypography";
+import secureStorage from "libs/secureStorage";
 
 function getSteps() {
   return ["Info Dasar", "Alamat", "Profile"];
@@ -80,7 +81,13 @@ function FormAdmin() {
   const params = useParams();
 
   useEffect(() => {
-    loadPath();
+    const user = secureStorage.getItem("user");
+    if (user) {
+      if (![1].includes(user.roleId)) {
+        redirectSet("/dashboard");
+      }
+      loadPath();
+    }
   }, []);
 
   const loadPath = () => {
