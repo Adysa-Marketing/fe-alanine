@@ -206,9 +206,9 @@ function Widhraw() {
                 refreshData={refreshData}
                 statusId={wdStatus.id}
                 detail={true}
-                reject={true}
-                process={true}
-                transfered={true}
+                rejectTrx={true}
+                processTrx={true}
+                transferedTrx={true}
               ></ButtonAction>
             ) : [3, 4].includes(user.roleId) ? (
               <ButtonAction

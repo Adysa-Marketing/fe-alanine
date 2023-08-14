@@ -29,7 +29,6 @@ import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
 function Partnership() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -59,19 +58,19 @@ function Partnership() {
 
   const [stokis, stokisSet] = useState(null);
   const [available, availableSet] = useState(false);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
-
-  useEffect(() => {
+    const user = secureStorage.getItem("user");
+    if (user && ![3, 4].includes(user.roleId)) {
+      redirectSet("/dashboard");
+    }
     if (user) {
       loadData();
       loadStokis();
       loadStatus();
     }
-  }, [user]);
+  }, []);
 
   const loadStokis = () => {
     useAxios()
@@ -101,6 +100,7 @@ function Partnership() {
 
   const loadData = (params) => {
     isLoadingSet(true);
+    const user = secureStorage.getItem("user");
 
     const statusId = params && params.statusId ? { statusId: params.statusId } : {};
     const bankId = params && params.bankId ? { bankId: params.bankId } : {};
@@ -120,6 +120,7 @@ function Partnership() {
       .then((response) => {
         const data = response.data;
         const output = data.data.map((item) => {
+          const trStatus = item.TrStatus;
           return {
             kode: item.kode,
             name: item.name,
@@ -127,22 +128,37 @@ function Partnership() {
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
             paymentType: item.PaymentType?.name,
             date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
-            status: item.TrStatus?.name,
+            status: trStatus ? (
+              <MDBadge
+                variant="contained"
+                badgeContent={trStatus.name}
+                size="lg"
+                color={
+                  trStatus.id === 1
+                    ? "secondary"
+                    : trStatus.id === 2
+                    ? "error"
+                    : trStatus.id === 3
+                    ? "warning"
+                    : "success"
+                }
+              />
+            ) : (
+              "-"
+            ),
             area: `${item.Province?.name} - ${item.District?.name}`,
-            action:
-              user && [3, 4].includes(user.roleId) && [1, 2].includes(item.TrStatus?.id) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/trx/stokis"}
-                  refreshData={loadData}
-                  edit={true}
-                  remove={[1, 2, 3].includes(item.TrStatus?.id) ? true : false}
-                  cancel={[1].includes(item.TrStatus?.id) ? true : false}
-                  statusId={item.TrStatus?.id}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/trx/stokis"}
+                refreshData={loadData}
+                detail={true}
+                edit={[1].includes(item.TrStatus?.id) ? true : false}
+                remove={[1, 2, 3].includes(item.TrStatus?.id) ? true : false}
+                cancel={[1].includes(item.TrStatus?.id) ? true : false}
+                statusId={item.TrStatus?.id}
+              ></ButtonAction>
+            ),
           };
         });
 
@@ -157,6 +173,11 @@ function Partnership() {
       });
   };
 
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
+
+  const user = secureStorage.getItem("user");
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -191,93 +212,84 @@ function Partnership() {
 
           <MDBox px={2} width="100%" display="flex" justifyContent="flex-start">
             <Grid container spacing={3}>
-              {user && [3, 4].includes(user.roleId) && (
-                <>
-                  <Grid item xs={12} md={3} lg={3}>
+              <Grid item xs={12} md={3} lg={3}>
+                <MDInput
+                  label="Search..."
+                  size="small"
+                  fullWidth
+                  value={keyword}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      loadData({
+                        currentPage: 1,
+                        keyword: e.target.value,
+                        statusId: status ? status.id : null,
+                        paymentTypeId: paymentType ? paymentType.id : null,
+                      });
+                    }
+                  }}
+                  onChange={(e) => keywordSet(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={status}
+                  options={statuses}
+                  onChange={(e, value) => {
+                    statusSet(value);
+                    loadData({
+                      keyword,
+                      currentPage: 1,
+                      statusId: value ? value.id : null,
+                      paymentTypeId: paymentType ? paymentType.id : null,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
+                    <MDInput sx={{ padding: "0px" }} fullWidth label="Pilih Status" {...params} />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} md={3} lg={3}>
+                <Autocomplete
+                  value={paymentType}
+                  options={paymentTypes}
+                  onChange={(e, value) => {
+                    paymentTypeSet(value);
+                    loadData({
+                      keyword,
+                      currentPage: 1,
+                      paymentTypeId: value ? value.id : null,
+                      statusId: status ? status.id : null,
+                    });
+                  }}
+                  sx={{
+                    ".MuiAutocomplete-input": {
+                      padding: "7.5px 5px 7.5px 8px !important",
+                    },
+                    ".MuiOutlinedInput-root": {
+                      padding: "1.5px !important",
+                    },
+                  }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  renderInput={(params) => (
                     <MDInput
-                      label="Search..."
-                      size="small"
+                      sx={{ padding: "0px" }}
                       fullWidth
-                      value={keyword}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          loadData({
-                            currentPage: 1,
-                            keyword: e.target.value,
-                            statusId: status ? status.id : null,
-                            paymentTypeId: paymentType ? paymentType.id : null,
-                          });
-                        }
-                      }}
-                      onChange={(e) => keywordSet(e.target.value)}
+                      label="Pilih Pembayaran"
+                      {...params}
                     />
-                  </Grid>
-                  <Grid item xs={12} md={3} lg={3}>
-                    <Autocomplete
-                      value={status}
-                      options={statuses}
-                      onChange={(e, value) => {
-                        statusSet(value);
-                        loadData({
-                          keyword,
-                          currentPage: 1,
-                          statusId: value ? value.id : null,
-                          paymentTypeId: paymentType ? paymentType.id : null,
-                        });
-                      }}
-                      sx={{
-                        ".MuiAutocomplete-input": {
-                          padding: "7.5px 5px 7.5px 8px !important",
-                        },
-                        ".MuiOutlinedInput-root": {
-                          padding: "1.5px !important",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      renderInput={(params) => (
-                        <MDInput
-                          sx={{ padding: "0px" }}
-                          fullWidth
-                          label="Pilih Status"
-                          {...params}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3} lg={3}>
-                    <Autocomplete
-                      value={paymentType}
-                      options={paymentTypes}
-                      onChange={(e, value) => {
-                        paymentTypeSet(value);
-                        loadData({
-                          keyword,
-                          currentPage: 1,
-                          paymentTypeId: value ? value.id : null,
-                          statusId: status ? status.id : null,
-                        });
-                      }}
-                      sx={{
-                        ".MuiAutocomplete-input": {
-                          padding: "7.5px 5px 7.5px 8px !important",
-                        },
-                        ".MuiOutlinedInput-root": {
-                          padding: "1.5px !important",
-                        },
-                      }}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      renderInput={(params) => (
-                        <MDInput
-                          sx={{ padding: "0px" }}
-                          fullWidth
-                          label="Pilih Pembayaran"
-                          {...params}
-                        />
-                      )}
-                    />
-                  </Grid>
-                </>
-              )}
+                  )}
+                />
+              </Grid>
             </Grid>
           </MDBox>
           <MDBox p={2}>

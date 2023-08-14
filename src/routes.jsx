@@ -96,6 +96,8 @@ import FormPartnership from "contents/Manage/Partnership/Form";
 import Widhraw from "contents/Transaction/Widhraw";
 import DetailWidhraw from "contents/Transaction/Widhraw/components/Detail";
 import Login from "contents/Authentication/Login";
+import TrxStokis from "contents/Transaction/Stokis";
+import DetailTrxStokis from "contents/Transaction/Stokis/Detail";
 
 const routes = [
   // ==========================================================================================
@@ -806,7 +808,7 @@ const routes = [
         route: "/manage/agen",
         component: <Agen />,
       },
-      // ====================== agen ======================
+      // ====================== agen product ======================
       {
         name: "Produk Agen",
         key: "agen-product",
@@ -920,7 +922,13 @@ const routes = [
         name: "Stokis",
         key: "stokis",
         route: "/trx/stokis",
-        component: <Container />,
+        component: <TrxStokis />,
+      },
+      {
+        name: "Detail Stokis",
+        key: "stokis-detail",
+        route: "/trx/stokis/detail/:id",
+        component: <DetailTrxStokis />,
       },
       {
         name: "Join Partnership",

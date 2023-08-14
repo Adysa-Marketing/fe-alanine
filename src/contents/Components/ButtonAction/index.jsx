@@ -32,10 +32,16 @@ function ButtonAction({
   changeStatus,
   statusId,
   cancel,
-  cancelTrx,
   reject,
-  process,
-  transfered,
+  approve,
+  approveStokis,
+  stokisData,
+  disable,
+  activate,
+  cancelTrx,
+  rejectTrx,
+  processTrx,
+  transferedTrx,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -213,6 +219,82 @@ function ButtonAction({
       });
   };
 
+  // approve stokis
+  const handleAprStk = () => {
+    closeMenu();
+    confirmRef.current.setShow({
+      title: "Konfirmasi",
+      message: "Approve dan buat agen baru ?",
+      onAction: () => {
+        submitAgen();
+      },
+    });
+  };
+
+  const submitAgen = () => {
+    useAxios()
+      .post(`${Config.ApiUrl}/api/v1/manage/agen/create`, stokisData)
+      .then(async (response) => {
+        try {
+          await useAxios().put(`${Config.ApiUrl}/api/v1/trx/stokis/change-status`, {
+            id,
+            statusId: 4,
+          });
+
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: `${response.data.message} - Lakukan Aktivasi Agen`,
+            onClose: () => {
+              console.log("[CREATE-AGEN]");
+              return (window.location.href = `/manage/agen`);
+            },
+          });
+        } catch (err) {
+          console.log(err);
+          if (err.response) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          }
+          // eslint-disable-next-line no-empty
+          else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response) {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: err.response.data
+              ? Array.isArray(err.response.data.message)
+                ? err.response.data.message[0].message
+                : err.response.data.message
+              : "Terjadi kesalahan pada system",
+            color: "warning",
+          });
+        }
+        // eslint-disable-next-line no-empty
+        else {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: "Koneksi jaringan terputus",
+          });
+        }
+      });
+  };
+
+  // Trx
   const handleStatusTrx = (status) => {
     closeMenu();
     confirmRef.current.setShow({
@@ -294,13 +376,31 @@ function ButtonAction({
         ((statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>) ||
           (statusId == 2 && <MenuItem onClick={() => handleStatus(1)}>Activate</MenuItem>))}
       {cancel && statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Batalkan</MenuItem>}
+      {reject && statusId == 1 && <MenuItem onClick={() => handleStatus(3)}>Tolak</MenuItem>}
+      {approve && statusId == 1 && <MenuItem onClick={() => handleStatus(4)}>Approved</MenuItem>}
+
+      {approveStokis && statusId == 1 && (
+        <MenuItem onClick={() => handleAprStk()}>Approved</MenuItem>
+      )}
+
+      {/* activate / disable */}
+      {disable && [1, 4].includes(statusId) && (
+        <MenuItem onClick={() => handleStatus(2)}>Disable</MenuItem>
+      )}
+      {activate && [1, 2].includes(statusId) && (
+        <MenuItem onClick={() => handleStatus(4)}>Activate</MenuItem>
+      )}
+
+      {/* trx with formData */}
       {cancelTrx && statusId == 1 && (
         <MenuItem onClick={() => handleStatusTrx(2)}>Batalkan</MenuItem>
       )}
-      {reject && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(3)}>Reject</MenuItem>}
-      {process && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(4)}>Process</MenuItem>}
-      {transfered && statusId == 4 && (
-        <MenuItem onClick={() => handleTransfer(5)}>Transfered</MenuItem>
+      {rejectTrx && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(3)}>Tolak</MenuItem>}
+      {processTrx && statusId == 1 && (
+        <MenuItem onClick={() => handleStatusTrx(4)}>Proses</MenuItem>
+      )}
+      {transferedTrx && statusId == 4 && (
+        <MenuItem onClick={() => handleTransfer(5)}>Di Transfer</MenuItem>
       )}
     </Menu>
   );
@@ -442,10 +542,19 @@ ButtonAction.defaultProps = {
   changeStatus: false,
   changePassword: false,
   cancel: false,
-  cancelTrx: false,
   reject: false,
-  process: false,
-  transfered: false,
+  approve: false,
+  approveStokis: false,
+  stokisData: {
+    stokisId: null,
+    userId: null,
+  },
+  disable: false,
+  activate: false,
+  cancelTrx: false,
+  rejectTrx: false,
+  processTrx: false,
+  transferedTrx: false,
 };
 
 ButtonAction.propTypes = {
@@ -459,10 +568,16 @@ ButtonAction.propTypes = {
   changeStatus: PropTypes.bool,
   statusId: PropTypes.number,
   cancel: PropTypes.bool,
-  cancelTrx: PropTypes.bool,
   reject: PropTypes.bool,
-  process: PropTypes.bool,
-  transfered: PropTypes.bool,
+  approve: PropTypes.bool,
+  approveStokis: PropTypes.bool,
+  stokisData: PropTypes.object,
+  disable: PropTypes.bool,
+  activate: PropTypes.bool,
+  cancelTrx: PropTypes.bool,
+  rejectTrx: PropTypes.bool,
+  processTrx: PropTypes.bool,
+  transferedTrx: PropTypes.bool,
 };
 
 export default ButtonAction;

@@ -27,7 +27,6 @@ import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
 function AgenProduct() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -45,18 +44,18 @@ function AgenProduct() {
 
   const [category, categorySet] = useState(null);
   const [categories, categoriesSet] = useState([]);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
-
-  useEffect(() => {
+    const user = secureStorage.getItem("user");
+    if (user && ![3].includes(user.roleId)) {
+      redirectSet("/dashboard");
+    }
     if (user) {
       loadProductCategory();
       loadData();
     }
-  }, [user]);
+  }, []);
 
   const loadProductCategory = () => {
     useAxios()
@@ -111,6 +110,10 @@ function AgenProduct() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

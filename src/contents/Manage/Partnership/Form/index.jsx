@@ -154,6 +154,7 @@ function FormPartnership() {
         const data = response.data.data;
         idSet(data.id);
         stokisDiscountSet(data.amount);
+        stokisPriceSet(data.Stoki?.price);
         kkSet(data.kk);
         fromBankSet(data.fromBank);
         accountNameSet(data.accountName);
@@ -344,9 +345,6 @@ function FormPartnership() {
     formData.append("districtId", district.id);
     formData.append("subDistrictId", subDistrict.id);
 
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
     useAxios()
       .post(`${Config.ApiUrl}/api/v1/trx/stokis/${action}`, formData)
       .then((response) => {

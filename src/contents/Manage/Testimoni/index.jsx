@@ -41,17 +41,21 @@ function Testimoni() {
     { Header: "Testimoni", accessor: "testimoni", width: "20%" },
   ]);
 
-  useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
+  const [redirect, redirectSet] = useState(null);
 
   useEffect(() => {
-    if (user) loadData();
-  }, [user]);
+    const user = secureStorage.getItem("user");
+    if (user && ![1, 2].includes(user.roleId)) {
+      redirectSet("/dashboard");
+    }
+    if (user) {
+      loadData();
+    }
+  }, []);
 
   const loadData = (params) => {
     isLoadingSet(true);
+    const user = secureStorage.getItem("user");
 
     const payload = {
       keyword: params && params.keyword ? params.keyword : keyword,
@@ -96,6 +100,10 @@ function Testimoni() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>
