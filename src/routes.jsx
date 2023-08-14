@@ -98,6 +98,7 @@ import DetailWidhraw from "contents/Transaction/Widhraw/components/Detail";
 import Login from "contents/Authentication/Login";
 import TrxStokis from "contents/Transaction/Stokis";
 import DetailTrxStokis from "contents/Transaction/Stokis/Detail";
+import Mutation from "contents/Transaction/Mutation";
 
 const routes = [
   // ==========================================================================================
@@ -888,7 +889,7 @@ const routes = [
         name: "Mutasi",
         key: "mutation",
         route: "/trx/mutation",
-        component: <Container />,
+        component: <Mutation />,
       },
       // ====================== stokis ======================
       {
