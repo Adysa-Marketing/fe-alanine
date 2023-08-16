@@ -37,13 +37,13 @@ function TrxStokis() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Aksi", accessor: "action", width: "15%" },
     { Header: "Kode", accessor: "kode", width: "15%" },
+    { Header: "Status", accessor: "status", width: "15%" },
     { Header: "Nama", accessor: "name", width: "25%" },
     { Header: "Stokis", accessor: "stokis", width: "25%" },
     { Header: "Harga", accessor: "amount", width: "25%" },
     { Header: "Pembayaran", accessor: "paymentType", width: "25%" },
     { Header: "Tanggal", accessor: "date", width: "25%" },
     { Header: "Area", accessor: "area", width: "25%" },
-    { Header: "Status", accessor: "status", width: "15%" },
   ]);
 
   const [status, statusSet] = useState(null);

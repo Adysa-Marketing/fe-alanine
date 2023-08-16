@@ -42,12 +42,12 @@ function TrxReward() {
   const [tableHead, tableHeadSet] = useState([
     { Header: "Aksi", accessor: "action", width: "15%" },
     { Header: "Kode", accessor: "kode", width: "15%" },
+    { Header: "Status", accessor: "status", width: "15%" },
     { Header: "Nama Item", accessor: "name", width: "25%" },
-    { Header: "Nama Member", accessor: "member", width: "25%" },
+    { Header: "Nama", accessor: "user", width: "25%" },
     { Header: "No Hp", accessor: "phone", width: "25%" },
     { Header: "Tanggal", accessor: "date", width: "25%" },
-    { Header: "Status", accessor: "status", width: "15%" },
-    { Header: "Catatan", accessor: "remark", width: "25%" },
+    { Header: "Pengiriman", accessor: "remark", width: "25%" },
   ]);
 
   const [status, statusSet] = useState(null);
@@ -66,6 +66,8 @@ function TrxReward() {
   const [imageKtpFilename, imageKtpFilenameSet] = useState("");
   const [address, addressSet] = useState("");
   const [disabledSubmit, disabledSubmitSet] = useState(false);
+  const [trxId, trxIdSet] = useState(null);
+  const [action, actionSet] = useState("create");
 
   const [redirect, redirectSet] = useState(null);
   const dialogFormRef = useRef();
@@ -133,7 +135,7 @@ function TrxReward() {
           return {
             kode: item.kode,
             name: item.Reward?.name,
-            member: item.User?.name,
+            user: item.User?.name,
             phone: item.User?.phone,
             date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
             remark: item.remark,
@@ -163,14 +165,14 @@ function TrxReward() {
                 urlKey={"/trx/reward"}
                 refreshData={refreshData}
                 detail={true}
-                cancel={[3, 4].includes(user.roleId) ? true : false}
-                remove={
-                  [1, 2, 3].includes(rwStatus.id) && [3, 4].includes(user.roleId) ? true : false
-                }
-                reject={[1, 2].includes(user.roleId) ? true : false}
-                approve={[1, 2].includes(user.roleId) ? true : false}
-                deliver={[1, 2].includes(user.roleId) ? true : false}
+                cancel={[3, 4].includes(user.roleId)}
+                remove={[1, 2, 3].includes(rwStatus.id) && [3, 4].includes(user.roleId)}
+                reject={[1, 2].includes(user.roleId)}
+                approve={[1, 2].includes(user.roleId)}
+                deliver={[1, 2].includes(user.roleId)}
                 statusId={rwStatus.id}
+                editTrxRw={[3, 4].includes(user.roleId)}
+                setIdTrxRw={setTrxId}
               ></ButtonAction>
             ),
           };
@@ -193,11 +195,38 @@ function TrxReward() {
     imageKtpFilenameSet("");
     addressSet("");
     imageKtpRef.current.value = "";
+    actionSet("create");
+    trxIdSet(null);
     loadData();
     loadReward();
   };
   const setId = (id) => {
+    imageKtpSet(null);
+    imageKtpFilenameSet("");
+    addressSet("");
+    imageKtpRef.current.value = "";
+    actionSet("create");
     dataIdSet(id);
+  };
+
+  const setTrxId = (id) => {
+    trxIdSet(id);
+    actionSet("update");
+    loadDetail(id);
+  };
+
+  const loadDetail = (id) => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/reward/get/${id}`)
+      .then((response) => {
+        let data = response.data.data;
+        dataIdSet(data.Reward.id);
+        addressSet(data.address);
+        dialogFormRef.current.setShow({ show: true, title: "Masukan Alamat Kamu" });
+      })
+      .catch((error) => {
+        console.log("[!] Error : ", error);
+      });
   };
 
   const handleSubmit = () => {
@@ -218,12 +247,13 @@ function TrxReward() {
   const sendData = () => {
     disabledSubmitSet(true);
     const formData = new FormData();
+    formData.append("id", trxId);
     formData.append("rewardId", dataId);
     formData.append("address", address);
     formData.append("imageKtp", imageKtp);
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/trx/reward/create`, formData)
+      .post(`${Config.ApiUrl}/api/v1/trx/reward/${action}`, formData)
       .then((response) => {
         disabledSubmitSet(false);
         modalNotifRef.current.setShow({
@@ -257,6 +287,75 @@ function TrxReward() {
       });
   };
 
+  const renderForm = (
+    <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+      <MDBox width="100%" component="form">
+        <MDBox mb={2}>
+          <MDBox mb={2}>
+            <input
+              type="file"
+              name="imageKtp"
+              ref={imageKtpRef}
+              onChange={(e) => {
+                if (e.target.files.length === 1) {
+                  const file = e.target.files[0];
+                  const filename = file.name;
+                  const ext = filename.split(".")[1];
+                  imageKtpSet(file);
+                  imageKtpFilenameSet(filename);
+                }
+              }}
+              hidden
+            />
+            <MDInput
+              fullWidth
+              value={imageKtpFilename}
+              label="Upload Foto KTP"
+              onClick={() => {
+                imageKtpRef.current.click();
+              }}
+              readOnly
+            />
+          </MDBox>
+        </MDBox>
+        <MDBox mb={2}>
+          <MDInput
+            fullWidth
+            type="text"
+            value={address}
+            onChange={(e) => addressSet(e.target.value)}
+            label="Alamat"
+            multiline
+            rows={3}
+          />
+        </MDBox>
+      </MDBox>
+      <MDBox py={3} width="100%" display="flex" justifyContent={{ md: "flex-end", xs: "center" }}>
+        <MDBox mr={1}>
+          <MDButton
+            variant="gradient"
+            color="error"
+            onClick={() => {
+              dataIdSet(null);
+              imageKtpSet(null);
+              imageKtpFilenameSet("");
+              addressSet("");
+              actionSet("create");
+              trxIdSet(null);
+              imageKtpRef.current.value = "";
+              dialogFormRef.current.setShow({ show: false, title: "" });
+            }}
+          >
+            Tutup
+          </MDButton>
+        </MDBox>
+        <MDButton variant="gradient" color="info" disabled={disabledSubmit} onClick={handleSubmit}>
+          Submit
+        </MDButton>
+      </MDBox>
+    </Grid>
+  );
+
   if (redirect) {
     return <Navigate to={redirect} />;
   }
@@ -267,80 +366,7 @@ function TrxReward() {
       <DashboardNavbar />
       <ModalNotif ref={modalNotifRef} />
       <DialogForm ref={dialogFormRef} maxWidth="xs">
-        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
-          <MDBox width="100%" component="form">
-            <MDBox mb={2}>
-              <MDBox mb={2}>
-                <input
-                  type="file"
-                  name="imageKtp"
-                  ref={imageKtpRef}
-                  onChange={(e) => {
-                    if (e.target.files.length === 1) {
-                      const file = e.target.files[0];
-                      const filename = file.name;
-                      const ext = filename.split(".")[1];
-                      imageKtpSet(file);
-                      imageKtpFilenameSet(filename);
-                    }
-                  }}
-                  hidden
-                />
-                <MDInput
-                  fullWidth
-                  value={imageKtpFilename}
-                  label="Upload Foto KTP"
-                  onClick={() => {
-                    imageKtpRef.current.click();
-                  }}
-                  readOnly
-                />
-              </MDBox>
-            </MDBox>
-            <MDBox mb={2}>
-              <MDInput
-                fullWidth
-                type="text"
-                value={address}
-                onChange={(e) => addressSet(e.target.value)}
-                label="Alamat"
-                multiline
-                rows={3}
-              />
-            </MDBox>
-          </MDBox>
-          <MDBox
-            py={3}
-            width="100%"
-            display="flex"
-            justifyContent={{ md: "flex-end", xs: "center" }}
-          >
-            <MDBox mr={1}>
-              <MDButton
-                variant="gradient"
-                color="error"
-                onClick={() => {
-                  dataIdSet(null);
-                  imageKtpSet(null);
-                  imageKtpFilenameSet("");
-                  addressSet("");
-                  imageKtpRef.current.value = "";
-                  dialogFormRef.current.setShow({ show: false, title: "" });
-                }}
-              >
-                Tutup
-              </MDButton>
-            </MDBox>
-            <MDButton
-              variant="gradient"
-              color="info"
-              disabled={disabledSubmit}
-              onClick={handleSubmit}
-            >
-              Submit
-            </MDButton>
-          </MDBox>
-        </Grid>
+        {renderForm}
       </DialogForm>
       <MDBox pb={3} my={3}>
         {user && [3, 4].includes(user.roleId) && (
@@ -361,6 +387,7 @@ function TrxReward() {
                         location="indo"
                         requirement={`${item.minFoot} downline masing-masing ${item.point} point`}
                         status={item.status}
+                        already={item.already}
                         dialogForm={dialogFormRef}
                         getId={setId}
                       />

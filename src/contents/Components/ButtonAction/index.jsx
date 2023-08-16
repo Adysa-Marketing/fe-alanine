@@ -45,6 +45,8 @@ function ButtonAction({
   rejectTrx,
   processTrx,
   transferedTrx,
+  editTrxRw,
+  setIdTrxRw,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -284,6 +286,7 @@ function ButtonAction({
         });
     }
   };
+
   // approve stokis
   const handleAprStk = () => {
     closeMenu();
@@ -425,6 +428,12 @@ function ButtonAction({
     }
   };
 
+  // trx rw
+  const handleEditTrxRw = () => {
+    closeMenu();
+    setIdTrxRw(id);
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -470,6 +479,8 @@ function ButtonAction({
       {transferedTrx && statusId == 4 && (
         <MenuItem onClick={() => handleTransfer(5)}>Di Transfer</MenuItem>
       )}
+      {/* trx reward */}
+      {editTrxRw && [1].includes(statusId) && <MenuItem onClick={handleEditTrxRw}>Edit</MenuItem>}
     </Menu>
   );
 
@@ -673,6 +684,7 @@ ButtonAction.defaultProps = {
   rejectTrx: false,
   processTrx: false,
   transferedTrx: false,
+  editTrxRw: false,
 };
 
 ButtonAction.propTypes = {
@@ -699,6 +711,8 @@ ButtonAction.propTypes = {
   rejectTrx: PropTypes.bool,
   processTrx: PropTypes.bool,
   transferedTrx: PropTypes.bool,
+  editTrxRw: PropTypes.bool,
+  setIdTrxRw: PropTypes.func,
 };
 
 export default ButtonAction;

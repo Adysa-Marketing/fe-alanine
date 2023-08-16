@@ -34,6 +34,7 @@ function BookingCard({
   price,
   requirement,
   status,
+  already,
   dialogForm,
   getId,
 }) {
@@ -99,13 +100,13 @@ function BookingCard({
       <MDBox textAlign="center" mt={1} mb={3} px={3}>
         <MDButton
           mt={-3}
-          color={status ? "info" : "error"}
+          color={already ? "success" : status ? "info" : "error"}
           variant="gradient"
           disabled={status ? false : true}
           onClick={() => handleForm()}
           fullWidth
         >
-          {status ? "Ambil Reward" : "Tidak Memenuhi Syarat"}
+          {already ? "Sudah Di Klaim" : status ? "Ambil Reward" : "Tidak Memenuhi Syarat"}
         </MDButton>
       </MDBox>
     </Card>
@@ -121,6 +122,7 @@ BookingCard.propTypes = {
   price: PropTypes.string.isRequired,
   requirement: PropTypes.string.isRequired,
   status: PropTypes.bool.isRequired,
+  already: PropTypes.bool.isRequired,
   dialogForm: PropTypes.func.isRequired,
   getId: PropTypes.func.isRequired,
 };
