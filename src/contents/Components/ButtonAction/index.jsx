@@ -26,6 +26,8 @@ function ButtonAction({
   urlKey,
   refreshData,
   detail,
+  detailAgen,
+  userId,
   edit,
   remove,
   changePassword,
@@ -34,6 +36,7 @@ function ButtonAction({
   cancel,
   reject,
   approve,
+  deliver,
   approveStokis,
   stokisData,
   disable,
@@ -47,12 +50,15 @@ function ButtonAction({
   const modalNotifRef = useRef();
   const dialogFormRef = useRef();
   const dialogTrfRef = useRef();
+  const dialogDeliverRef = useRef();
   const imageRef = useRef();
 
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
   const [password, passwordSet] = useState("");
   const [repassword, repasswordSet] = useState("");
+  const [courier, courierSet] = useState("");
+  const [noResi, noResiSet] = useState("");
   const [image, imageSet] = useState(null);
   const [imageFilename, imageFilenameSet] = useState("");
   const [remark, remarkSet] = useState("");
@@ -70,6 +76,11 @@ function ButtonAction({
   const handleDetail = () => {
     closeMenu();
     navigate(`${urlKey}/detail/${id}`);
+  };
+
+  const handleDetailAgen = () => {
+    closeMenu();
+    navigate(`${urlKey}/detail/${userId}`);
   };
 
   const handleDelete = () => {
@@ -219,6 +230,60 @@ function ButtonAction({
       });
   };
 
+  // deliver
+  const handleDeliver = () => {
+    closeMenu();
+    dialogDeliverRef.current.setShow({ show: true, title: "Masukan Resi Pengiriman" });
+  };
+
+  const submitDeliver = () => {
+    if (courier == "" || noResi == "") {
+      modalNotifRef.current.setShow({
+        modalTitle: "Peringatan",
+        modalMessage: "Input data tidak lengkap",
+      });
+    } else {
+      disabledSubmitSet(false);
+      useAxios()
+        .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, {
+          id,
+          statusId: 5,
+          remark: `${courier} - ${noResi}`,
+        })
+        .then((response) => {
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: response.data.message,
+            onClose: () => {
+              console.log("[REFRESH]");
+              refreshData();
+            },
+          });
+        })
+        .catch((err) => {
+          disabledSubmitSet(false);
+          console.log(err);
+          if (err.response) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          }
+          // eslint-disable-next-line no-empty
+          else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        });
+    }
+  };
   // approve stokis
   const handleAprStk = () => {
     closeMenu();
@@ -325,6 +390,7 @@ function ButtonAction({
     if ([5].includes(status) && !image) {
       alertInfoSet("Tolong Upload Bukti Transfer");
     } else {
+      disabledSubmitSet(true);
       useAxios()
         .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, formData)
         .then((response) => {
@@ -369,6 +435,7 @@ function ButtonAction({
       keepMounted
     >
       {detail && <MenuItem onClick={handleDetail}>Detail</MenuItem>}
+      {detailAgen && <MenuItem onClick={handleDetailAgen}>Detail</MenuItem>}
       {edit && <MenuItem onClick={handleEdit}>Edit</MenuItem>}
       {remove && <MenuItem onClick={handleDelete}>Hapus</MenuItem>}
       {changePassword && <MenuItem onClick={handlePassword}>Ganti Password</MenuItem>}
@@ -378,6 +445,7 @@ function ButtonAction({
       {cancel && statusId == 1 && <MenuItem onClick={() => handleStatus(2)}>Batalkan</MenuItem>}
       {reject && statusId == 1 && <MenuItem onClick={() => handleStatus(3)}>Tolak</MenuItem>}
       {approve && statusId == 1 && <MenuItem onClick={() => handleStatus(4)}>Approved</MenuItem>}
+      {deliver && statusId == 4 && <MenuItem onClick={() => handleDeliver()}>Delivered</MenuItem>}
 
       {approveStokis && statusId == 1 && (
         <MenuItem onClick={() => handleAprStk()}>Approved</MenuItem>
@@ -452,6 +520,55 @@ function ButtonAction({
               color="info"
               disabled={disabledSubmit}
               onClick={handleChangePassword}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
+      <DialogForm ref={dialogDeliverRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            <MDBox mb={2}>
+              <MDInput
+                fullWidth
+                type="text"
+                value={courier}
+                onChange={(e) => courierSet(e.target.value)}
+                label="Ekspedisi Pengiriman"
+              />
+            </MDBox>
+            <MDBox mb={2}>
+              <MDInput
+                fullWidth
+                type="text"
+                value={noResi}
+                onChange={(e) => noResiSet(e.target.value)}
+                label="No Resi Pengiriman"
+              />
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => dialogDeliverRef.current.setShow({ show: false, title: "" })}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={submitDeliver}
             >
               Submit
             </MDButton>
@@ -544,6 +661,7 @@ ButtonAction.defaultProps = {
   cancel: false,
   reject: false,
   approve: false,
+  deliver: false,
   approveStokis: false,
   stokisData: {
     stokisId: null,
@@ -562,6 +680,8 @@ ButtonAction.propTypes = {
   urlKey: PropTypes.string,
   refreshData: PropTypes.func,
   detail: PropTypes.bool,
+  detailAgen: PropTypes.bool,
+  userId: PropTypes.number,
   edit: PropTypes.bool,
   remove: PropTypes.bool,
   changePassword: PropTypes.bool,
@@ -570,6 +690,7 @@ ButtonAction.propTypes = {
   cancel: PropTypes.bool,
   reject: PropTypes.bool,
   approve: PropTypes.bool,
+  deliver: PropTypes.bool,
   approveStokis: PropTypes.bool,
   stokisData: PropTypes.object,
   disable: PropTypes.bool,

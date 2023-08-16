@@ -65,7 +65,6 @@ import Dashboard from "contents/Dashboards";
 import Container from "@mui/material/Container";
 import Admin from "contents/Master/Admin";
 import FormAdmin from "contents/Master/Admin/Form";
-import ProfileOverview from "contents/Master/Admin/Overview";
 import Article from "contents/Master/Article";
 import FormArticle from "contents/Master/Article/Form";
 import AccountBank from "contents/Master/Bank";
@@ -86,7 +85,6 @@ import Agen from "contents/Manage/Agen";
 import Commission from "contents/Manage/Commission";
 import AgenProduct from "contents/Manage/AgenProduct";
 import Member from "contents/Manage/Member";
-import MemberOverview from "contents/Manage/Member/Overview";
 import Testimoni from "contents/Manage/Testimoni";
 import Partnership from "contents/Manage/Partnership";
 import Referral from "contents/Manage/Referral";
@@ -99,6 +97,9 @@ import Login from "contents/Authentication/Login";
 import TrxStokis from "contents/Transaction/Stokis";
 import DetailTrxStokis from "contents/Transaction/Stokis/Detail";
 import Mutation from "contents/Transaction/Mutation";
+import TrxReward from "contents/Transaction/Reward";
+import DetailTrxRw from "contents/Transaction/Reward/components/Detail";
+import Overview from "contents/Components/Overview";
 
 const routes = [
   // ==========================================================================================
@@ -631,7 +632,7 @@ const routes = [
         name: "Detail Admin",
         key: "detail-admin",
         route: "/master/admin/detail/:id",
-        component: <ProfileOverview />,
+        component: <Overview path="master/admin" />,
       },
       // ====================== article ======================
       {
@@ -809,6 +810,12 @@ const routes = [
         route: "/manage/agen",
         component: <Agen />,
       },
+      {
+        name: "Detail Agen",
+        key: "detail-agen",
+        route: "/manage/agen/detail/:id",
+        component: <Overview path="manage/agen" />,
+      },
       // ====================== agen product ======================
       {
         name: "Produk Agen",
@@ -834,7 +841,7 @@ const routes = [
         name: "Detail Member",
         key: "detail-member",
         route: "/manage/member/detail/:id",
-        component: <MemberOverview />,
+        component: <Overview path="manage/member" />,
       },
       // ====================== partnership ======================
       {
@@ -916,7 +923,13 @@ const routes = [
         name: "Reward",
         key: "reward",
         route: "/trx/reward",
-        component: <Container />,
+        component: <TrxReward />,
+      },
+      {
+        name: "Reward",
+        key: "detail-reward",
+        route: "/trx/reward/detail/:id",
+        component: <DetailTrxRw />,
       },
       // ====================== stokis ======================
       {

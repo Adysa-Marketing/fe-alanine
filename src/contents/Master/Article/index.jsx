@@ -44,6 +44,7 @@ function Article() {
     { Header: "Kutipam", accessor: "excerpt", width: "30%" },
   ]);
 
+  const [redirect, redirectSet] = useState(null);
   const [status, statusSet] = useState(null);
   const [statuses, statusesSet] = useState([
     { id: 1, label: "Aktif" },

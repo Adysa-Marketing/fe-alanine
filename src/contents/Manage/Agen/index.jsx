@@ -133,6 +133,8 @@ function Agen() {
                   statusId={agenStatus?.id}
                   disable={true}
                   activate={true}
+                  detailAgen={true}
+                  userId={item.User?.id}
                 ></ButtonAction>
               ) : (
                 "-"

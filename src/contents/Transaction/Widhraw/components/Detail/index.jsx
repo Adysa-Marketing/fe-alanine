@@ -108,7 +108,9 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">{accountName}</MDTypography>
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                        {accountName}
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Bank */}
@@ -119,7 +121,9 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">{bankName}</MDTypography>
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                        {bankName}
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Rekening */}
@@ -130,7 +134,9 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">{noRekening}</MDTypography>
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                        {noRekening}
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* NIK */}
@@ -141,7 +147,9 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">{kk}</MDTypography>
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                        {kk}
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Status */}
@@ -178,9 +186,9 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
                         {"Rp. " + new Intl.NumberFormat("id-ID").format(amount)}
-                      </MDTypography>
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Paid Amount */}
@@ -191,11 +199,11 @@ function DetailWidhraw() {
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
                         {paidAmount
                           ? "Rp." + new Intl.NumberFormat("id-ID").format(paidAmount)
                           : "-"}
-                      </MDTypography>
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
                 </TableBody>

@@ -130,24 +130,21 @@ function TrxStokis() {
               "-"
             ),
             area: `${item.Province?.name} - ${item.District?.name}`,
-            action:
-              user && [1, 2].includes(user.roleId) && [1, 2].includes(item.TrStatus?.id) ? (
-                <ButtonAction
-                  id={item.id}
-                  urlKey={"/trx/stokis"}
-                  refreshData={loadData}
-                  reject={true}
-                  detail={true}
-                  approveStokis={true}
-                  stokisData={{
-                    stokisId: item.Stoki?.id,
-                    userId: item.User?.id,
-                  }}
-                  statusId={item.TrStatus?.id}
-                ></ButtonAction>
-              ) : (
-                "-"
-              ),
+            action: (
+              <ButtonAction
+                id={item.id}
+                urlKey={"/trx/stokis"}
+                refreshData={loadData}
+                reject={true}
+                detail={true}
+                approveStokis={true}
+                stokisData={{
+                  stokisId: item.Stoki?.id,
+                  userId: item.User?.id,
+                }}
+                statusId={item.TrStatus?.id}
+              ></ButtonAction>
+            ),
           };
         });
 

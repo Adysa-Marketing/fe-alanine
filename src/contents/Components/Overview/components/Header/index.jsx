@@ -97,7 +97,7 @@ function Header({ children, profile }) {
           <Grid container spacing={3} alignItems="center">
             <Grid item>
               <MDAvatar
-                src={profile.image !== "" ? `${Config.ApiAsset}/admin/${profile.image}` : burceMars}
+                src={profile.image ? `${Config.ApiAsset}/user/${profile.image}` : burceMars}
                 alt="profile-image"
                 size="xl"
                 shadow="sm"
@@ -125,10 +125,10 @@ function Header({ children, profile }) {
 Header.defaultProps = {
   children: "",
   profile: {
-    name: "Admin",
-    username: "admin",
+    name: "",
+    username: "",
     image: "",
-    role: "ADMIN",
+    role: "",
   },
 };
 

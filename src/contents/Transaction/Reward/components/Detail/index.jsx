@@ -25,35 +25,28 @@ import { Table, TableBody, TableRow } from "@mui/material";
 import DataTableBodyCell from "examples/Tables/DataTable/DataTableBodyCell";
 import ButtonBack from "contents/Components/ButtonBack";
 import moment from "moment";
+import secureStorage from "libs/secureStorage";
 
-function DetailTrxStokis() {
-  const [amount, amountSet] = useState(0);
-  const [kk, kkSet] = useState("");
-  const [image, imageSet] = useState("");
-  const [imageKtp, imageKtpSet] = useState("");
-  const [phone, phoneSet] = useState("");
-  const [fromBank, fromBankSet] = useState("");
-  const [accountName, accountNameSet] = useState("");
-  const [address, addressSet] = useState("");
+function DetailTrxRw() {
   const [status, statusSet] = useState({
     id: 0,
     name: "",
   });
-  const [province, provinceSet] = useState("");
-  const [district, districtSet] = useState("");
-  const [subDistrict, subDistrictSet] = useState("");
+
   const [date, dateSet] = useState("");
-  const [stokis, stokisSet] = useState("");
-  const [paymentType, paymentTypeSet] = useState("");
-  const [bank, bankSet] = useState({
-    name: "",
-    noRekening: "",
-  });
+  const [imageKtp, imageKtpSet] = useState("");
+  const [name, nameSet] = useState("");
+  const [point, pointSet] = useState(0);
+  const [minFoot, minFootSet] = useState(0);
+  const [address, addressSet] = useState("");
+  const [remark, remarkSet] = useState("");
+
   const [user, userSet] = useState({
+    id: null,
     name: "",
     username: "",
-    email: "",
     phone: "",
+    kk: "",
   });
 
   const [redirect, redirectSet] = useState(null);
@@ -67,41 +60,27 @@ function DetailTrxStokis() {
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/trx/stokis/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/trx/reward/get/${id}`)
       .then((response) => {
         const data = response.data.data;
-        const Province = data.Province;
-        const District = data.District;
-        const SubDistrict = data.SubDistrict;
-        const Bank = data.Bank;
         const User = data.User;
 
-        amountSet(data.amount);
-        kkSet(data.kk);
-        imageSet(data.image);
-        imageKtpSet(data.imageKtp);
-        phoneSet(data.phoneNumber);
-        fromBankSet(data.fromBank);
-        accountNameSet(data.accountName);
-        addressSet(data.address);
-        statusSet(data.TrStatus);
-        provinceSet(Province ? Province.name : "");
-        districtSet(District ? District.name : "");
-        subDistrictSet(SubDistrict ? SubDistrict.name : "");
+        nameSet(data.Reward?.name);
         dateSet(data.date);
-        stokisSet(data.Stoki?.name);
-        paymentTypeSet(data.PaymentType?.name);
-        Bank &&
-          bankSet({
-            name: Bank.name,
-            noRekening: Bank.noRekening,
-          });
+        pointSet(data.Reward?.point);
+        minFootSet(data.Reward?.minFoot);
+        imageKtpSet(data.imageKtp);
+        addressSet(data.address);
+        statusSet(data.RwStatus);
+        dateSet(data.date);
+        remarkSet(data.remark);
         User &&
           userSet({
+            id: User.id,
             name: User.name,
             username: User.username,
-            email: User.email,
             phone: User.phone,
+            kk: User.kk,
           });
       })
       .catch((err) => {
@@ -110,15 +89,13 @@ function DetailTrxStokis() {
           modalTitle: "Gagal",
           modalMessage: err.response ? err.response.data?.message : "Koneksi jaringan terputus",
           onClose: () => {
-            redirectSet("/trx/stokis");
+            redirectSet("/trx/reward");
           },
         });
       });
   };
 
-  if (redirect) {
-    <Navigate to={redirect} />;
-  }
+  const userData = secureStorage.getItem("user");
 
   return (
     <DashboardLayout>
@@ -135,7 +112,7 @@ function DetailTrxStokis() {
             <Grid item xs={12} md={12} lg={12}>
               <MDBox width="100%" display="flex" justifyContent="center">
                 <MDTypography variant="h5" textTransform="capitalize" fontWeight="medium">
-                  DETAIL TRANSAKSI STOKIS
+                  DETAIL TRANSAKSI REWARD
                 </MDTypography>
               </MDBox>
             </Grid>
@@ -162,19 +139,6 @@ function DetailTrxStokis() {
                       </MDTypography>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* NIK */}
-                  <TableRow>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body" fontWeight="medium">
-                        No NIK :
-                      </MDTypography>
-                    </DataTableBodyCell>
-                    <DataTableBodyCell noBorder>
-                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {kk}
-                      </p>
-                    </DataTableBodyCell>
-                  </TableRow>
                   {/* Phone */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
@@ -184,77 +148,35 @@ function DetailTrxStokis() {
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {phone}
+                        {user.phone ? user.phone : "-"}
                       </p>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* Bank */}
+                  {/* KK */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Dari Bank :
+                        No Nik :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {fromBank}
+                        {user.kk ? user.kk : "-"}
                       </p>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* account name */}
+                  {/* Reward Name */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Atas Nama :
+                        Item :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {accountName}
+                        {name}
                       </p>
-                    </DataTableBodyCell>
-                  </TableRow>
-                  {/* account name */}
-                  <TableRow>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body" fontWeight="medium">
-                        Pembayaran :
-                      </MDTypography>
-                    </DataTableBodyCell>
-                    <DataTableBodyCell noBorder>
-                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {paymentType}
-                      </p>
-                    </DataTableBodyCell>
-                  </TableRow>
-                  {/* Bank */}
-                  <TableRow>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body" fontWeight="medium">
-                        Tujuan :
-                      </MDTypography>
-                    </DataTableBodyCell>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">
-                        <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                          {bank.name} - {bank.noRekening}
-                        </p>
-                      </MDTypography>
-                    </DataTableBodyCell>
-                  </TableRow>
-                  {/* Date */}
-                  <TableRow>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body" fontWeight="medium">
-                        Tanggal :
-                      </MDTypography>
-                    </DataTableBodyCell>
-                    <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">
-                        <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                          {date && moment(date).format("DD-MM-YYYY HH:mm:ss")}
-                        </p>
-                      </MDTypography>
+                      <MDTypography variant="body">{name}</MDTypography>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Status */}
@@ -283,33 +205,35 @@ function DetailTrxStokis() {
                       />
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* Stokis */}
+                  {/* Requirement */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Tipe :
+                        Syarat :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {stokis}
+                        {`${minFoot} kaki . masing-masing ${point} point`}
                       </p>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* Amount */}
+                  {/* date */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Harga :
+                        Tanggal :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                        {"Rp. " + new Intl.NumberFormat("id-ID").format(amount)}
-                      </p>
+                      <MDTypography variant="body">
+                        <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                          {date && moment(date).format("DD-MM-YYYY HH:mm:ss")}
+                        </p>
+                      </MDTypography>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* Address */}
+                  {/* address */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
@@ -322,21 +246,35 @@ function DetailTrxStokis() {
                       </p>
                     </DataTableBodyCell>
                   </TableRow>
-                  {/* Area */}
+                  {/* courier */}
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Area :
+                        Pengiriman :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
-                      <MDTypography variant="body">
-                        <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
-                          {province} - {district} - {subDistrict}
-                        </p>
-                      </MDTypography>
+                      <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                        {remark ? remark : "-"}
+                      </p>
                     </DataTableBodyCell>
                   </TableRow>
+                  {/* btn detail */}
+                  {[1, 2].includes(userData.roleId) && (
+                    <TableRow>
+                      <DataTableBodyCell noBorder>
+                        <MDButton
+                          variant="gradient"
+                          color="info"
+                          size="small"
+                          component={Link}
+                          to={{ pathname: `/manage/member/detail/${user.id}` }}
+                        >
+                          Detail User
+                        </MDButton>
+                      </DataTableBodyCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Grid>
@@ -353,31 +291,7 @@ function DetailTrxStokis() {
                 {imageKtp && (
                   <MDBox
                     component="img"
-                    src={`${Config.ApiAsset}/trx/stokis/${imageKtp}`}
-                    alt="Bukti Transfer"
-                    borderRadius="lg"
-                    shadow="sm"
-                    width="100%"
-                    height="100%"
-                    position="relative"
-                    zIndex={10}
-                    mb={2}
-                  />
-                )}
-              </MDBox>
-              <MDBox
-                position="relative"
-                borderRadius="lg"
-                mx={2}
-                className="card-header"
-                sx={{ transition: "transform 300ms cubic-bezier(0.34, 1.61, 0.7, 1)" }}
-              >
-                <MDTypography variant="body">Bukti Transfer</MDTypography>
-                <br></br>
-                {image && (
-                  <MDBox
-                    component="img"
-                    src={`${Config.ApiAsset}/trx/stokis/${image}`}
+                    src={`${Config.ApiAsset}/trx/reward/${imageKtp}`}
                     alt="Bukti Transfer"
                     borderRadius="lg"
                     shadow="sm"
@@ -397,4 +311,4 @@ function DetailTrxStokis() {
   );
 }
 
-export default DetailTrxStokis;
+export default DetailTrxRw;

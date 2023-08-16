@@ -29,13 +29,18 @@ import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 
 function ProfilesList({ title, profiles, shadow }) {
-  const renderProfiles = profiles.map(({ image, name, district, point }) => (
+  const renderProfiles = profiles.map(({ id, image, name, district, point, roleId }) => (
     <MDBox key={name} component="li" display="flex" alignItems="center" py={1} mb={1}>
       <MDBox mr={2}>
         <MDAvatar src={image} alt="something here" shadow="md" />
       </MDBox>
       <MDBox display="flex" flexDirection="column" alignItems="flex-start" justifyContent="center">
-        <MDTypography variant="button" fontWeight="medium">
+        <MDTypography
+          variant="button"
+          fontWeight="medium"
+          component={Link}
+          to={roleId == 3 ? `/manage/agen/detail/${id}` : `/manage/member/detail/${id}`}
+        >
           {name}
         </MDTypography>
         <MDTypography variant="button" color="text">
