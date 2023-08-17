@@ -292,7 +292,7 @@ function DetailTrxRw() {
                   <MDBox
                     component="img"
                     src={`${Config.ApiAsset}/trx/reward/${imageKtp}`}
-                    alt="Bukti Transfer"
+                    alt="Foto KTP"
                     borderRadius="lg"
                     shadow="sm"
                     width="100%"

@@ -201,7 +201,7 @@ function DetailWidhraw() {
                     <DataTableBodyCell noBorder>
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
                         {paidAmount
-                          ? "Rp." + new Intl.NumberFormat("id-ID").format(paidAmount)
+                          ? "Rp. " + new Intl.NumberFormat("id-ID").format(paidAmount)
                           : "-"}
                       </p>
                     </DataTableBodyCell>
@@ -223,7 +223,7 @@ function DetailWidhraw() {
                   <MDBox
                     component="img"
                     src={`${Config.ApiAsset}/trx/widhraw/${imageKtp}`}
-                    alt="Bukti Transfer"
+                    alt="Foto KTP"
                     borderRadius="lg"
                     shadow="sm"
                     width="100%"

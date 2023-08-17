@@ -100,6 +100,7 @@ import Mutation from "contents/Transaction/Mutation";
 import TrxReward from "contents/Transaction/Reward";
 import DetailTrxRw from "contents/Transaction/Reward/components/Detail";
 import Overview from "contents/Components/Overview";
+import WaBot from "contents/Master/WaBot";
 
 const routes = [
   // ==========================================================================================
@@ -791,7 +792,7 @@ const routes = [
         name: "WhatsApp Bot",
         key: "wa-bot",
         route: "/master/wa-bot",
-        component: <Container />,
+        component: <WaBot />,
       },
     ],
   },

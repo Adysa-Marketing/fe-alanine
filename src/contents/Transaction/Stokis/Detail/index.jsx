@@ -354,7 +354,7 @@ function DetailTrxStokis() {
                   <MDBox
                     component="img"
                     src={`${Config.ApiAsset}/trx/stokis/${imageKtp}`}
-                    alt="Bukti Transfer"
+                    alt="Foto KTP"
                     borderRadius="lg"
                     shadow="sm"
                     width="100%"
