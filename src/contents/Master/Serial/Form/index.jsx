@@ -193,7 +193,7 @@ function FormSeri() {
                 <MDBox mb={2}>
                   <MDInput
                     id="amount"
-                    type="text"
+                    type="number"
                     label="Total Serial"
                     value={state.amount}
                     onChange={handleChange}

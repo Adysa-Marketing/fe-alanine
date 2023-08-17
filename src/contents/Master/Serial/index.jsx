@@ -41,7 +41,8 @@ function Serial() {
     { Header: "No", accessor: "no", width: "15%" },
     { Header: "Nomor Serial", accessor: "serialNumber", width: "25%" },
     { Header: "Status", accessor: "status", width: "25%" },
-    { Header: "Tanggal", accessor: "createdAt", width: "25%" },
+    { Header: "DiBuat", accessor: "createdAt", width: "25%" },
+    { Header: "DiUpdate", accessor: "updatedAt", width: "25%" },
     { Header: "Deskripsi", accessor: "description", width: "20%" },
   ]);
 
@@ -92,7 +93,8 @@ function Serial() {
               ) : (
                 <MDBadge badgeContent="Aktif" container color="success" />
               ),
-            createdAt: moment(item.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+            createdAt: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            updatedAt: item.updated ? moment(item.updated).format("YYYY-MM-DD HH:mm:ss") : "-",
             description: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
             // action:
             //   user && [1, 2].includes(user.roleId) ? (
