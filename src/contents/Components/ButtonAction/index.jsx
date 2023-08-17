@@ -52,6 +52,7 @@ function ButtonAction({
   const modalNotifRef = useRef();
   const dialogFormRef = useRef();
   const dialogTrfRef = useRef();
+  const dialogRejectTfRef = useRef();
   const dialogDeliverRef = useRef();
   const imageRef = useRef();
 
@@ -383,6 +384,15 @@ function ButtonAction({
     submitStatusTrx(5);
   };
 
+  const handleRejectTrx = () => {
+    closeMenu();
+    dialogRejectTfRef.current.setShow({ show: true, title: "Cantumkan Alasan Reject" });
+  };
+
+  const submitReject = () => {
+    submitStatusTrx(3);
+  };
+
   const submitStatusTrx = (status) => {
     const formData = new FormData();
     formData.append("id", id);
@@ -392,6 +402,8 @@ function ButtonAction({
 
     if ([5].includes(status) && !image) {
       alertInfoSet("Tolong Upload Bukti Transfer");
+    } else if ([3].includes(status) && remark == "") {
+      alertInfoSet("Tolong Tulis Alasan Reject");
     } else {
       disabledSubmitSet(true);
       useAxios()
@@ -472,7 +484,7 @@ function ButtonAction({
       {cancelTrx && statusId == 1 && (
         <MenuItem onClick={() => handleStatusTrx(2)}>Batalkan</MenuItem>
       )}
-      {rejectTrx && statusId == 1 && <MenuItem onClick={() => handleStatusTrx(3)}>Tolak</MenuItem>}
+      {rejectTrx && statusId == 1 && <MenuItem onClick={() => handleRejectTrx()}>Tolak</MenuItem>}
       {processTrx && statusId == 1 && (
         <MenuItem onClick={() => handleStatusTrx(4)}>Proses</MenuItem>
       )}
@@ -590,11 +602,6 @@ function ButtonAction({
       <DialogForm ref={dialogTrfRef} maxWidth="xs">
         <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
           <MDBox width="100%" component="form">
-            {alertInfo !== "" && (
-              <MDTypography mb={3} color="error" fontWeight="lighter" mx="auto">
-                {alertInfo}
-              </MDTypography>
-            )}
             <MDBox mb={2}>
               <input
                 type="file"
@@ -620,6 +627,11 @@ function ButtonAction({
                 }}
                 readOnly
               />
+              {alertInfo !== "" && (
+                <MDTypography variant="caption" color="error" fontWeight="bold">
+                  {alertInfo}
+                </MDTypography>
+              )}
             </MDBox>
           </MDBox>
           <MDBox
@@ -647,6 +659,56 @@ function ButtonAction({
               color="info"
               disabled={disabledSubmit}
               onClick={submitTransfer}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
+      <DialogForm ref={dialogRejectTfRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            <MDBox mb={2}>
+              <MDInput
+                fullWidth
+                value={remark}
+                label="Alasan Ditolak"
+                onChange={(e) => remarkSet(e.target.value)}
+                multiline
+                rows={3}
+              />
+              {alertInfo !== "" && (
+                <MDTypography variant="caption" color="error" fontWeight="bold">
+                  {alertInfo}
+                </MDTypography>
+              )}
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => {
+                  dialogRejectTfRef.current.setShow({ show: false, title: "" });
+                  remarkSet("");
+                  alertInfoSet("");
+                }}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={submitReject}
             >
               Submit
             </MDButton>

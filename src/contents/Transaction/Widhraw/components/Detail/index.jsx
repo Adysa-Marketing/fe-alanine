@@ -36,6 +36,7 @@ function DetailWidhraw() {
   const [image, imageSet] = useState(null);
   const [wdStatus, wdStatusSet] = useState({});
   const [redirect, redirectSet] = useState(null);
+  const [remark, remarkSet] = useState(null);
 
   const modalNotifRef = useRef();
 
@@ -59,6 +60,7 @@ function DetailWidhraw() {
         imageKtpSet(data.imageKtp);
         imageSet(data.image);
         wdStatusSet(data.WdStatus);
+        data.remark != "" && remarkSet(data.remark);
       })
       .catch((err) => {
         console.log("[!] Error : ", err);
@@ -195,7 +197,7 @@ function DetailWidhraw() {
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Total Dibayar
+                        Total Dibayar :
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>
@@ -206,6 +208,21 @@ function DetailWidhraw() {
                       </p>
                     </DataTableBodyCell>
                   </TableRow>
+                  {/* Remark */}
+                  {remark && (
+                    <TableRow>
+                      <DataTableBodyCell noBorder>
+                        <MDTypography variant="body" fontWeight="medium">
+                          Alasan Ditolak :
+                        </MDTypography>
+                      </DataTableBodyCell>
+                      <DataTableBodyCell noBorder>
+                        <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                          {remark}
+                        </p>
+                      </DataTableBodyCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Grid>
