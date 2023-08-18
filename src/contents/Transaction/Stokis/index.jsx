@@ -74,6 +74,7 @@ function TrxStokis() {
       .then((response) => {
         let data = response.data.data;
         data = data.map((item) => ({ id: item.id, label: item.name }));
+        data.pop();
         statusesSet(data);
       })
       .catch((error) => {
@@ -133,9 +134,9 @@ function TrxStokis() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/trx/stokis"}
+                urlKey={"trx/stokis"}
                 refreshData={loadData}
-                reject={true}
+                // reject={true}
                 detail={true}
                 approveStokis={true}
                 stokisData={{
@@ -143,6 +144,7 @@ function TrxStokis() {
                   userId: item.User?.id,
                 }}
                 statusId={item.TrStatus?.id}
+                rejectTrxStokis={[1].includes(item.TrStatus?.id)}
               ></ButtonAction>
             ),
           };

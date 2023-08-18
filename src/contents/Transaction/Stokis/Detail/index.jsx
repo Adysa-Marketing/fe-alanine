@@ -45,6 +45,7 @@ function DetailTrxStokis() {
   const [date, dateSet] = useState("");
   const [stokis, stokisSet] = useState("");
   const [paymentType, paymentTypeSet] = useState("");
+  const [remark, remarkSet] = useState(null);
   const [bank, bankSet] = useState({
     name: "",
     noRekening: "",
@@ -91,6 +92,7 @@ function DetailTrxStokis() {
         dateSet(data.date);
         stokisSet(data.Stoki?.name);
         paymentTypeSet(data.PaymentType?.name);
+        data.remark && remarkSet(data.remark);
         Bank &&
           bankSet({
             name: Bank.name,
@@ -337,6 +339,23 @@ function DetailTrxStokis() {
                       </MDTypography>
                     </DataTableBodyCell>
                   </TableRow>
+                  {/* Reject Rason */}
+                  {remark && (
+                    <TableRow>
+                      <DataTableBodyCell noBorder>
+                        <MDTypography variant="body" fontWeight="medium">
+                          Ditolak :
+                        </MDTypography>
+                      </DataTableBodyCell>
+                      <DataTableBodyCell noBorder>
+                        <MDTypography variant="body">
+                          <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
+                            {remark}
+                          </p>
+                        </MDTypography>
+                      </DataTableBodyCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </Grid>

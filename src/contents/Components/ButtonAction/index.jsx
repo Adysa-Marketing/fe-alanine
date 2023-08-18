@@ -43,6 +43,7 @@ function ButtonAction({
   activate,
   cancelTrx,
   rejectTrx,
+  rejectTrxStokis,
   processTrx,
   transferedTrx,
   editTrxRw,
@@ -53,6 +54,7 @@ function ButtonAction({
   const dialogFormRef = useRef();
   const dialogTrfRef = useRef();
   const dialogRejectTfRef = useRef();
+  const dialogRejectTrxStokisRef = useRef();
   const dialogDeliverRef = useRef();
   const imageRef = useRef();
 
@@ -73,17 +75,17 @@ function ButtonAction({
 
   const handleEdit = () => {
     closeMenu();
-    navigate(`${urlKey}/edit/${id}`);
+    navigate(`/${urlKey}/edit/${id}`);
   };
 
   const handleDetail = () => {
     closeMenu();
-    navigate(`${urlKey}/detail/${id}`);
+    navigate(`/${urlKey}/detail/${id}`);
   };
 
   const handleDetailAgen = () => {
     closeMenu();
-    navigate(`${urlKey}/detail/${userId}`);
+    navigate(`/${urlKey}/detail/${userId}`);
   };
 
   const handleDelete = () => {
@@ -446,6 +448,56 @@ function ButtonAction({
     setIdTrxRw(id);
   };
 
+  // trx stokis
+  const handleRejectTrxStokis = () => {
+    closeMenu();
+    dialogRejectTrxStokisRef.current.setShow({ show: true, title: "Cantumkan Alasan Reject" });
+  };
+
+  const submitRejectTrxStokis = () => {
+    const payload = {
+      id,
+      statusId: 3,
+      remark: remark,
+    };
+    if (remark == "") {
+      alertInfoSet("Tolong Tulis Alasan Reject");
+    } else {
+      disabledSubmitSet(true);
+      useAxios()
+        .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-status`, payload)
+        .then((response) => {
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: response.data.message,
+            onClose: () => {
+              console.log("[REFRESH]");
+              refreshData();
+            },
+          });
+        })
+        .catch((err) => {
+          disabledSubmitSet(false);
+          if (err.response?.data) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        });
+    }
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -491,8 +543,14 @@ function ButtonAction({
       {transferedTrx && statusId == 4 && (
         <MenuItem onClick={() => handleTransfer(5)}>Di Transfer</MenuItem>
       )}
+
       {/* trx reward */}
       {editTrxRw && [1].includes(statusId) && <MenuItem onClick={handleEditTrxRw}>Edit</MenuItem>}
+
+      {/* trx stokis */}
+      {rejectTrxStokis && statusId == 1 && (
+        <MenuItem onClick={() => handleRejectTrxStokis()}>Tolak</MenuItem>
+      )}
     </Menu>
   );
 
@@ -716,6 +774,56 @@ function ButtonAction({
         </Grid>
       </DialogForm>
 
+      <DialogForm ref={dialogRejectTrxStokisRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            <MDBox mb={2}>
+              <MDInput
+                fullWidth
+                value={remark}
+                label="Alasan Ditolak"
+                onChange={(e) => remarkSet(e.target.value)}
+                multiline
+                rows={3}
+              />
+              {alertInfo !== "" && (
+                <MDTypography variant="caption" color="error" fontWeight="bold">
+                  {alertInfo}
+                </MDTypography>
+              )}
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => {
+                  dialogRejectTrxStokisRef.current.setShow({ show: false, title: "" });
+                  remarkSet("");
+                  alertInfoSet("");
+                }}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={submitRejectTrxStokis}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
       <MDButton variant="contained" color="info" size="small" onClick={openMenu}>
         actions&nbsp;
         <Icon>keyboard_arrow_down</Icon>
@@ -771,6 +879,7 @@ ButtonAction.propTypes = {
   activate: PropTypes.bool,
   cancelTrx: PropTypes.bool,
   rejectTrx: PropTypes.bool,
+  rejectTrxStokis: PropTypes.bool,
   processTrx: PropTypes.bool,
   transferedTrx: PropTypes.bool,
   editTrxRw: PropTypes.bool,
