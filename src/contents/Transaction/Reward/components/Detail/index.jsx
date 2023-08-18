@@ -250,7 +250,7 @@ function DetailTrxRw() {
                   <TableRow>
                     <DataTableBodyCell noBorder>
                       <MDTypography variant="body" fontWeight="medium">
-                        Pengiriman :
+                        {status.id == 3 ? "Ditolak : " : "Pengiriman"}
                       </MDTypography>
                     </DataTableBodyCell>
                     <DataTableBodyCell noBorder>

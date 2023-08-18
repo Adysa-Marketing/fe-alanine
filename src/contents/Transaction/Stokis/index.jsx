@@ -136,7 +136,6 @@ function TrxStokis() {
                 id={item.id}
                 urlKey={"trx/stokis"}
                 refreshData={loadData}
-                // reject={true}
                 detail={true}
                 approveStokis={true}
                 stokisData={{
@@ -144,7 +143,7 @@ function TrxStokis() {
                   userId: item.User?.id,
                 }}
                 statusId={item.TrStatus?.id}
-                rejectTrxStokis={[1].includes(item.TrStatus?.id)}
+                rejectTrxStokisReward={[1].includes(item.TrStatus?.id)}
               ></ButtonAction>
             ),
           };

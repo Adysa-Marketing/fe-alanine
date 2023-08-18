@@ -43,7 +43,7 @@ function ButtonAction({
   activate,
   cancelTrx,
   rejectTrx,
-  rejectTrxStokis,
+  rejectTrxStokisReward,
   processTrx,
   transferedTrx,
   editTrxRw,
@@ -54,7 +54,7 @@ function ButtonAction({
   const dialogFormRef = useRef();
   const dialogTrfRef = useRef();
   const dialogRejectTfRef = useRef();
-  const dialogRejectTrxStokisRef = useRef();
+  const dialogRejectTrxStokisRewardRef = useRef();
   const dialogDeliverRef = useRef();
   const imageRef = useRef();
 
@@ -448,13 +448,16 @@ function ButtonAction({
     setIdTrxRw(id);
   };
 
-  // trx stokis
-  const handleRejectTrxStokis = () => {
+  // reject stokis & reward
+  const handleRejectTrxStokisReward = () => {
     closeMenu();
-    dialogRejectTrxStokisRef.current.setShow({ show: true, title: "Cantumkan Alasan Reject" });
+    dialogRejectTrxStokisRewardRef.current.setShow({
+      show: true,
+      title: "Cantumkan Alasan Reject",
+    });
   };
 
-  const submitRejectTrxStokis = () => {
+  const submitRejectTrxStokisReward = () => {
     const payload = {
       id,
       statusId: 3,
@@ -548,8 +551,8 @@ function ButtonAction({
       {editTrxRw && [1].includes(statusId) && <MenuItem onClick={handleEditTrxRw}>Edit</MenuItem>}
 
       {/* trx stokis */}
-      {rejectTrxStokis && statusId == 1 && (
-        <MenuItem onClick={() => handleRejectTrxStokis()}>Tolak</MenuItem>
+      {rejectTrxStokisReward && statusId == 1 && (
+        <MenuItem onClick={() => handleRejectTrxStokisReward()}>Tolak</MenuItem>
       )}
     </Menu>
   );
@@ -774,7 +777,7 @@ function ButtonAction({
         </Grid>
       </DialogForm>
 
-      <DialogForm ref={dialogRejectTrxStokisRef} maxWidth="xs">
+      <DialogForm ref={dialogRejectTrxStokisRewardRef} maxWidth="xs">
         <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
           <MDBox width="100%" component="form">
             <MDBox mb={2}>
@@ -804,7 +807,7 @@ function ButtonAction({
                 variant="gradient"
                 color="error"
                 onClick={() => {
-                  dialogRejectTrxStokisRef.current.setShow({ show: false, title: "" });
+                  dialogRejectTrxStokisRewardRef.current.setShow({ show: false, title: "" });
                   remarkSet("");
                   alertInfoSet("");
                 }}
@@ -816,7 +819,7 @@ function ButtonAction({
               variant="gradient"
               color="info"
               disabled={disabledSubmit}
-              onClick={submitRejectTrxStokis}
+              onClick={submitRejectTrxStokisReward}
             >
               Submit
             </MDButton>
@@ -879,7 +882,7 @@ ButtonAction.propTypes = {
   activate: PropTypes.bool,
   cancelTrx: PropTypes.bool,
   rejectTrx: PropTypes.bool,
-  rejectTrxStokis: PropTypes.bool,
+  rejectTrxStokisReward: PropTypes.bool,
   processTrx: PropTypes.bool,
   transferedTrx: PropTypes.bool,
   editTrxRw: PropTypes.bool,

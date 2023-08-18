@@ -138,7 +138,7 @@ function TrxReward() {
             user: item.User?.name,
             phone: item.User?.phone,
             date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
-            remark: item.remark,
+            remark: rwStatus.id == 5 ? item.remark : "-",
             status: rwStatus ? (
               <MDBadge
                 variant="contained"
@@ -167,7 +167,7 @@ function TrxReward() {
                 detail={true}
                 cancel={[3, 4].includes(user.roleId)}
                 remove={[1, 2, 3].includes(rwStatus.id) && [3, 4].includes(user.roleId)}
-                reject={[1, 2].includes(user.roleId)}
+                rejectTrxStokisReward={[1].includes(rwStatus.id) && [1, 2].includes(user.roleId)}
                 approve={[1, 2].includes(user.roleId)}
                 deliver={[1, 2].includes(user.roleId)}
                 statusId={rwStatus.id}
