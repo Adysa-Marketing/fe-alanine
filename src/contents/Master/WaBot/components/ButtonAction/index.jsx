@@ -20,10 +20,12 @@ function ButtonAction({
   edit,
   close,
   remove,
+  synchron,
   setRegenerate,
   setEdit,
   setClose,
   setRemove,
+  setSynchron,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -53,6 +55,11 @@ function ButtonAction({
     setRemove(id);
   };
 
+  const handleSynchron = () => {
+    closeMenu();
+    setSynchron(uniqKey);
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -66,6 +73,7 @@ function ButtonAction({
       {edit && <MenuItem onClick={() => handleEdit()}>Edit</MenuItem>}
       {close && <MenuItem onClick={() => handleClose()}>Tutup</MenuItem>}
       {remove && <MenuItem onClick={() => handleRemove()}>Hapus</MenuItem>}
+      {synchron && <MenuItem onClick={() => handleSynchron()}>Synchron</MenuItem>}
     </Menu>
   );
 
@@ -90,10 +98,12 @@ ButtonAction.propTypes = {
   edit: PropTypes.bool,
   close: PropTypes.bool,
   remove: PropTypes.bool,
+  synchron: PropTypes.bool,
   setRegenerate: PropTypes.func,
   setEdit: PropTypes.func,
   setClose: PropTypes.func,
   setRemove: PropTypes.func,
+  setSynchron: PropTypes.func,
 };
 
 export default ButtonAction;

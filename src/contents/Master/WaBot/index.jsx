@@ -67,9 +67,15 @@ function WaBot() {
   const [colorBtnQr, colorBtnQrSet] = useState("info");
   const [dataSocket, dataSocketSet] = useState(null);
 
+  // state for synchron wa bot
+  const [recipient, recipientSet] = useState("");
+  const [message, messageSet] = useState("");
+  const [uniqKey, uniqKeySet] = useState(null);
+
   const dialogFormRef = useRef();
   const modalNotifRef = useRef();
   const confirmRef = useRef();
+  const dialogFormSyncRef = useRef();
 
   useEffect(() => {
     const user = secureStorage.getItem("user");
@@ -116,10 +122,12 @@ function WaBot() {
                 edit={true}
                 close={true}
                 remove={true}
+                synchron={true}
                 setRegenerate={handleRegenerate}
                 setEdit={handleEdit}
                 setClose={handleClose}
                 setRemove={handleRemove}
+                setSynchron={handleSynchron}
               ></ButtonAction>
             ),
           };
@@ -222,6 +230,9 @@ function WaBot() {
     actionSet("create");
     btnQrSet("SUBMIT");
     colorBtnQrSet("info");
+    uniqKeySet(null);
+    recipientSet("");
+    messageSet("");
   };
 
   const handleCloseSocket = () => {
@@ -408,6 +419,7 @@ function WaBot() {
       />
     </MDBox>
   );
+
   const renderInput = (
     <>
       <MDBox mb={2}>
@@ -431,7 +443,72 @@ function WaBot() {
     </>
   );
 
-  const renderForm = (
+  // handle synchron wa bot
+  const handleSynchron = (key) => {
+    disabledSubmitSet(false);
+    uniqKeySet(key);
+    dialogFormSyncRef.current.setShow({ show: true, title: "Synchronization WA BOT" });
+  };
+
+  const handleSubmitSync = () => {
+    if (recipient == "" || message == "") {
+      let input = "";
+      message == "" && (input = "Pesan");
+      recipient == "" && (input = "No Tujuan");
+
+      modalNotifRef.current.setShow({
+        modalTitle: "Gagal",
+        modalMessage: `Mohon lengkapi data ${input}`,
+      });
+    } else {
+      sendSynchron();
+    }
+  };
+
+  const sendSynchron = () => {
+    disabledSubmitSet(true);
+    const payload = {
+      recipient,
+      message,
+      key: uniqKey,
+    };
+    useAxios()
+      .post(`${Config.ApiUrl}/api/v1/master/wa-bot/synchron`, payload)
+      .then((response) => {
+        disabledSubmitSet(false);
+        modalNotifRef.current.setShow({
+          modalTitle: "Sukses",
+          modalMessage: response.data.message,
+          onClose: () => {
+            console.log("[REFRESH]");
+            dialogFormSyncRef.current.setShow({ show: false, title: "" });
+            refreshData();
+          },
+        });
+      })
+      .catch((err) => {
+        console.log("error : ", err);
+        disabledSubmitSet(false);
+        if (err.response?.data) {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: err.response.data
+              ? Array.isArray(err.response.data.message)
+                ? err.response.data.message[0].message
+                : err.response.data.message
+              : "Terjadi kesalahan pada system",
+            color: "warning",
+          });
+        } else {
+          modalNotifRef.current.setShow({
+            modalTitle: "Gagal",
+            modalMessage: "Koneksi jaringan terputus",
+          });
+        }
+      });
+  };
+
+  const renderFormQR = (
     <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
       <MDBox width="100%" component="form">
         {action !== "update" && renderImage}
@@ -467,6 +544,59 @@ function WaBot() {
     </Grid>
   );
 
+  const renderFormSynchron = (
+    <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+      <MDBox width="100%" component="form">
+        <MDBox mb={2}>
+          <MDBox mb={2}>
+            <MDInput
+              fullWidth
+              type="text"
+              value={recipient}
+              onChange={(e) => recipientSet(e.target.value)}
+              label="No Tujuan"
+            />
+          </MDBox>
+          <MDInput
+            fullWidth
+            type="text"
+            value={message}
+            onChange={(e) => messageSet(e.target.value)}
+            label="Pesan"
+            multiline
+            rows={3}
+          />
+        </MDBox>
+      </MDBox>
+      <MDBox py={3} width="100%">
+        <MDBox>
+          <MDButton
+            variant="gradient"
+            color={colorBtnQr}
+            disabled={disabledSubmit}
+            onClick={handleSubmitSync}
+            fullWidth
+          >
+            Submit
+          </MDButton>
+        </MDBox>
+        <MDBox my={2}>
+          <MDButton
+            variant="gradient"
+            color="error"
+            onClick={() => {
+              refreshData();
+              dialogFormSyncRef.current.setShow({ show: false, title: "" });
+            }}
+            fullWidth
+          >
+            Tutup
+          </MDButton>
+        </MDBox>
+      </MDBox>
+    </Grid>
+  );
+
   if (redirect) {
     return <Navigate to={redirect} />;
   }
@@ -477,7 +607,10 @@ function WaBot() {
       <Confirm ref={confirmRef} />
       <ModalNotif ref={modalNotifRef} />
       <DialogForm ref={dialogFormRef} maxWidth="xs">
-        {renderForm}
+        {renderFormQR}
+      </DialogForm>
+      <DialogForm ref={dialogFormSyncRef} maxWidth="xs">
+        {renderFormSynchron}
       </DialogForm>
       <MDBox pb={3} my={3}>
         <MDBox pb={2} mt={{ xs: 2, md: 0 }} display="flex">
