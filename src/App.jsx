@@ -47,6 +47,8 @@ import {
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import Register from "contents/Authentication/Register";
+import Verification from "contents/Authentication/ForgetPassword/Verification";
+import ResetPassword from "contents/Authentication/ForgetPassword/ResetPassword";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -152,6 +154,8 @@ export default function App() {
       <Routes>
         <Route exact path="/login" element={<Login />} key="login" />
         <Route exact path="/register" element={<Register />} key="register" />
+        <Route exact path="/verification" element={<Verification />} key="verifycation" />
+        <Route exact path="/reset/:confirmCode" element={<ResetPassword />} key="reset-pass" />
         <Route element={<Layout key="layout" />}>{getRoutes(routes)}</Route>
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

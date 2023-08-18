@@ -26,6 +26,8 @@ import Notif from "contents/Components/Notif";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 import axios from "axios";
+import DialogForm from "contents/Components/DialogForm";
+import { Grid } from "@mui/material";
 function Login({ status }) {
   const [rememberMe, setRememberMe] = useState(true);
   const [username, usernameSet] = useState("");
@@ -34,7 +36,14 @@ function Login({ status }) {
   const [submitDisabled, submitDisabledSet] = useState(false);
   const [redirect, redirectSet] = useState(null);
 
+  // reset password
+  const [resetPass, resetPassSet] = useState("");
+  const [submitResetDisabled, submitResetDisabledSet] = useState(false);
+  const [verify, verifySet] = useState(false);
+
   const notifRef = useRef();
+  const dialogFormRef = useRef();
+
   useEffect(() => {
     if (status == "signout") {
       secureStorage.removeItem("token");
@@ -89,16 +98,17 @@ function Login({ status }) {
             isLoginSet(true);
           }, 2000);
         })
-        .catch((error) => {
-          console.log("[!] Error : ", error);
+        .catch((err) => {
+          console.log("[!] Error : ", err);
           submitDisabledSet(false);
-          if (error.response.data) {
+          if (err.response?.data) {
             notifRef.current.setShow({
               show: true,
-              message:
-                error.response && error.response.data
-                  ? error.response.data?.message
-                  : "Terjadi kesalahan pada system",
+              message: err.response.data
+                ? Array.isArray(err.response.data?.message)
+                  ? err.response.data?.message[0].message
+                  : err.response.data?.message
+                : "Terjadi kesalahan pada system",
               color: "warning",
             });
           } else {
@@ -112,15 +122,132 @@ function Login({ status }) {
     }
   };
 
+  const toggleModal = () => {
+    dialogFormRef.current.setShow({ show: true, title: "Lupa Password" });
+  };
+
+  const handleKeyDownForget = (e) => {
+    if (e.key == "Enter") {
+      e.preventDefault();
+      return handleForgetPass();
+    }
+  };
+
+  const handleForgetPass = () => {
+    const regexUsername = /^[^\s]*$/;
+    if (!regexUsername.test(resetPass)) {
+      notifRef.current.setShow({
+        show: true,
+        message: "Username tidak boleh menggunakan spasi",
+        color: "warning",
+      });
+    } else if (resetPass !== "") {
+      submitResetDisabledSet(false);
+      const payload = {
+        username: resetPass,
+      };
+
+      axios
+        .post(`${Config.ApiUrl}/api/v1/user/reset/sendotp`, payload)
+        .then((response) => {
+          const data = response.data.data;
+          secureStorage.setItem("resetPass", data);
+          submitResetDisabledSet(false);
+          verifySet(true);
+        })
+        .catch((err) => {
+          console.log("[!] Error : ", err);
+          submitResetDisabledSet(false);
+          if (err.response?.data) {
+            notifRef.current.setShow({
+              show: true,
+              message: err.response.data
+                ? Array.isArray(err.response.data?.message)
+                  ? err.response.data?.message[0].message
+                  : err.response.data?.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            notifRef.current.setShow({
+              show: true,
+              message: "Koneksi jaringan terputus",
+              color: "success",
+            });
+          }
+        });
+    } else {
+      notifRef.current.setShow({
+        show: true,
+        message: "Data masih ada yang kosong, Mohon di lengkapi dahulu",
+        color: "warning",
+      });
+    }
+  };
+
   if (redirect) {
     return <Navigate to="/login" />;
   }
   if (isLogin) {
     return <Navigate to="/dashboard" />;
   }
+  if (verify) {
+    return <Navigate to="/verification" />;
+  }
+
   return (
     <CoverLayout image={bgImage}>
       <Notif ref={notifRef} />
+      <DialogForm ref={dialogFormRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }}>
+          <MDBox width="100%" component="form">
+            <MDBox my={2}>
+              <MDInput
+                fullWidth
+                type="text"
+                value={resetPass}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!val) {
+                    resetPassSet(val);
+                    submitDisabledSet(true);
+                  } else {
+                    resetPassSet(val);
+                    submitResetDisabledSet(false);
+                  }
+                }}
+                label="Masukan Username Anda"
+                onKeyDown={handleKeyDownForget}
+              />
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => dialogFormRef.current.setShow({ show: false, title: "" })}
+              >
+                TUTUP
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={submitResetDisabled}
+              onClick={handleForgetPass}
+            >
+              SUBMIT
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
       <Card>
         <MDBox
           variant="gradient"
@@ -209,6 +336,18 @@ function Login({ status }) {
                 >
                   Daftar
                 </MDTypography>
+              </MDTypography>
+            </MDBox>
+            <MDBox mt={3} mb={1} textAlign="center">
+              <MDTypography
+                onClick={toggleModal}
+                sx={{ cursor: "pointer" }}
+                variant="button"
+                color="info"
+                fontWeight="medium"
+                textGradient
+              >
+                Lupa passsword ?
               </MDTypography>
             </MDBox>
           </MDBox>
