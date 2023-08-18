@@ -75,7 +75,7 @@ function AccountBank() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/bank"}
+                urlKey={"master/bank"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

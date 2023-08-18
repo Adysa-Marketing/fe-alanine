@@ -20,7 +20,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
 import DataTable from "contents/Components/DataTable";
 import Pagination from "contents/Components/Pagination";
-import ButtonAction from "contents/Components/ButtonAction";
 
 import useAxios from "libs/useAxios";
 import Config from "config";
@@ -96,16 +95,6 @@ function Serial() {
             createdAt: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
             updatedAt: item.updated ? moment(item.updated).format("YYYY-MM-DD HH:mm:ss") : "-",
             description: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
-            // action:
-            //   user && [1, 2].includes(user.roleId) ? (
-            //     <ButtonAction
-            //       id={item.id}
-            //       urlKey={"/master/serial"}
-            //       refreshData={loadData}
-            //     ></ButtonAction>
-            //   ) : (
-            //     "-"
-            //   ),
           };
         });
 

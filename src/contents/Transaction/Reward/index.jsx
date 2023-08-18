@@ -162,7 +162,7 @@ function TrxReward() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/trx/reward"}
+                urlKey={"trx/reward"}
                 refreshData={refreshData}
                 detail={true}
                 cancel={[3, 4].includes(user.roleId)}

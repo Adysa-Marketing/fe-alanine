@@ -113,7 +113,7 @@ function Article() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/article"}
+                urlKey={"master/article"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

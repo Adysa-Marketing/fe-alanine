@@ -159,6 +159,7 @@ function FormPartnership() {
       .then((response) => {
         const data = response.data.data;
         idSet(data.id);
+        stokisIdSet(data.Stoki?.id);
         stokisDiscountSet(data.amount);
         stokisPriceSet(data.Stoki?.price);
         kkSet(data.kk);

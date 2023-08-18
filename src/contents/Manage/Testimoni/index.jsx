@@ -79,7 +79,7 @@ function Testimoni() {
               user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/manage/testimoni"}
+                  urlKey={"manage/testimoni"}
                   refreshData={loadData}
                   remove={true}
                 ></ButtonAction>

@@ -81,7 +81,7 @@ function Reward() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/reward"}
+                urlKey={"master/reward"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

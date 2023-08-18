@@ -109,7 +109,7 @@ function Member() {
               user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/manage/member"}
+                  urlKey={"manage/member"}
                   refreshData={loadData}
                   detail={true}
                   changePassword={true}

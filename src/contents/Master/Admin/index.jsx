@@ -103,7 +103,7 @@ function Admin() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/admin"}
+                urlKey={"master/admin"}
                 refreshData={loadData}
                 detail={true}
                 edit={true}

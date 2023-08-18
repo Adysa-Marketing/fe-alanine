@@ -150,12 +150,12 @@ function Partnership() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/trx/stokis"}
+                urlKey={"trx/stokis"}
                 refreshData={loadData}
                 detail={true}
-                edit={[1].includes(item.TrStatus?.id) ? true : false}
-                remove={[1, 2, 3].includes(item.TrStatus?.id) ? true : false}
-                cancel={[1].includes(item.TrStatus?.id) ? true : false}
+                edit={[1].includes(item.TrStatus?.id)}
+                remove={[1, 2, 3].includes(item.TrStatus?.id)}
+                cancel={[1].includes(item.TrStatus?.id)}
                 statusId={item.TrStatus?.id}
               ></ButtonAction>
             ),

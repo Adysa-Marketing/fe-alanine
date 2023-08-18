@@ -127,7 +127,7 @@ function Agen() {
               user && [1, 2].includes(user.roleId) ? (
                 <ButtonAction
                   id={item.id}
-                  urlKey={"/manage/agen"}
+                  urlKey={"manage/agen"}
                   changePassword={true}
                   refreshData={loadData}
                   statusId={agenStatus?.id}

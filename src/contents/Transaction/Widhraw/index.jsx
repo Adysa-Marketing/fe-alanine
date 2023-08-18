@@ -202,7 +202,7 @@ function Widhraw() {
             action: [1, 2].includes(user.roleId) ? (
               <ButtonAction
                 id={item.id}
-                urlKey={"/trx/widhraw"}
+                urlKey={"trx/widhraw"}
                 refreshData={refreshData}
                 statusId={wdStatus.id}
                 detail={true}
@@ -213,7 +213,7 @@ function Widhraw() {
             ) : [3, 4].includes(user.roleId) ? (
               <ButtonAction
                 id={item.id}
-                urlKey={"/trx/widhraw"}
+                urlKey={"trx/widhraw"}
                 refreshData={refreshData}
                 statusId={wdStatus.id}
                 detail={true}

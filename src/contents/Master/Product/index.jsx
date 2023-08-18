@@ -98,7 +98,7 @@ function Product() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/product"}
+                urlKey={"master/product"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

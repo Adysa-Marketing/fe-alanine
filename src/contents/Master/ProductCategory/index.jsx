@@ -73,7 +73,7 @@ function ProductCategory() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/product-category"}
+                urlKey={"master/product-category"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

@@ -80,7 +80,7 @@ function Package() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/package"}
+                urlKey={"master/package"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}
