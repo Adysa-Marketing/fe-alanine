@@ -100,7 +100,7 @@ function FormArticle() {
         excerptSet(data.excerpt);
         descriptionSet(data.description);
         statusSet(data.isActive ? { id: 1, label: "Aktif" } : { id: 2, label: "Draft" });
-        remarkSet(data.remark);
+        remarkSet(data.remark ? data.remark : "");
 
         successSet({
           ...success,

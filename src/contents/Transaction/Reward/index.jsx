@@ -384,7 +384,6 @@ function TrxReward() {
                         price={`Hadiah Senilai Rp. ${new Intl.NumberFormat("id-ID").format(
                           item.amount
                         )}`}
-                        location="indo"
                         requirement={`${item.minFoot} downline masing-masing ${item.point} point`}
                         status={item.status}
                         already={item.already}

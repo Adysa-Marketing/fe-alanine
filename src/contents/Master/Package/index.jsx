@@ -38,7 +38,7 @@ function Package() {
     { Header: "Nama Paket", accessor: "name", width: "25%" },
     { Header: "Type", accessor: "type", width: "25%" },
     { Header: "Harga", accessor: "amount", width: "25%" },
-    { Header: "Kutipan", accessor: "description", width: "35%" },
+    { Header: "Deskripsi", accessor: "description", width: "35%" },
   ]);
 
   const [redirect, redirectSet] = useState(null);

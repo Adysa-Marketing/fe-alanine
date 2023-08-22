@@ -141,7 +141,7 @@ function FormProduct() {
             : null,
           description: data.description,
           image: data.image,
-          remark: data.remark,
+          remark: data.remark ? data.remark : "",
           success: {
             ...prev.success,
             name: data.name ? true : false,

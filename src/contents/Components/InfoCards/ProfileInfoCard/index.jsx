@@ -101,7 +101,7 @@ function ProfileInfoCard({ title, description, info, social, action, edit, shado
       <MDBox p={2}>
         <MDBox mb={2} lineHeight={1}>
           <MDTypography variant="button" color="text" fontWeight="light">
-            {description.replace("<p>", "").replace("</p>", "")}
+            {description}
           </MDTypography>
         </MDBox>
         <MDBox opacity={0.3}>
