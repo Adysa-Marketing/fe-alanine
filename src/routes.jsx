@@ -104,6 +104,8 @@ import WaBot from "contents/Master/WaBot";
 import TrxProduct from "contents/Transaction/Product";
 import FormTrxProduct from "contents/Transaction/Product/components/Form";
 import DetailTrxProduct from "contents/Transaction/Product/components/Detail";
+import TrxAgenProduct from "contents/Transaction/AgenProduct";
+import DetailTrxAgenProduct from "contents/Transaction/AgenProduct/components/Detail";
 
 const routes = [
   // ==========================================================================================
@@ -905,9 +907,15 @@ const routes = [
       // ====================== stokis / agen ======================
       {
         name: "Penjualan Agen",
-        key: "agen",
+        key: "agen-sale",
         route: "/trx/product/agen",
-        component: <Container />,
+        component: <TrxAgenProduct />,
+      },
+      {
+        name: "Detail Penjualan Agen",
+        key: "detail-agen-sale",
+        route: "/trx/product/agen/detail/:id",
+        component: <DetailTrxAgenProduct />,
       },
       // ====================== product ======================
       {
