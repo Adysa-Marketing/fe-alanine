@@ -311,8 +311,6 @@ function FormArticle() {
                               value={status}
                               onChange={(e, newValue) => {
                                 statusSet(newValue);
-                                successSet({ ...success, status: true });
-                                errorSet({ ...error, status: false });
                               }}
                               onBlur={handleBlur}
                               variant="standard"

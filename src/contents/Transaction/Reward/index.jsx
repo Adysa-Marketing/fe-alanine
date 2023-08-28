@@ -137,7 +137,7 @@ function TrxReward() {
             name: item.Reward?.name,
             user: item.User?.name,
             phone: item.User?.phone,
-            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            date: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
             remark: rwStatus.id == 5 ? item.remark : "-",
             status: rwStatus ? (
               <MDBadge

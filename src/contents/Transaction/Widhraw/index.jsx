@@ -175,9 +175,9 @@ function Widhraw() {
             bankName: `${item.bankName} - ${item.accountName} - ${item.noRekening}`,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
             paidAmount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.paidAmount),
-            createdAt: moment(item.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+            createdAt: moment(item.createdAt).format("DD-MM-YYYY HH:mm:ss"),
             updatedAt: [5].includes(wdStatus?.id)
-              ? moment(item.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+              ? moment(item.updatedAt).format("DD-MM-YYYY HH:mm:ss")
               : "-",
             status: wdStatus ? (
               <MDBadge

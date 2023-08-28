@@ -359,7 +359,7 @@ function FormProduct() {
                               fullWidth
                             />
                           </Grid>
-                          <Grid item xs={0} sm={1}></Grid>
+                          <Grid item xs={12} sm={1} my={2}></Grid>
                           <Grid item xs={12} sm={4}>
                             <MDInput
                               type="text"
@@ -434,8 +434,6 @@ function FormProduct() {
                                 setState((prev) => ({
                                   ...prev,
                                   category: value,
-                                  success: { ...prev.success, category: true },
-                                  error: { ...prev.error, category: false },
                                 }));
                               }}
                               onBlur={handleBlur}
@@ -443,11 +441,17 @@ function FormProduct() {
                               isOptionEqualToValue={(option, value) => option.id === value.id}
                               fullWidth
                               renderInput={(params) => (
-                                <MDInput {...params} label="Kategory Paket" variant="standard" />
+                                <MDInput
+                                  {...params}
+                                  label="Kategory Paket"
+                                  success={state.success ? state.success.category : false}
+                                  error={state.error ? state.error.category : false}
+                                  variant="standard"
+                                />
                               )}
                             />
                           </Grid>
-                          <Grid item xs={0} sm={1}></Grid>
+                          <Grid item xs={12} sm={1} my={2}></Grid>
                           <Grid item xs={12} sm={6}>
                             <MDBox mb={2}>
                               <input

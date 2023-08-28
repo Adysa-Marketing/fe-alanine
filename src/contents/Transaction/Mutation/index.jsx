@@ -108,7 +108,7 @@ function Mutation() {
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
             type: item.type,
             category: item.category,
-            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            date: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
           };
         });
 

@@ -104,7 +104,7 @@ function Commission() {
             upline: item.Upline?.name,
             downline: item.Downline?.name,
             level: item.CommissionLevel?.name,
-            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            date: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
           };
         });
 

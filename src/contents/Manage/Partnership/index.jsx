@@ -127,7 +127,7 @@ function Partnership() {
             stokis: item.Stoki?.name,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
             paymentType: item.PaymentType?.name,
-            date: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
+            date: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
             status: trStatus ? (
               <MDBadge
                 variant="contained"

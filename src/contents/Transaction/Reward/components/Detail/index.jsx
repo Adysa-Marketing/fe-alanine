@@ -176,7 +176,6 @@ function DetailTrxRw() {
                       <p style={{ wordWrap: "break-word", width: "10em", color: "#344767" }}>
                         {name}
                       </p>
-                      <MDTypography variant="body">{name}</MDTypography>
                     </DataTableBodyCell>
                   </TableRow>
                   {/* Status */}

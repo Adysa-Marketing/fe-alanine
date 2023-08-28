@@ -119,7 +119,7 @@ function Agen() {
               "-"
             ),
             dateApproved: item.dateApproved
-              ? moment(item.dateApproved).format("YYYY-MM-DD HH:mm:ss")
+              ? moment(item.dateApproved).format("DD-MM-YYYY HH:mm:ss")
               : "-",
             stokis: item.Stoki?.name,
             agenDiscount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.Stoki?.agenDiscount),

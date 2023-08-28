@@ -102,9 +102,9 @@ function FormPartnership() {
     const index = pathname.indexOf("edit");
     if (index === -1) {
       actionSet("create");
-      loadData(params.id);
       const user = secureStorage.getItem("user");
       if (user) {
+        loadData(params.id);
         countrySet({ id: user.Country.id, label: user.Country.name });
         if (user.Province) {
           provinceSet({ id: user.Province.id, label: user.Province.name });
@@ -127,6 +127,7 @@ function FormPartnership() {
   };
 
   const loadData = (id) => {
+    const user = secureStorage.getItem("user");
     useAxios()
       .get(`${Config.ApiUrl}/api/v1/master/stokis/get/${id}`)
       .then((response) => {
@@ -139,6 +140,9 @@ function FormPartnership() {
         successSet({
           ...success,
           stokisDiscount: data && data.discount ? true : false,
+          province: user.Province ? true : false,
+          district: user.District ? true : false,
+          subDistrict: user.SubDistrict ? true : false,
         });
       })
       .catch((err) => {

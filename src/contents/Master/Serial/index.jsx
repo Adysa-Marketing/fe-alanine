@@ -92,8 +92,8 @@ function Serial() {
               ) : (
                 <MDBadge badgeContent="Aktif" container color="success" />
               ),
-            createdAt: moment(item.date).format("YYYY-MM-DD HH:mm:ss"),
-            updatedAt: item.updated ? moment(item.updated).format("YYYY-MM-DD HH:mm:ss") : "-",
+            createdAt: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
+            updatedAt: item.updated ? moment(item.updated).format("DD-MM-YYYY HH:mm:ss") : "-",
             description: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
           };
         });
