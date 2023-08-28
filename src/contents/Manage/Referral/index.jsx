@@ -224,7 +224,6 @@ function Referral() {
                       currentPage: 1,
                       startDate,
                       endDate,
-                      levelId: level ? level.id : null,
                     });
                   }}
                   iconOnly
