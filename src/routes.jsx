@@ -101,6 +101,9 @@ import TrxReward from "contents/Transaction/Reward";
 import DetailTrxRw from "contents/Transaction/Reward/components/Detail";
 import Overview from "contents/Components/Overview";
 import WaBot from "contents/Master/WaBot";
+import TrxProduct from "contents/Transaction/Product";
+import FormTrxProduct from "contents/Transaction/Product/components/Form";
+import DetailTrxProduct from "contents/Transaction/Product/components/Detail";
 
 const routes = [
   // ==========================================================================================
@@ -899,25 +902,37 @@ const routes = [
         route: "/trx/mutation",
         component: <Mutation />,
       },
-      // ====================== stokis ======================
+      // ====================== stokis / agen ======================
       {
-        name: "Agen Order",
-        key: "agen-order",
-        route: "/trx/agen-order",
-        component: <Container />,
-      },
-      {
-        name: "Agen Sale",
-        key: "agen-sale",
-        route: "/trx/agen-sale",
+        name: "Penjualan Agen",
+        key: "agen",
+        route: "/trx/product/agen",
         component: <Container />,
       },
       // ====================== product ======================
       {
-        name: "Product",
-        key: "product",
+        name: "Trx Product",
+        key: "trx-product",
         route: "/trx/product",
-        component: <Container />,
+        component: <TrxProduct />,
+      },
+      {
+        name: "Create Trx Product",
+        key: "create-trx-product",
+        route: "/trx/product/create/:id",
+        component: <FormTrxProduct />,
+      },
+      {
+        name: "Edit Trx Product",
+        key: "edit-trx-product",
+        route: "/trx/product/edit/:id",
+        component: <FormTrxProduct />,
+      },
+      {
+        name: "Detail Trx Product",
+        key: "detail-trx-product",
+        route: "/trx/product/detail/:id",
+        component: <DetailTrxProduct />,
       },
       // ====================== reward ======================
       {
@@ -927,7 +942,7 @@ const routes = [
         component: <TrxReward />,
       },
       {
-        name: "Reward",
+        name: "Detail Reward",
         key: "detail-reward",
         route: "/trx/reward/detail/:id",
         component: <DetailTrxRw />,
@@ -965,7 +980,7 @@ const routes = [
         component: <Widhraw />,
       },
       {
-        name: "Widhraw",
+        name: "Detail Widhraw",
         key: "detail-widhraw",
         route: "/trx/widhraw/detail/:id",
         component: <DetailWidhraw />,
@@ -1244,24 +1259,18 @@ const getMenu = (user) => {
       ]
     : [];
 
-  const subTrxAgenOrderSale = [3].includes(roleId)
+  const subTrxAgenSale = [3].includes(roleId)
     ? [
         {
-          name: "Pemesanan Paket",
-          key: "agen-order",
-          route: "/trx/agen-order",
-          component: <Container />,
-        },
-        {
-          name: "Penjualan Paket",
-          key: "agen-sale",
-          route: "/trx/agen-sale",
+          name: "Penjualan Agen",
+          key: "agen",
+          route: "/trx/product/agen",
           component: <Container />,
         },
       ]
     : [];
 
-  const subTrxProduct = [1, 2].includes(roleId)
+  const subTrxProduct = [1, 2, 3].includes(roleId)
     ? [
         {
           name: "Produk",
@@ -1292,7 +1301,7 @@ const getMenu = (user) => {
           icon: <Icon fontSize="medium">shoppingcart</Icon>,
           collapse: [
             ...subTrxMutation,
-            ...subTrxAgenOrderSale,
+            ...subTrxAgenSale,
             ...subTrxProduct,
             {
               name: "Reward",

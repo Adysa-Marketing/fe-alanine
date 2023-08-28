@@ -317,7 +317,7 @@ function ButtonAction({
             modalMessage: `${response.data.message} - Lakukan Aktivasi Agen`,
             onClose: () => {
               console.log("[CREATE-AGEN]");
-              return (window.location.href = `/manage/agen`);
+              navigate("/manage/agen");
             },
           });
         } catch (err) {
