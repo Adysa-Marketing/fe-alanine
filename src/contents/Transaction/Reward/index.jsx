@@ -133,7 +133,20 @@ function TrxReward() {
         const output = data.data.map((item) => {
           const rwStatus = item.RwStatus;
           return {
-            kode: item.kode,
+            kode: (
+              <MDTypography
+                variant="caption"
+                fontWeight="medium"
+                sx={{
+                  cursor: "pointer",
+                }}
+                color="info"
+                component={Link}
+                to={{ pathname: `/trx/reward/detail/${item.id}` }}
+              >
+                {item.kode}
+              </MDTypography>
+            ),
             name: item.Reward?.name,
             user: item.User?.name,
             phone: item.User?.phone,

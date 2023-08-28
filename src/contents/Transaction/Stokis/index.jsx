@@ -84,7 +84,6 @@ function TrxStokis() {
 
   const loadData = (params) => {
     isLoadingSet(true);
-    const user = secureStorage.getItem("user");
 
     const statusId = params && params.statusId ? { statusId: params.statusId } : {};
     const bankId = params && params.bankId ? { bankId: params.bankId } : {};
@@ -106,7 +105,20 @@ function TrxStokis() {
         const output = data.data.map((item) => {
           const trStatus = item.TrStatus;
           return {
-            kode: item.kode,
+            kode: (
+              <MDTypography
+                variant="caption"
+                fontWeight="medium"
+                sx={{
+                  cursor: "pointer",
+                }}
+                color="info"
+                component={Link}
+                to={{ pathname: `/trx/stokis/detail/${item.id}` }}
+              >
+                {item.kode}
+              </MDTypography>
+            ),
             name: `${item.User?.name} - (${item.User?.username})`,
             stokis: item.Stoki?.name,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),

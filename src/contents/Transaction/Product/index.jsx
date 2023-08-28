@@ -181,7 +181,20 @@ function TrxProduct() {
         const output = data.data.map((item) => {
           const trStatus = item.TrStatus;
           return {
-            kode: item.kode,
+            kode: (
+              <MDTypography
+                variant="caption"
+                fontWeight="medium"
+                sx={{
+                  cursor: "pointer",
+                }}
+                color="info"
+                component={Link}
+                to={{ pathname: `/trx/product/detail/${item.id}` }}
+              >
+                {item.kode}
+              </MDTypography>
+            ),
             user: item.User?.name,
             name: item.Product?.name,
             qty: item.qty,

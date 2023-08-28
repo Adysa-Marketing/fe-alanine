@@ -170,7 +170,20 @@ function Widhraw() {
         const output = data.data.map((item) => {
           const wdStatus = item.WdStatus ? item.WdStatus : null;
           return {
-            kode: item.kode,
+            kode: (
+              <MDTypography
+                variant="caption"
+                fontWeight="medium"
+                sx={{
+                  cursor: "pointer",
+                }}
+                color="info"
+                component={Link}
+                to={{ pathname: `/trx/widhraw/detail/${item.id}` }}
+              >
+                {item.kode}
+              </MDTypography>
+            ),
             name: item.User ? item.User.name : "-",
             bankName: `${item.bankName} - ${item.accountName} - ${item.noRekening}`,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),

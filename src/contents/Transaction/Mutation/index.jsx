@@ -78,8 +78,9 @@ function Mutation() {
     if (user) {
       if (![1, 2].includes(user.roleId)) {
         redirectSet("/dashboard");
+      } else {
+        loadData();
       }
-      loadData();
     }
   }, []);
 
