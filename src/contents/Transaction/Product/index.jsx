@@ -484,6 +484,7 @@ function TrxProduct() {
                             keyword: e.target.value,
                             statusId: status ? status.id : null,
                             categoryId: category ? category.id : null,
+                            bankId: bank ? bank.id : null,
                           });
                         }
                       }}

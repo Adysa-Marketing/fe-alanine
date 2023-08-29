@@ -25,6 +25,7 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 import moment from "moment";
+import MDDatePicker from "components/MDDatePicker";
 
 function TrxStokis() {
   const [isLoading, isLoadingSet] = useState(false);
@@ -48,6 +49,9 @@ function TrxStokis() {
 
   const [status, statusSet] = useState(null);
   const [statuses, statusesSet] = useState([]);
+
+  const [startDate, startDateSet] = useState("");
+  const [endDate, endDateSet] = useState("");
 
   const [paymentType, paymentTypeSet] = useState(null);
   const [paymentTypes, paymentTypesSet] = useState([
@@ -93,6 +97,8 @@ function TrxStokis() {
       keyword: params && params.keyword ? params.keyword : keyword,
       currentPage: params && params.currentPage ? params.currentPage : 1,
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
+      startDate: params && params.startDate ? params.startDate : startDate,
+      endDate: params && params.endDate ? params.endDate : endDate,
       ...statusId,
       ...bankId,
       ...paymentTypeId,
@@ -189,7 +195,7 @@ function TrxStokis() {
 
           <MDBox px={2} width="100%" display="flex" justifyContent="flex-start">
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3} lg={3}>
+              <Grid item xs={12} md={2} lg={2}>
                 <MDInput
                   label="Search..."
                   size="small"
@@ -202,13 +208,15 @@ function TrxStokis() {
                         keyword: e.target.value,
                         statusId: status ? status.id : null,
                         paymentTypeId: paymentType ? paymentType.id : null,
+                        startDate,
+                        endDate,
                       });
                     }
                   }}
                   onChange={(e) => keywordSet(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} md={3} lg={3}>
+              <Grid item xs={12} md={2} lg={2}>
                 <Autocomplete
                   value={status}
                   options={statuses}
@@ -219,6 +227,8 @@ function TrxStokis() {
                       currentPage: 1,
                       statusId: value ? value.id : null,
                       paymentTypeId: paymentType ? paymentType.id : null,
+                      startDate,
+                      endDate,
                     });
                   }}
                   sx={{
@@ -235,7 +245,7 @@ function TrxStokis() {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} md={3} lg={3}>
+              <Grid item xs={12} md={2} lg={2}>
                 <Autocomplete
                   value={paymentType}
                   options={paymentTypes}
@@ -246,6 +256,8 @@ function TrxStokis() {
                       currentPage: 1,
                       paymentTypeId: value ? value.id : null,
                       statusId: status ? status.id : null,
+                      startDate,
+                      endDate,
                     });
                   }}
                   sx={{
@@ -267,6 +279,66 @@ function TrxStokis() {
                   )}
                 />
               </Grid>
+              {/* Start Date */}
+              <Grid item xs={12} md={2} lg={2}>
+                <MDDatePicker
+                  input={{
+                    id: "startDate",
+                    placeholder: "Tanggal Awal",
+                    fullWidth: true,
+                    sx: {
+                      ".MuiInputBase-input": {
+                        height: "1em !important",
+                      },
+                    },
+                  }}
+                  value={startDate}
+                  onChange={(value) => {
+                    const date = moment(value[0]).format("YYYY-MM-DD");
+                    startDateSet(date);
+                  }}
+                />
+              </Grid>
+              {/* End Date */}
+              <Grid item xs={12} md={2} lg={2}>
+                <MDDatePicker
+                  input={{
+                    id: "endDate",
+                    placeholder: "Tanggal Akhir",
+                    fullWidth: true,
+                    sx: {
+                      ".MuiInputBase-input": {
+                        height: "1em !important",
+                      },
+                    },
+                  }}
+                  value={endDate}
+                  onChange={(value) => {
+                    const date = moment(value[0]).format("YYYY-MM-DD");
+                    endDateSet(date);
+                  }}
+                />
+              </Grid>
+              {/* Button Search */}
+              <Grid item xs={12} md={1} lg={1}>
+                <MDButton
+                  color="info"
+                  variant="gradient"
+                  onClick={() => {
+                    loadData({
+                      keyword,
+                      currentPage: 1,
+                      startDate,
+                      endDate,
+                      statusId: status ? status.id : null,
+                      paymentTypeId: paymentType ? paymentType.id : null,
+                    });
+                  }}
+                  iconOnly
+                >
+                  <Icon>search</Icon>
+                </MDButton>
+              </Grid>
             </Grid>
           </MDBox>
           <MDBox p={2}>
@@ -287,6 +359,8 @@ function TrxStokis() {
                   keyword,
                   statusId: status ? status.id : null,
                   paymentTypeId: paymentType ? paymentType.id : null,
+                  startDate,
+                  endDate,
                 });
               }}
               onChangePage={(current) => {
@@ -298,6 +372,8 @@ function TrxStokis() {
                     keyword,
                     statusId: status ? status.id : null,
                     paymentTypeId: paymentType ? paymentType.id : null,
+                    startDate,
+                    endDate,
                   });
                 }
               }}

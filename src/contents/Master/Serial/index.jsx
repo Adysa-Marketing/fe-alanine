@@ -25,9 +25,10 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 import moment from "moment";
+import * as XLSX from "xlsx/xlsx.mjs";
+import GetAppIcon from "@mui/icons-material/GetApp";
 
 function Serial() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -41,7 +42,8 @@ function Serial() {
     { Header: "Nomor Serial", accessor: "serialNumber", width: "25%" },
     { Header: "Status", accessor: "status", width: "25%" },
     { Header: "DiBuat", accessor: "createdAt", width: "25%" },
-    { Header: "DiUpdate", accessor: "updatedAt", width: "25%" },
+    { Header: "DiPakai", accessor: "updatedAt", width: "25%" },
+    { Header: "Member", accessor: "member", width: "25%" },
     { Header: "Deskripsi", accessor: "description", width: "20%" },
   ]);
 
@@ -53,6 +55,10 @@ function Serial() {
   ]);
   const [startDate, startDateSet] = useState("");
   const [endDate, endDateSet] = useState("");
+
+  // data export
+  const [dataSerial, dataSerialSet] = useState([]);
+
   useEffect(() => {
     const user = secureStorage.getItem("user");
     if (user) {
@@ -82,6 +88,7 @@ function Serial() {
         const data = response.data;
         let no = 0;
         const output = data.data.map((item) => {
+          const user = item.User ? item.User : null;
           no++;
           return {
             no,
@@ -94,9 +101,13 @@ function Serial() {
               ),
             createdAt: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
             updatedAt: item.updated ? moment(item.updated).format("DD-MM-YYYY HH:mm:ss") : "-",
+            member: user ? user.username : "-",
             description: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
           };
         });
+
+        const dataSer = data.data.map((item) => item.serialNumber.toString());
+        dataSerialSet(dataSer);
 
         totalPagesSet(data.totalPages);
         totalDataSet(data.totalData);
@@ -107,6 +118,13 @@ function Serial() {
         console.log("[!] Error : ", error);
         isLoadingSet(false);
       });
+  };
+
+  const exportToExcel = () => {
+    const ws = XLSX.utils.aoa_to_sheet(dataSerial.map((item) => [item]));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, `data-serial.xlsx`);
   };
 
   return (
@@ -182,7 +200,7 @@ function Serial() {
                 />
               </Grid>
               {/* Start Date */}
-              <Grid item xs={12} md={3} lg={2}>
+              <Grid item xs={12} md={2} lg={2}>
                 <MDDatePicker
                   input={{
                     id: "startDate",
@@ -202,7 +220,7 @@ function Serial() {
                 />
               </Grid>
               {/* End Date */}
-              <Grid item xs={12} md={3} lg={2}>
+              <Grid item xs={12} md={2} lg={2}>
                 <MDDatePicker
                   input={{
                     id: "endDate",
@@ -222,7 +240,7 @@ function Serial() {
                 />
               </Grid>
               {/* Button Search */}
-              <Grid item xs={12} md={1} lg={1}>
+              <Grid item xs={2} md={1} lg={1}>
                 <MDButton
                   color="info"
                   variant="gradient"
@@ -238,6 +256,19 @@ function Serial() {
                   iconOnly
                 >
                   <Icon>search</Icon>
+                </MDButton>
+              </Grid>
+              {/* Button Export */}
+              <Grid item xs={2} md={1} lg={1}>
+                <MDButton
+                  color="success"
+                  variant="gradient"
+                  onClick={() => {
+                    exportToExcel();
+                  }}
+                  iconOnly
+                >
+                  <GetAppIcon />
                 </MDButton>
               </Grid>
             </Grid>
@@ -260,6 +291,7 @@ function Serial() {
                   keyword,
                   startDate,
                   endDate,
+                  statusId: status ? status.id : null,
                 });
               }}
               onChangePage={(current) => {
@@ -271,6 +303,7 @@ function Serial() {
                     keyword,
                     startDate,
                     endDate,
+                    statusId: status ? status.id : null,
                   });
                 }
               }}

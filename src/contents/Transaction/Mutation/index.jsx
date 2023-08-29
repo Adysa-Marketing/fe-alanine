@@ -203,7 +203,7 @@ function Mutation() {
                     />
                   </Grid>
                   {/* Start Date */}
-                  <Grid item xs={12} md={3} lg={2}>
+                  <Grid item xs={12} md={2} lg={2}>
                     <MDDatePicker
                       input={{
                         id: "startDate",
@@ -223,7 +223,7 @@ function Mutation() {
                     />
                   </Grid>
                   {/* End Date */}
-                  <Grid item xs={12} md={3} lg={2}>
+                  <Grid item xs={12} md={2} lg={2}>
                     <MDDatePicker
                       input={{
                         id: "endDate",
@@ -253,7 +253,8 @@ function Mutation() {
                           currentPage: 1,
                           startDate,
                           endDate,
-                          statusId: status ? status.id : null,
+                          type: type ? type.label : null,
+                          category: value ? value.label : null,
                         });
                       }}
                       iconOnly

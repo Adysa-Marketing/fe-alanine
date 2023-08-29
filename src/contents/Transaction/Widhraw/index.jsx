@@ -602,6 +602,8 @@ function Widhraw() {
                               currentPage: 1,
                               keyword: e.target.value,
                               statusId: status ? status.id : null,
+                              startDate,
+                              endDate,
                             });
                           }
                         }}
@@ -643,7 +645,7 @@ function Widhraw() {
                     />
                   </Grid>
                   {/* Start Date */}
-                  <Grid item xs={12} md={3} lg={2}>
+                  <Grid item xs={12} md={2} lg={2}>
                     <MDDatePicker
                       input={{
                         id: "startDate",
@@ -663,7 +665,7 @@ function Widhraw() {
                     />
                   </Grid>
                   {/* End Date */}
-                  <Grid item xs={12} md={3} lg={2}>
+                  <Grid item xs={12} md={2} lg={2}>
                     <MDDatePicker
                       input={{
                         id: "endDate",
