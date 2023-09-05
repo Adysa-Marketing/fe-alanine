@@ -271,7 +271,7 @@ function FormTrxProduct() {
       success.address &&
       success.imageTf
     ) {
-      if (qty > stock) {
+      if (qty > parseInt(stock)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
           modalMessage: "Jumlah pesanan melebihi stock yang tersedia",

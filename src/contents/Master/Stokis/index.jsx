@@ -81,7 +81,7 @@ function Stokis() {
             action: (
               <ButtonAction
                 id={item.id}
-                urlKey={"/master/stokis"}
+                urlKey={"master/stokis"}
                 refreshData={loadData}
                 edit={true}
                 remove={true}

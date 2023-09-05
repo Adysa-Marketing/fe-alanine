@@ -586,24 +586,24 @@ const routes = [
         route: "/setting/bank",
         component: <Container />,
       },
+      // {
+      //   name: "Pofile Perusahaan",
+      //   key: "company",
+      //   route: "/setting/company",
+      //   component: <Container />,
+      // },
       {
-        name: "Pofile Perusahaan",
-        key: "company",
-        route: "/setting/company",
-        component: <Container />,
-      },
-      {
-        name: "Tesrimonial",
+        name: "Testimonial",
         key: "add-testimoni",
         route: "/setting/testimoni",
         component: <Container />,
       },
-      {
-        name: "Web Config",
-        key: "web",
-        route: "/setting/web",
-        component: <Container />,
-      },
+      // {
+      //   name: "Web Config",
+      //   key: "web",
+      //   route: "/setting/web",
+      //   component: <Container />,
+      // },
     ],
   },
 
@@ -1035,26 +1035,26 @@ const getMenu = (user) => {
         },
       ]
     : [];
-  const subSettingCompany = [1, 2].includes(roleId)
-    ? [
-        {
-          name: "Pofile Perusahaan",
-          key: "company",
-          route: "/setting/company",
-          component: <Container />,
-        },
-      ]
-    : [];
-  const subSettingWebConfig = [1, 2].includes(roleId)
-    ? [
-        {
-          name: "Web Config",
-          key: "web",
-          route: "/setting/web",
-          component: <Container />,
-        },
-      ]
-    : [];
+  // const subSettingCompany = [1, 2].includes(roleId)
+  //   ? [
+  //       {
+  //         name: "Pofile Perusahaan",
+  //         key: "company",
+  //         route: "/setting/company",
+  //         component: <Container />,
+  //       },
+  //     ]
+  //   : [];
+  // const subSettingWebConfig = [1, 2].includes(roleId)
+  //   ? [
+  //       {
+  //         name: "Web Config",
+  //         key: "web",
+  //         route: "/setting/web",
+  //         component: <Container />,
+  //       },
+  //     ]
+  //   : [];
   const menuSetting = [1, 2, 3, 4].includes(roleId)
     ? [
         {
@@ -1063,7 +1063,7 @@ const getMenu = (user) => {
           key: "setting",
           route: "/setting",
           icon: <Icon fontSize="medium">settingsApplication</Icon>,
-          collapse: [...subSettingAccount, ...subSettingCompany, ...subSettingWebConfig],
+          collapse: [...subSettingAccount],
         },
       ]
     : [];
