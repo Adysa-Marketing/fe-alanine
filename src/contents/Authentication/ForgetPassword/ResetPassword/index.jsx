@@ -161,7 +161,7 @@ function ResetPassword() {
             notifRef.current.setShow({
               show: true,
               message: "Koneksi jaringan terputus",
-              color: "success",
+              color: "warning",
             });
           }
         });

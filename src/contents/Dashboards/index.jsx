@@ -740,7 +740,7 @@ function Dashboard() {
         )}
 
         {/* HISTORY LIST DATA */}
-        {[1, 2].includes(user.roleId) && (
+        {user && [1, 2].includes(user.roleId) && (
           <>
             {/* history sale & history reward */}
             <Grid container spacing={3} mb={2}>
@@ -1030,7 +1030,7 @@ function Dashboard() {
         )}
 
         {/* history referral & history widhraw */}
-        {[3, 4].includes(user.roleId) && (
+        {user && [3, 4].includes(user.roleId) && (
           <Grid container spacing={3} mb={2}>
             <Grid item xs={12} md={12} lg={6}>
               <Card>
@@ -1156,7 +1156,7 @@ function Dashboard() {
         )}
 
         {/* trx product agen */}
-        {[3].includes(user.roleId) && (
+        {user && [3].includes(user.roleId) && (
           <Grid container spacing={3} mb={2}>
             <Grid item xs={12} md={12} lg={6}>
               <Card>

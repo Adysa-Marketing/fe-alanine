@@ -115,7 +115,7 @@ function Login({ status }) {
             notifRef.current.setShow({
               show: true,
               message: "Koneksi jaringan terputus",
-              color: "success",
+              color: "warning",
             });
           }
         });
@@ -172,7 +172,7 @@ function Login({ status }) {
             notifRef.current.setShow({
               show: true,
               message: "Koneksi jaringan terputus",
-              color: "success",
+              color: "warning",
             });
           }
         });

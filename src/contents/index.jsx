@@ -17,7 +17,7 @@ import { getMenu } from "routes";
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
-// import logoApp from "assets/img/logoApp.png";
+import logoApp from "assets/img/logo.png";
 
 import secureStorage from "libs/secureStorage";
 // import { requestForToken, onMessageListener } from "firebaseinit";
@@ -94,8 +94,8 @@ function Layout() {
     <>
       <Sidenav
         color={sidenavColor}
-        // brand={logoApp}
-        brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
+        brand={logoApp}
+        // brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
         brandName="ADYSA MARKETING"
         routes={user ? getMenu(user) : []}
         onMouseEnter={handleOnMouseEnter}

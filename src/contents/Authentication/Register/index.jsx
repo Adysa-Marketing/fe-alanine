@@ -299,8 +299,35 @@ function Register() {
                     label="Password"
                     id="password"
                     value={password}
-                    onChange={handleChange(passwordSet)}
-                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      passwordSet(value);
+                      if (password !== passwordConfirm || password.length < 5) {
+                        console.log("Password : ", password);
+                        console.log("Password Confirm :", passwordConfirm);
+                        successSet({
+                          ...success,
+                          password: false,
+                          passwordConfirm: false,
+                        });
+                        errorSet({
+                          ...error,
+                          password: true,
+                          passwordConfirm: true,
+                        });
+                      } else {
+                        successSet({
+                          ...success,
+                          password: true,
+                          passwordConfirm: true,
+                        });
+                        errorSet({
+                          ...error,
+                          password: false,
+                          passwordConfirm: false,
+                        });
+                      }
+                    }}
                     success={success ? success.password : false}
                     error={error ? error.password : false}
                     variant="standard"
@@ -313,8 +340,35 @@ function Register() {
                     label="Password Konfirmasi"
                     id="passwordConfirm"
                     value={passwordConfirm}
-                    onChange={handleChange(passwordConfirmSet)}
-                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      const { value } = e.target;
+                      passwordConfirmSet(value);
+                      if (password !== passwordConfirm) {
+                        console.log("Password : ", password);
+                        console.log("Password Confirm :", passwordConfirm);
+                        successSet({
+                          ...success,
+                          password: false,
+                          passwordConfirm: false,
+                        });
+                        errorSet({
+                          ...error,
+                          password: true,
+                          passwordConfirm: true,
+                        });
+                      } else {
+                        successSet({
+                          ...success,
+                          password: true,
+                          passwordConfirm: true,
+                        });
+                        errorSet({
+                          ...error,
+                          password: false,
+                          passwordConfirm: false,
+                        });
+                      }
+                    }}
                     success={success ? success.passwordConfirm : false}
                     error={error ? error.passwordConfirm : false}
                     variant="standard"
