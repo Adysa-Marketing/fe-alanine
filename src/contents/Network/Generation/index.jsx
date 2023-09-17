@@ -35,7 +35,6 @@ import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
 function Generation() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -55,6 +54,8 @@ function Generation() {
   const [level, levelSet] = useState("all");
   const [startDate, startDateSet] = useState("");
   const [endDate, endDateSet] = useState("");
+
+  const [redirect, redirectSet] = useState(null);
 
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
@@ -78,7 +79,7 @@ function Generation() {
     }
 
     /** 
-     The event listener that's calling the handleTabsOrientation function when resizing the window.
+    The event listener that's calling the handleTabsOrientation function when resizing the window.
     */
     window.addEventListener("resize", handleTabsOrientation);
 
@@ -94,7 +95,6 @@ function Generation() {
   }, [level]);
 
   const handleSetTabValue = (event, newValue) => {
-    console.log("new val : ", newValue);
     newValue == 0 ? levelSet("all") : levelSet(newValue);
     setTabValue(newValue);
   };
@@ -145,6 +145,10 @@ function Generation() {
         isLoadingSet(false);
       });
   };
+
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
 
   return (
     <DashboardLayout>

@@ -25,7 +25,6 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import secureStorage from "libs/secureStorage";
 function Product() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);

@@ -27,7 +27,6 @@ import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
 function Referral() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -48,17 +47,13 @@ function Referral() {
   const [kodeReferral, kodeReferralSet] = useState("");
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
-
-  useEffect(() => {
+    const user = secureStorage.getItem("user");
     if (user) {
       linkReferralSet(`${window.location.origin}/register/?ref=${user.SponsorKey?.key}`);
       kodeReferralSet(user.SponsorKey?.key);
       loadData();
     }
-  }, [user]);
+  }, []);
 
   const loadData = (params) => {
     isLoadingSet(true);

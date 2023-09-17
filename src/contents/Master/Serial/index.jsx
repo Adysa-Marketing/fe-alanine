@@ -127,6 +127,10 @@ function Serial() {
     XLSX.writeFile(wb, `data-serial.xlsx`);
   };
 
+  if (redirect) {
+    return <Navigate to={redirect} />;
+  }
+
   return (
     <DashboardLayout>
       <DashboardNavbar />

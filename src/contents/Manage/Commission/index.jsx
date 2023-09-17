@@ -27,7 +27,6 @@ import secureStorage from "libs/secureStorage";
 import moment from "moment";
 
 function Commission() {
-  const [user, userSet] = useState(null);
   const [isLoading, isLoadingSet] = useState(false);
   const [keyword, keywordSet] = useState("");
   const [currentPage, currentPageSet] = useState(1);
@@ -51,16 +50,12 @@ function Commission() {
   const [endDate, endDateSet] = useState("");
 
   useEffect(() => {
-    const userData = secureStorage.getItem("user");
-    userSet(userData);
-  }, []);
-
-  useEffect(() => {
+    const user = secureStorage.getItem("user");
     if (user) {
       loadCommissionLevel();
       loadData();
     }
-  }, [user]);
+  }, []);
 
   const loadCommissionLevel = () => {
     useAxios()
