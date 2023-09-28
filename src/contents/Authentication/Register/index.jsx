@@ -81,6 +81,9 @@ function Register() {
   };
 
   const handleSubmit = () => {
+    console.log("success :", success);
+    console.log("error :", error);
+    console.log("pass :", password, passwordConfirm);
     if (
       success.serial &&
       success.referral &&
@@ -302,9 +305,7 @@ function Register() {
                     onChange={(e) => {
                       const { value } = e.target;
                       passwordSet(value);
-                      if (password !== passwordConfirm || password.length < 5) {
-                        console.log("Password : ", password);
-                        console.log("Password Confirm :", passwordConfirm);
+                      if (value !== passwordConfirm || value.length < 5) {
                         successSet({
                           ...success,
                           password: false,
@@ -343,9 +344,7 @@ function Register() {
                     onChange={(e) => {
                       const { value } = e.target;
                       passwordConfirmSet(value);
-                      if (password !== passwordConfirm) {
-                        console.log("Password : ", password);
-                        console.log("Password Confirm :", passwordConfirm);
+                      if (password !== value) {
                         successSet({
                           ...success,
                           password: false,
