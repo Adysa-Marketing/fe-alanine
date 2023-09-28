@@ -81,9 +81,6 @@ function Register() {
   };
 
   const handleSubmit = () => {
-    console.log("success :", success);
-    console.log("error :", error);
-    console.log("pass :", password, passwordConfirm);
     if (
       success.serial &&
       success.referral &&
