@@ -81,8 +81,6 @@ function Register() {
   };
 
   const handleSubmit = () => {
-    console.log("success :", success);
-    console.log("error :", error);
     if (
       success.serial &&
       success.referral &&
