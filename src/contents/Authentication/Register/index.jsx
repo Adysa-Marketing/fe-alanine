@@ -81,6 +81,8 @@ function Register() {
   };
 
   const handleSubmit = () => {
+    console.log("success :", success);
+    console.log("error :", error);
     if (
       success.serial &&
       success.referral &&
@@ -299,33 +301,35 @@ function Register() {
                     label="Password"
                     id="password"
                     value={password}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      passwordSet(value);
-                      if (value !== passwordConfirm || value.length < 5) {
-                        successSet({
-                          ...success,
-                          password: false,
-                          passwordConfirm: false,
-                        });
-                        errorSet({
-                          ...error,
-                          password: true,
-                          passwordConfirm: true,
-                        });
-                      } else {
-                        successSet({
-                          ...success,
-                          password: true,
-                          passwordConfirm: true,
-                        });
-                        errorSet({
-                          ...error,
-                          password: false,
-                          passwordConfirm: false,
-                        });
-                      }
-                    }}
+                    onChange={handleChange(passwordSet)}
+                    onBlur={handleBlur}
+                    // onChange={(e) => {
+                    //   const { value } = e.target;
+                    //   passwordSet(value);
+                    //   if (value !== passwordConfirm || value.length < 5) {
+                    //     successSet({
+                    //       ...success,
+                    //       password: false,
+                    //       passwordConfirm: false,
+                    //     });
+                    //     errorSet({
+                    //       ...error,
+                    //       password: true,
+                    //       passwordConfirm: true,
+                    //     });
+                    //   } else {
+                    //     successSet({
+                    //       ...success,
+                    //       password: true,
+                    //       passwordConfirm: true,
+                    //     });
+                    //     errorSet({
+                    //       ...error,
+                    //       password: false,
+                    //       passwordConfirm: false,
+                    //     });
+                    //   }
+                    // }}
                     success={success ? success.password : false}
                     error={error ? error.password : false}
                     variant="standard"
@@ -338,33 +342,35 @@ function Register() {
                     label="Password Konfirmasi"
                     id="passwordConfirm"
                     value={passwordConfirm}
-                    onChange={(e) => {
-                      const { value } = e.target;
-                      passwordConfirmSet(value);
-                      if (password !== value) {
-                        successSet({
-                          ...success,
-                          password: false,
-                          passwordConfirm: false,
-                        });
-                        errorSet({
-                          ...error,
-                          password: true,
-                          passwordConfirm: true,
-                        });
-                      } else {
-                        successSet({
-                          ...success,
-                          password: true,
-                          passwordConfirm: true,
-                        });
-                        errorSet({
-                          ...error,
-                          password: false,
-                          passwordConfirm: false,
-                        });
-                      }
-                    }}
+                    onChange={handleChange(passwordConfirmSet)}
+                    onBlur={handleBlur}
+                    // onChange={(e) => {
+                    //   const { value } = e.target;
+                    //   passwordConfirmSet(value);
+                    //   if (password !== value) {
+                    //     successSet({
+                    //       ...success,
+                    //       password: false,
+                    //       passwordConfirm: false,
+                    //     });
+                    //     errorSet({
+                    //       ...error,
+                    //       password: true,
+                    //       passwordConfirm: true,
+                    //     });
+                    //   } else {
+                    //     successSet({
+                    //       ...success,
+                    //       password: true,
+                    //       passwordConfirm: true,
+                    //     });
+                    //     errorSet({
+                    //       ...error,
+                    //       password: false,
+                    //       passwordConfirm: false,
+                    //     });
+                    //   }
+                    // }}
                     success={success ? success.passwordConfirm : false}
                     error={error ? error.passwordConfirm : false}
                     variant="standard"
