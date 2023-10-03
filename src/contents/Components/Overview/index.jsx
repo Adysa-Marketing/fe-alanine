@@ -44,6 +44,7 @@ import useAxios from "libs/useAxios";
 import Config from "config";
 import ModalNotif from "contents/Components/ModalNotif";
 import secureStorage from "libs/secureStorage";
+import burceMars from "assets/images/bruce-mars.jpg";
 
 function Overview({ path }) {
   const [name, nameSet] = useState("");
@@ -58,6 +59,7 @@ function Overview({ path }) {
   const [subDistrict, subDistrictSet] = useState("");
   const [image, imageSet] = useState("");
   const [gender, genderSet] = useState("");
+  const [wallet, walletSet] = useState(0);
   const [kk, kkSet] = useState("");
   const [bio, bioSet] = useState("");
   const [testimoni, testimoniSet] = useState({});
@@ -98,6 +100,7 @@ function Overview({ path }) {
         subDistrictSet(data.SubDistrict?.name);
         imageSet(data.image);
         genderSet(data.gender);
+        walletSet(data.wallet);
         kkSet(data.kk);
         bioSet(data.remark);
         testimoniSet(data.Testimonial);
@@ -105,9 +108,9 @@ function Overview({ path }) {
         sponsorKeySet(data.SponsorKey?.key);
         const Downline = data.SponsorKey?.Referrals
           ? data.SponsorKey?.Referrals.map((downline) => {
-              const User = downline.User;
-              const district = User.District?.name;
-              const image = `${Config.ApiAsset}/user/${User.image}`;
+              const User = downline.User || {};
+              const district = User.District?.name || "";
+              const image = User.image ? `${Config.ApiAsset}/user/${User.image}` : burceMars;
               delete User.District;
               delete User.image;
               return {
@@ -159,15 +162,16 @@ function Overview({ path }) {
                   role,
                   phone,
                   email,
-                  point,
+                  point: point.toString(),
+                  saldo: "Rp. " + new Intl.NumberFormat("id-ID").format(wallet),
                   nik: kk,
                   gender,
                   sponsorKey,
-                  alamat: address,
-                  location: country,
-                  provinsi: province,
-                  kota: district,
-                  kecamatan: subDistrict,
+                  alamat: address || "",
+                  location: country || "",
+                  provinsi: province || "",
+                  kota: district || "",
+                  kecamatan: subDistrict || "",
                 }}
                 social={[]}
                 action={{
@@ -189,7 +193,7 @@ function Overview({ path }) {
                 Testimonial
               </MDTypography>
               <MDTypography variant="h6" mt={2} mb={4} fontWeight="light">
-                {testimoni?.testimonial}
+                {testimoni?.testimonial || ""}
               </MDTypography>
             </Grid>
           </Grid>
