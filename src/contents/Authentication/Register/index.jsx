@@ -93,12 +93,19 @@ function Register() {
       success.phone
     ) {
       const regexUsername = /^[^\s]*$/;
+      const regexUsernameUpper = /[A-Z]/;
       const regexPhone = /^(08|628)[0-9]{9,13}$/;
       const regexKK = /^[0-9]{16}$/;
       if (!regexUsername.test(username)) {
         notifRef.current.setShow({
           show: true,
           message: "Username tidak boleh menggunakan spasi",
+          color: "warning",
+        });
+      } else if (regexUsernameUpper.test(username)) {
+        notifRef.current.setShow({
+          show: true,
+          message: "Username tidak boleh menggunakan kapital",
           color: "warning",
         });
       } else if (password.length < 5) {
