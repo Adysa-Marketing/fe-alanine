@@ -84,6 +84,7 @@ function Overview({ path }) {
   }, [location]);
 
   const loadDetail = (id) => {
+    downlineSet([]); // to clear previous data downline if exist
     useAxios()
       .get(`${Config.ApiUrl}/api/v1/${path}/get/${id}`)
       .then((response) => {
