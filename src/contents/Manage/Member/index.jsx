@@ -43,8 +43,10 @@ function Member() {
     { Header: "Email", accessor: "email", width: "25%" },
     { Header: "No Telpon", accessor: "phone", width: "25%" },
     { Header: "Poin", accessor: "point", width: "15%" },
+    { Header: "Saldo", accessor: "wallet", width: "25%" },
     { Header: "Gender", accessor: "gender", width: "15%" },
     { Header: "Status", accessor: "status", width: "15%" },
+    { Header: "Tgl Daftar", accessor: "createdAt", width: "25%" },
   ]);
 
   const [redirect, redirectSet] = useState(null);
@@ -99,7 +101,9 @@ function Member() {
             email: item.email,
             phone: item.phone,
             point: item.point,
+            wallet: "Rp. " + new Intl.NumberFormat("id-ID").format(item.wallet),
             gender: item.gender,
+            createdAt: item.createdAt,
             status: item.isActive ? (
               <MDBadge badgeContent="Aktif" container color="success" />
             ) : (

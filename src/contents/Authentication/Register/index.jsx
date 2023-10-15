@@ -94,7 +94,7 @@ function Register() {
     ) {
       const regexUsername = /^[^\s]*$/;
       const regexUsernameUpper = /[A-Z]/;
-      const regexPhone = /^(08|628)[0-9]{9,13}$/;
+      const regexPhone = /^(08|628)[0-9]{7,13}$/;
       const regexKK = /^[0-9]{16}$/;
       if (!regexUsername.test(username)) {
         notifRef.current.setShow({
