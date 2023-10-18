@@ -46,6 +46,7 @@ function Generation() {
     { Header: "No", accessor: "no", width: "15%" },
     { Header: "Downline", accessor: "downline", width: "20%" },
     { Header: "Kontak", accessor: "contact", width: "20%" },
+    { Header: "Poin", accessor: "point", width: "20%" },
     { Header: "Level", accessor: "level", width: "20%" },
     { Header: "Status", accessor: "status", width: "20%" },
     { Header: "Tanggal", accessor: "date", width: "30%" },
@@ -125,6 +126,7 @@ function Generation() {
                 {item.Downline?.email} <br /> {item.Downline?.phone}
               </p>
             ),
+            point: item.Downline?.point,
             level: item.remark,
             status: item.Downline?.isActive ? (
               <MDBadge badgeContent="Aktif" container color="success" />

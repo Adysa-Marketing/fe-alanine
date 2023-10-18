@@ -38,6 +38,7 @@ function Referral() {
     { Header: "No", accessor: "no", width: "15%" },
     { Header: "Downline", accessor: "downline", width: "20%" },
     { Header: "Kontak", accessor: "contact", width: "20%" },
+    { Header: "Poin", accessor: "point", width: "20%" },
     { Header: "Tanggal", accessor: "date", width: "30%" },
   ]);
 
@@ -80,6 +81,7 @@ function Referral() {
                 {item.User?.email} <br /> {item.User?.phone}
               </p>
             ),
+            point: item.User?.point,
             date: item.date,
           };
         });
