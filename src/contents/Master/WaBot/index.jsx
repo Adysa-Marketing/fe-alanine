@@ -451,7 +451,14 @@ function WaBot() {
   };
 
   const handleSubmitSync = () => {
-    if (recipient == "" || message == "") {
+    const regexPhone = /^(08|628)[0-9]{7,13}$/;
+
+    if (!regexPhone.test(recipient)) {
+      modalNotifRef.current.setShow({
+        modalTitle: "Gagal",
+        modalMessage: `No WhatsApp tidak valid`,
+      });
+    } else if (recipient == "" || message == "") {
       let input = "";
       message == "" && (input = "Pesan");
       recipient == "" && (input = "No Tujuan");
