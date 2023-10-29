@@ -63,15 +63,15 @@ function Widhraw() {
   const [accountName, accountNameSet] = useState("");
   const [bankName, bankNameSet] = useState("");
   const [password, passwordSet] = useState("");
-  const [imageKtp, imageKtpSet] = useState(null);
-  const [imageKtpFilename, imageKtpFilenameSet] = useState("");
+  // const [imageKtp, imageKtpSet] = useState(null);
+  // const [imageKtpFilename, imageKtpFilenameSet] = useState("");
   const [disabledSubmit, disabledSubmitSet] = useState(false);
   const [remark, remarkSet] = useState("");
 
   const [success, successSet] = useState([]);
   const [error, errorSet] = useState([]);
 
-  const imageKtpRef = useRef();
+  // const imageKtpRef = useRef();
   const modalNotifRef = useRef();
 
   useEffect(() => {
@@ -112,7 +112,7 @@ function Widhraw() {
               noRekening: data.noRekening ? true : false,
               accountName: data.accountName ? true : false,
               amount: false,
-              imageKtp: false,
+              // imageKtp: false,
               password: false,
             });
 
@@ -123,7 +123,7 @@ function Widhraw() {
               noRekening: !data.noRekening ? true : false,
               accountName: !data.accountName ? true : false,
               amount: true,
-              imageKtp: true,
+              // imageKtp: true,
               password: true,
             });
           })
@@ -268,21 +268,21 @@ function Widhraw() {
 
   const resetForm = () => {
     amountSet(0);
-    imageKtpSet(null);
-    imageKtpFilenameSet("");
+    // imageKtpSet(null);
+    // imageKtpFilenameSet("");
     passwordSet("");
 
     successSet({
       ...success,
       amount: false,
-      imageKtp: false,
+      // imageKtp: false,
       password: false,
     });
 
     errorSet({
       ...success,
       amount: true,
-      imageKtp: true,
+      // imageKtp: true,
       password: true,
     });
   };
@@ -294,7 +294,7 @@ function Widhraw() {
       success.bankName &&
       success.amount &&
       success.password &&
-      success.imageKtp &&
+      // success.imageKtp &&
       success.kk
     ) {
       if (parseInt(wallet) < parseInt(amount)) {
@@ -313,7 +313,7 @@ function Widhraw() {
     } else {
       let input = "";
       !success.password && (input = "Password");
-      !success.imageKtp && (input = "KTP");
+      // !success.imageKtp && (input = "KTP");
       !success.amount && (input = "Total Widhraw");
       !success.noRekening && (input = "No Rekening");
       !success.bankName && (input = "Nama Bank");
@@ -335,7 +335,7 @@ function Widhraw() {
     formData.append("bankName", bankName);
     formData.append("accountName", accountName);
     formData.append("password", password);
-    formData.append("imageKtp", imageKtp);
+    // formData.append("imageKtp", imageKtp);
 
     useAxios()
       .post(`${Config.ApiUrl}/api/v1/trx/widhraw/create`, formData)
@@ -497,7 +497,7 @@ function Widhraw() {
                     </MDBox>
                     <MDBox mb={2}>
                       <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} sm={6}>
                           <input
                             type="file"
                             name="fileInput"
@@ -530,7 +530,7 @@ function Widhraw() {
                           <small style={{ color: "red", fontSize: "12px" }}>
                             Maksimal ukuran 2MB
                           </small>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={6}>
                           <MDInput
                             type="password"

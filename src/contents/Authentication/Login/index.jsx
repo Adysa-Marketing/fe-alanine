@@ -286,11 +286,11 @@ function Login({ status }) {
             </MDBox>
             <MDBox mb={2}>
               <MDInput
-                type="password"
+                type="text"
                 label="Password"
                 variant="standard"
                 fullWidth
-                placeholder="************"
+                placeholder="password"
                 InputLabelProps={{ shrink: true }}
                 value={password}
                 onChange={(e) => {

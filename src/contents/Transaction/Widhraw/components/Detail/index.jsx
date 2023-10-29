@@ -32,7 +32,7 @@ function DetailWidhraw() {
   const [kk, kkSet] = useState("");
   const [accountName, accountNameSet] = useState("");
   const [bankName, bankNameSet] = useState("");
-  const [imageKtp, imageKtpSet] = useState(null);
+  // const [imageKtp, imageKtpSet] = useState(null);
   const [image, imageSet] = useState(null);
   const [wdStatus, wdStatusSet] = useState({});
   const [redirect, redirectSet] = useState(null);
@@ -57,7 +57,7 @@ function DetailWidhraw() {
         accountNameSet(data.accountName);
         kkSet(data.kk);
         bankNameSet(data.bankName);
-        imageKtpSet(data.imageKtp);
+        // imageKtpSet(data.imageKtp);
         imageSet(data.image);
         wdStatusSet(data.WdStatus);
         data.remark != "" && remarkSet(data.remark);
@@ -227,7 +227,7 @@ function DetailWidhraw() {
               </Table>
             </Grid>
             <Grid item xs={12} md={6} lg={6}>
-              <MDBox
+              {/* <MDBox
                 position="relative"
                 borderRadius="lg"
                 mx={2}
@@ -250,7 +250,7 @@ function DetailWidhraw() {
                     mb={2}
                   />
                 )}
-              </MDBox>
+              </MDBox> */}
               <MDBox
                 position="relative"
                 borderRadius="lg"
