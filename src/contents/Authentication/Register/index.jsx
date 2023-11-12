@@ -302,7 +302,7 @@ function Register() {
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <MDInput
-                    type="password"
+                    type="text"
                     label="Password"
                     id="password"
                     value={password}
@@ -343,7 +343,7 @@ function Register() {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <MDInput
-                    type="password"
+                    type="text"
                     label="Password Konfirmasi"
                     id="passwordConfirm"
                     value={passwordConfirm}
