@@ -40,10 +40,11 @@ function Serial() {
     // { Header: "Action", accessor: "action", width: "15%" },
     { Header: "No", accessor: "no", width: "15%" },
     { Header: "Nomor Serial", accessor: "serialNumber", width: "25%" },
-    { Header: "Status", accessor: "status", width: "25%" },
-    { Header: "DiBuat", accessor: "createdAt", width: "25%" },
-    { Header: "DiPakai", accessor: "updatedAt", width: "25%" },
-    { Header: "Member", accessor: "member", width: "25%" },
+    { Header: "Status", accessor: "status", width: "20%" },
+    { Header: "DiBuat", accessor: "createdAt", width: "20%" },
+    { Header: "DiPakai", accessor: "updatedAt", width: "20%" },
+    { Header: "Member", accessor: "member", width: "20%" },
+    { Header: "Level Akun", accessor: "accountLevel", width: "20%" },
     { Header: "Deskripsi", accessor: "description", width: "20%" },
   ]);
 
@@ -89,6 +90,7 @@ function Serial() {
         let no = 0;
         const output = data.data.map((item) => {
           const user = item.User ? item.User : null;
+          const accountLevl = item.AccountLevel ? item.AccountLevel : null;
           no++;
           return {
             no,
@@ -102,12 +104,17 @@ function Serial() {
             createdAt: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
             updatedAt: item.updated ? moment(item.updated).format("DD-MM-YYYY HH:mm:ss") : "-",
             member: user ? user.username : "-",
+            accountLevel: accountLevl ? accountLevl.name : "-",
             description: <p style={{ wordWrap: "break-word", width: "25em" }}>{item.remark}</p>,
           };
         });
 
-        const dataSer = data.data.map((item) => item.serialNumber.toString());
-        dataSerialSet(dataSer);
+        const dataSer = data.data.map((item) => {
+          let serial = item.serialNumber.toString();
+          let level = item.AccountLevel ? item.AccountLevel.name : "-";
+          return [serial, level];
+        });
+        dataSerialSet([["SERIAL", "LEVEL AKUN"], ...dataSer]);
 
         totalPagesSet(data.totalPages);
         totalDataSet(data.totalData);
@@ -121,7 +128,7 @@ function Serial() {
   };
 
   const exportToExcel = () => {
-    const ws = XLSX.utils.aoa_to_sheet(dataSerial.map((item) => [item]));
+    const ws = XLSX.utils.aoa_to_sheet(dataSerial);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
     XLSX.writeFile(wb, `data-serial.xlsx`);

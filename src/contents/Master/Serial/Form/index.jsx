@@ -47,12 +47,14 @@ function FormSeri() {
   const [state, setState] = useState({
     title: "",
     id: "",
+    accountLevel: null,
     amount: "",
     remark: "",
 
     disabledSubmit: false,
     redirect: null,
 
+    accountLevels: [],
     error: [],
     success: [],
   });
@@ -68,8 +70,23 @@ function FormSeri() {
           redirect: "/dashboard",
         }));
       }
+      loadAccountLevel();
     }
   }, []);
+
+  const loadAccountLevel = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/dropdown/account-level`)
+      .then((response) => {
+        let data = response.data.data;
+        data = data.map((item) => ({ id: item.id, label: item.name }));
+        setState((prev) => ({
+          ...prev,
+          accountLevels: data,
+        }));
+      })
+      .catch((err) => console.log("[!] Error :", err));
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -101,7 +118,7 @@ function FormSeri() {
   };
 
   const handleSubmit = () => {
-    if (state.success.amount && state.success.remark) {
+    if (state.success.accountLevel && state.success.amount && state.success.remark) {
       if (!/^[1-9][0-9]*$/.test(state.amount)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
@@ -114,6 +131,7 @@ function FormSeri() {
       let input = "";
       !state.success.remark && (input = "Deskripsi");
       !state.success.amount && (input = "Total Serial");
+      !state.success.accountLevel && (input = "Level Akun");
 
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
@@ -128,6 +146,7 @@ function FormSeri() {
       disabledSubmit: true,
     }));
     const payload = {
+      accountLevelId: parseInt(state.accountLevel.id),
       amount: parseInt(state.amount),
       remark: state.remark,
     };
@@ -190,6 +209,32 @@ function FormSeri() {
           <MDBox component="form" role="form">
             <Grid container spacing={3}>
               <Grid item xs={12} lg={12} md={12}>
+                <MDBox mb={2}>
+                  <Autocomplete
+                    options={state.accountLevels}
+                    id="accountLevel"
+                    value={state.accountLevel}
+                    onKeyDown={handleKeyDown}
+                    onChange={(e, value) => {
+                      console.log("value :", value);
+                      setState((prev) => ({
+                        ...prev,
+                        accountLevel: value,
+                      }));
+                    }}
+                    onBlur={handleBlur}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    fullWidth
+                    renderInput={(params) => (
+                      <MDInput
+                        {...params}
+                        label="Level Akun"
+                        success={state.success ? state.success.accountLevel : false}
+                        error={state.error ? state.error.accountLevel : false}
+                      />
+                    )}
+                  />
+                </MDBox>
                 <MDBox mb={2}>
                   <MDInput
                     id="amount"
