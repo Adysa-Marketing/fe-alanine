@@ -106,6 +106,8 @@ import FormTrxProduct from "contents/Transaction/Product/components/Form";
 import DetailTrxProduct from "contents/Transaction/Product/components/Detail";
 import TrxAgenProduct from "contents/Transaction/AgenProduct";
 import DetailTrxAgenProduct from "contents/Transaction/AgenProduct/components/Detail";
+import AccountLevel from "contents/Master/AccountLevel";
+import FormAccountLevel from "contents/Master/AccountLevel/Form";
 
 const routes = [
   // ==========================================================================================
@@ -615,6 +617,25 @@ const routes = [
     route: "/master",
     icon: <Icon fontSize="medium">source</Icon>,
     collapse: [
+      // ====================== account level ======================
+      {
+        name: "Level Akun",
+        key: "account-level",
+        route: "/master/account-level",
+        component: <AccountLevel />,
+      },
+      {
+        name: "Tambah Level Akun",
+        key: "add-account-level",
+        route: "/master/account-level/add",
+        component: <FormAccountLevel />,
+      },
+      {
+        name: "Edit Level Akun",
+        key: "edit-account-level",
+        route: "/master/account-level/edit/:id",
+        component: <FormAccountLevel />,
+      },
       // ====================== admin ======================
       {
         name: "Admin",
@@ -1088,6 +1109,12 @@ const getMenu = (user) => {
           route: "/master",
           icon: <Icon fontSize="medium">source</Icon>,
           collapse: [
+            {
+              name: "Akun Level",
+              key: "account-level",
+              route: "/master/account-level",
+              component: <Container />,
+            },
             ...subMasterAdmin,
             {
               name: "Artikel",
