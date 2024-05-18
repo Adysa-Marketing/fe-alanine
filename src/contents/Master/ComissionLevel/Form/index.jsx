@@ -42,17 +42,29 @@ import { Navigate, useParams } from "react-router-dom";
 import ButtonBack from "contents/Components/ButtonBack";
 import secureStorage from "libs/secureStorage";
 
-function FormAccountLevel() {
-  const [id, idSet] = useState(0);
-  const [title, titleSet] = useState("");
+function FormCommissionLevel() {
+  const [id, idSet] = useState(null);
   const [name, nameSet] = useState("");
-  const [amount, amountSet] = useState(0);
+  const [percent, percentSet] = useState(0);
+  const [level, levelSet] = useState({ id: 1, label: "Level 1" });
   const [remark, remarkSet] = useState("");
+
+  const [title, titleSet] = useState("");
   const [action, actionSet] = useState("");
   const [redirect, redirectSet] = useState(null);
 
-  const [error, errorSet] = useState([]);
-  const [success, successSet] = useState([]);
+  const [accountLevel, accountLevelSet] = useState(null);
+  const [accountLevels, accountLevelsSet] = useState([]);
+  const [levels, levelsSet] = useState([
+    { id: 1, label: "Level 1" },
+    { id: 2, label: "Level 2" },
+    { id: 3, label: "Level 3" },
+    { id: 4, label: "Level 4" },
+    { id: 5, label: "Level 5" },
+  ]);
+
+  const [error, errorSet] = useState({});
+  const [success, successSet] = useState({ level: true });
   const [disabledSubmit, disabledSubmitSet] = useState(false);
 
   const params = useParams();
@@ -64,18 +76,30 @@ function FormAccountLevel() {
       if (![1, 2].includes(user.roleId)) {
         redirectSet("/dashboard");
       }
+      loadAccountLevel();
       loadPath();
     }
   }, []);
+
+  const loadAccountLevel = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/dropdown/account-level`)
+      .then((response) => {
+        let data = response.data.data;
+        data = data.map((item) => ({ id: item.id, label: item.name }));
+        accountLevelsSet(data);
+      })
+      .catch((err) => console.log("[!] Error :", err));
+  };
 
   const loadPath = () => {
     const pathname = window.location.pathname;
     const index = pathname.indexOf("edit");
     if (index === -1) {
-      titleSet("Tambah Level Akun");
+      titleSet("Tambah Level Komisi");
       actionSet("create");
     } else {
-      titleSet("Edit Level Akun");
+      titleSet("Edit Level Komisi");
       actionSet("update");
       loadDetail(params.id);
     }
@@ -83,18 +107,24 @@ function FormAccountLevel() {
 
   const loadDetail = (id) => {
     useAxios()
-      .get(`${Config.ApiUrl}/api/v1/master/account-level/get/${id}`)
+      .get(`${Config.ApiUrl}/api/v1/master/commission-level/get/${id}`)
       .then((response) => {
         const data = response.data.data;
         idSet(`${data.id}`);
         nameSet(data.name);
-        amountSet(data.amount);
+        percentSet(data.percent);
+        levelSet(data.level);
+        accountLevelSet(
+          data.AccountLevel ? { id: data.AccountLevel.id, label: data.AccountLevel.name } : null
+        );
         remarkSet(data.remark ? data.remark : "");
 
         successSet({
           ...success,
           name: data.name ? true : false,
-          amount: data.amount ? true : false,
+          percent: data.percent ? true : false,
+          level: data.level ? true : false,
+          accountLevel: data.AccountLevel ? true : false,
           remark: data.remark ? true : false,
         });
       })
@@ -104,7 +134,7 @@ function FormAccountLevel() {
           modalTitle: "Gagal",
           modalMessage: err.response ? err.response.data?.message : "Koneksi jaringan terputus",
           onClose: () => {
-            redirectSet("/master/account-level");
+            redirectSet("/master/commission-level");
           },
         });
       });
@@ -122,11 +152,17 @@ function FormAccountLevel() {
   };
 
   const handleSubmit = () => {
-    if (success.name && success.amount && success.remark) {
-      if (!/^[1-9][0-9]*$/.test(amount)) {
+    if (
+      success.name &&
+      success.percent &&
+      success.level &&
+      success.accountLevel &&
+      success.remark
+    ) {
+      if (!/^[1-9][0-9]*$/.test(percent)) {
         modalNotifRef.current.setShow({
           modalTitle: "Gagal",
-          modalMessage: "Harga Akun Level harus berupa angka dan tidak boleh kurang dari 1",
+          modalMessage: "Persentase Komisi harus berupa angka dan tidak boleh kurang dari 1",
         });
       } else {
         sendData();
@@ -134,8 +170,10 @@ function FormAccountLevel() {
     } else {
       let input = "";
       !success.remark && (input = "Catatan");
-      !success.amount && (input = "Harga");
-      !success.name && (input = "Nama Level");
+      !success.accountLevel && (input = "Level Akun");
+      !success.level && (input = "Level Komisi");
+      !success.percent && (input = "Persentase Komisi");
+      !success.name && (input = "Judul");
 
       modalNotifRef.current.setShow({
         modalTitle: "Gagal",
@@ -149,18 +187,20 @@ function FormAccountLevel() {
     const payload = {
       id: parseInt(id),
       name: name,
-      amount: parseInt(amount),
+      percent: parseInt(percent),
+      level: parseInt(level.id),
+      accountLevelId: parseInt(accountLevel.id),
       remark: remark,
     };
 
     useAxios()
-      .post(`${Config.ApiUrl}/api/v1/master/account-level/${action}`, payload)
+      .post(`${Config.ApiUrl}/api/v1/master/commission-level/${action}`, payload)
       .then((response) => {
         modalNotifRef.current.setShow({
           modalTitle: "Sukses",
           modalMessage: response.data.message,
           onClose: () => {
-            redirectSet("/master/account-level");
+            redirectSet("/master/commission-level");
           },
         });
       })
@@ -208,7 +248,7 @@ function FormAccountLevel() {
                   <MDInput
                     id="name"
                     type="text"
-                    label="Nama Level"
+                    label="Nama Level Komisi"
                     value={name}
                     onChange={(e) => nameSet(e.target.value)}
                     onBlur={handleBlur}
@@ -218,16 +258,60 @@ function FormAccountLevel() {
                   />
                 </MDBox>
                 <MDBox mb={2}>
-                  <MDInput
-                    id="amount"
-                    type="text"
-                    label="Harga"
-                    value={amount}
-                    onChange={(e) => amountSet(e.target.value)}
+                  <Autocomplete
+                    options={levels}
+                    id="level"
+                    value={level}
+                    onChange={(e, value) => {
+                      levelSet(value);
+                    }}
                     onBlur={handleBlur}
-                    success={success ? success.amount : false}
-                    error={error ? error.amount : false}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
                     fullWidth
+                    renderInput={(params) => (
+                      <MDInput
+                        {...params}
+                        label="Level Komisi"
+                        success={success ? success.level : false}
+                        error={error ? error.level : false}
+                      />
+                    )}
+                    disabled={title == "Edit Level Komisi"}
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDInput
+                    id="percent"
+                    type="text"
+                    label="Persentase Komisi (%)"
+                    value={percent}
+                    onChange={(e) => percentSet(e.target.value)}
+                    onBlur={handleBlur}
+                    success={success ? success.percent : false}
+                    error={error ? error.percent : false}
+                    fullWidth
+                  />
+                </MDBox>
+                <MDBox mb={2}>
+                  <Autocomplete
+                    options={accountLevels}
+                    id="accountLevel"
+                    value={accountLevel}
+                    onChange={(e, value) => {
+                      accountLevelSet(value);
+                    }}
+                    onBlur={handleBlur}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    fullWidth
+                    renderInput={(params) => (
+                      <MDInput
+                        {...params}
+                        label="Level Akun"
+                        success={success ? success.accountLevel : false}
+                        error={error ? error.accountLevel : false}
+                      />
+                    )}
+                    disabled={title == "Edit Level Komisi"}
                   />
                 </MDBox>
                 <MDBox mb={2}>
@@ -265,4 +349,4 @@ function FormAccountLevel() {
   );
 }
 
-export default FormAccountLevel;
+export default FormCommissionLevel;

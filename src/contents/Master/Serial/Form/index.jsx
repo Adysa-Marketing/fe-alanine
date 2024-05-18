@@ -216,7 +216,6 @@ function FormSeri() {
                     value={state.accountLevel}
                     onKeyDown={handleKeyDown}
                     onChange={(e, value) => {
-                      console.log("value :", value);
                       setState((prev) => ({
                         ...prev,
                         accountLevel: value,

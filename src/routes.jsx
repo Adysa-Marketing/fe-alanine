@@ -108,6 +108,8 @@ import TrxAgenProduct from "contents/Transaction/AgenProduct";
 import DetailTrxAgenProduct from "contents/Transaction/AgenProduct/components/Detail";
 import AccountLevel from "contents/Master/AccountLevel";
 import FormAccountLevel from "contents/Master/AccountLevel/Form";
+import CommissionLevel from "contents/Master/ComissionLevel";
+import FormCommissionLevel from "contents/Master/ComissionLevel/Form";
 
 const routes = [
   // ==========================================================================================
@@ -617,25 +619,6 @@ const routes = [
     route: "/master",
     icon: <Icon fontSize="medium">source</Icon>,
     collapse: [
-      // ====================== account level ======================
-      {
-        name: "Level Akun",
-        key: "account-level",
-        route: "/master/account-level",
-        component: <AccountLevel />,
-      },
-      {
-        name: "Tambah Level Akun",
-        key: "add-account-level",
-        route: "/master/account-level/add",
-        component: <FormAccountLevel />,
-      },
-      {
-        name: "Edit Level Akun",
-        key: "edit-account-level",
-        route: "/master/account-level/edit/:id",
-        component: <FormAccountLevel />,
-      },
       // ====================== admin ======================
       {
         name: "Admin",
@@ -704,6 +687,44 @@ const routes = [
         key: "edit-bank",
         route: "/master/bank/edit/:id",
         component: <FormAccountBank />,
+      },
+      // ====================== level account ======================
+      {
+        name: "Level Akun",
+        key: "account-level",
+        route: "/master/account-level",
+        component: <AccountLevel />,
+      },
+      {
+        name: "Tambah Level Akun",
+        key: "add-account-level",
+        route: "/master/account-level/add",
+        component: <FormAccountLevel />,
+      },
+      {
+        name: "Edit Level Akun",
+        key: "edit-account-level",
+        route: "/master/account-level/edit/:id",
+        component: <FormAccountLevel />,
+      },
+      // ====================== level commission ======================
+      {
+        name: "Level Komisi",
+        key: "commission-level",
+        route: "/master/commission-level",
+        component: <CommissionLevel />,
+      },
+      {
+        name: "Tambah Level Akun",
+        key: "add-commission-level",
+        route: "/master/commission-level/add",
+        component: <FormCommissionLevel />,
+      },
+      {
+        name: "Edit Level Akun",
+        key: "edit-commission-level",
+        route: "/master/commission-level/edit/:id",
+        component: <FormCommissionLevel />,
       },
       // ====================== package ======================
       {
@@ -1109,12 +1130,6 @@ const getMenu = (user) => {
           route: "/master",
           icon: <Icon fontSize="medium">source</Icon>,
           collapse: [
-            {
-              name: "Akun Level",
-              key: "account-level",
-              route: "/master/account-level",
-              component: <Container />,
-            },
             ...subMasterAdmin,
             {
               name: "Artikel",
@@ -1126,6 +1141,18 @@ const getMenu = (user) => {
               name: "Bank",
               key: "bank",
               route: "/master/bank",
+              component: <Container />,
+            },
+            {
+              name: "Level Akun",
+              key: "account-level",
+              route: "/master/account-level",
+              component: <Container />,
+            },
+            {
+              name: "Level Komisi",
+              key: "comission-level",
+              route: "/master/commission-level",
               component: <Container />,
             },
             {
