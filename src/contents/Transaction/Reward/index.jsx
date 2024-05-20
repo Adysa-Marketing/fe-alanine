@@ -397,7 +397,7 @@ function TrxReward() {
                         price={`Hadiah Senilai Rp. ${new Intl.NumberFormat("id-ID").format(
                           item.amount
                         )}`}
-                        requirement={`${item.minFoot} downline masing-masing ${item.point} point`}
+                        requirement={`Hanya dapat di ambil oleh akun dengan level GOLD dengan ketentuan memiliki ${item.minFoot} downline masing-masing ${item.point} point`}
                         status={item.status}
                         already={item.already}
                         dialogForm={dialogFormRef}
