@@ -51,6 +51,7 @@ function ButtonAction({
   setIdTrxRw,
   changeAccountLevel,
   oldLevelData,
+  injectSaldo,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -61,6 +62,7 @@ function ButtonAction({
   const dialogDeliverRef = useRef();
   const imageRef = useRef();
   const accountLevelFormRef = useRef();
+  const injectSaldoFormRef = useRef();
 
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
@@ -75,6 +77,7 @@ function ButtonAction({
   const [disabledSubmit, disabledSubmitSet] = useState(false);
   const [accountLevel, accountLevelSet] = useState({ id: 1, label: "SILVER" });
   const [accountLevels, accountLevelsSet] = useState([]);
+  const [saldoAmount, saldoAmountSet] = useState(0);
 
   const openMenu = (event) => setMenu(event.currentTarget);
   const closeMenu = () => setMenu(null);
@@ -571,6 +574,56 @@ function ButtonAction({
     }
   };
 
+  // Inject saldo manual for member / agen
+  const handleInjectSaldo = () => {
+    injectSaldoFormRef.current.setShow({ show: true, title: "Tambahkan Saldo Akun" });
+  };
+
+  const handleSubmitInjectSaldo = () => {
+    if (saldoAmount < 1) {
+      modalNotifRef.current.setShow({
+        modalTitle: "Peringatan",
+        modalMessage: "Penambahan saldo minimal Rp.1",
+      });
+    } else {
+      disabledSubmitSet(true);
+      useAxios()
+        .post(`${Config.ApiUrl}/api/v1/${urlKey}/inject-saldo`, {
+          id,
+          amount: parseInt(saldoAmount),
+        })
+        .then((response) => {
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: response.data.message,
+            onClose: () => {
+              console.log("[REFRESH]");
+              refreshData();
+            },
+          });
+        })
+        .catch((err) => {
+          disabledSubmitSet(false);
+          if (err.response?.data) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data?.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data?.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        });
+    }
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -627,6 +680,9 @@ function ButtonAction({
 
       {/* change acccount level */}
       {changeAccountLevel && <MenuItem onClick={handleAccountLevel}>Ubah Level Akun</MenuItem>}
+
+      {/* inject saldo member / agen */}
+      {injectSaldo && <MenuItem onClick={handleInjectSaldo}>Tambah Saldo Manual</MenuItem>}
     </Menu>
   );
 
@@ -943,6 +999,55 @@ function ButtonAction({
         </Grid>
       </DialogForm>
 
+      {/* INJECT SALDO MEMBER / AGEN */}
+      <DialogForm ref={injectSaldoFormRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            <MDBox mb={2}>
+              <MDInput
+                fullWidth
+                value={saldoAmount}
+                label="Total Saldo Ditambahkan"
+                onChange={(e) => saldoAmountSet(e.target.value)}
+              />
+              {alertInfo !== "" && (
+                <MDTypography variant="caption" color="error" fontWeight="bold">
+                  {alertInfo}
+                </MDTypography>
+              )}
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => {
+                  injectSaldoFormRef.current.setShow({ show: false, title: "" });
+                  remarkSet("");
+                  alertInfoSet("");
+                }}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={handleSubmitInjectSaldo}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
       <MDButton variant="contained" color="info" size="small" onClick={openMenu}>
         actions&nbsp;
         <Icon>keyboard_arrow_down</Icon>
@@ -976,6 +1081,7 @@ ButtonAction.defaultProps = {
   editTrxRw: false,
   changeAccountLevel: false,
   levelData: { id: 1, label: "SILVER" },
+  injectSaldo: false,
 };
 
 ButtonAction.propTypes = {
@@ -1007,6 +1113,7 @@ ButtonAction.propTypes = {
   setIdTrxRw: PropTypes.func,
   changeAccountLevel: PropTypes.bool,
   oldLevelData: PropTypes.object, // data level lama
+  injectSaldo: PropTypes.bool,
 };
 
 export default ButtonAction;

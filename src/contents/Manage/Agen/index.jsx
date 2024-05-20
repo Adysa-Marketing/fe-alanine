@@ -37,10 +37,11 @@ function Agen() {
   const [rows, rowsSet] = useState([]);
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
-    { Header: "No", accessor: "no", width: "10%" },
+    { Header: "No", accessor: "no", width: "5%" },
     { Header: "Nama", accessor: "name", width: "20%" },
     { Header: "Level Akun", accessor: "accountLevel", width: "15%" },
-    { Header: "Status", accessor: "status", width: "20%" },
+    { Header: "Saldo", accessor: "wallet", width: "15%" },
+    { Header: "Status", accessor: "status", width: "10%" },
     { Header: "Tanggal Approve", accessor: "dateApproved", width: "20%" },
     { Header: "Stokis", accessor: "stokis", width: "20%" },
     { Header: "Diskon Produk Agen", accessor: "agenDiscount", width: "30%" },
@@ -98,13 +99,15 @@ function Agen() {
         const output = data.data.map((item) => {
           no++;
           const agenStatus = item.AgenStatus;
-          const levelData = item.AccountLevel
-            ? { id: item.AccountLevel.id, label: item.AccountLevel.name }
-            : { id: 1, label: "SILVER" }; // level id lama
+          const levelData =
+            item.User && item.User.AccountLevel
+              ? { id: item.User.AccountLevel.id, label: item.User.AccountLevel.name }
+              : { id: 1, label: "SILVER" }; // level id lama
           return {
             no,
             name: `${item.name} - (${item.User?.username})`,
             accountLevel: item.User && item.User.AccountLevel ? item.User.AccountLevel.name : "-",
+            wallet: "Rp. " + new Intl.NumberFormat("id-ID").format(item.User?.wallet || 0),
             status: agenStatus ? (
               <MDBadge
                 variant="contained"
@@ -142,6 +145,7 @@ function Agen() {
                   userId={item.User?.id}
                   changeAccountLevel={true}
                   oldLevelData={levelData}
+                  injectSaldo={true}
                 ></ButtonAction>
               ) : (
                 "-"

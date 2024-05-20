@@ -127,6 +127,7 @@ function Member() {
                   statusId={statusId}
                   changeAccountLevel={true}
                   oldLevelData={levelData}
+                  injectSaldo={true}
                 ></ButtonAction>
               ) : (
                 "-"
