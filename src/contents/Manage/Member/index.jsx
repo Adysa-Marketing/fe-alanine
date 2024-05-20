@@ -37,11 +37,12 @@ function Member() {
   const [rows, rowsSet] = useState([]);
   const [tableHead, tableHeadSet] = useState([
     { Header: "Action", accessor: "action", width: "15%" },
-    { Header: "No", accessor: "no", width: "15%" },
-    { Header: "Nama", accessor: "name", width: "25%" },
-    { Header: "Username", accessor: "username", width: "25%" },
-    { Header: "Email", accessor: "email", width: "25%" },
-    { Header: "No Telpon", accessor: "phone", width: "25%" },
+    { Header: "No", accessor: "no", width: "5%" },
+    { Header: "Nama", accessor: "name", width: "20%" },
+    { Header: "Username", accessor: "username", width: "20%" },
+    { Header: "Email", accessor: "email", width: "20%" },
+    { Header: "No Telpon", accessor: "phone", width: "20%" },
+    { Header: "Level Akun", accessor: "accountLevel", width: "15%" },
     { Header: "Poin", accessor: "point", width: "15%" },
     { Header: "Saldo", accessor: "wallet", width: "25%" },
     { Header: "Gender", accessor: "gender", width: "15%" },
@@ -94,12 +95,17 @@ function Member() {
         const output = data.data.map((item) => {
           no++;
           const statusId = item.isActive ? 1 : 2;
+          const levelData = item.AccountLevel
+            ? { id: item.AccountLevel.id, label: item.AccountLevel.name }
+            : { id: 1, label: "SILVER" }; // level id lama
+
           return {
             no,
             name: item.name,
             username: item.username,
             email: item.email,
             phone: item.phone,
+            accountLevel: item.AccountLevel ? item.AccountLevel.name : "-",
             point: item.point,
             wallet: "Rp. " + new Intl.NumberFormat("id-ID").format(item.wallet),
             gender: item.gender,
@@ -119,6 +125,8 @@ function Member() {
                   changePassword={true}
                   changeStatus={true}
                   statusId={statusId}
+                  changeAccountLevel={true}
+                  oldLevelData={levelData}
                 ></ButtonAction>
               ) : (
                 "-"

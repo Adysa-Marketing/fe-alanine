@@ -11,6 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
+import Autocomplete from "@mui/material/Autocomplete";
 
 import useAxios from "libs/useAxios";
 import Config from "config";
@@ -48,6 +49,8 @@ function ButtonAction({
   transferedTrx,
   editTrxRw,
   setIdTrxRw,
+  changeAccountLevel,
+  oldLevelData,
 }) {
   const confirmRef = useRef();
   const modalNotifRef = useRef();
@@ -57,6 +60,7 @@ function ButtonAction({
   const dialogRejectTrxStokisRewardRef = useRef();
   const dialogDeliverRef = useRef();
   const imageRef = useRef();
+  const accountLevelFormRef = useRef();
 
   const navigate = useNavigate();
   const [menu, setMenu] = useState(null);
@@ -69,6 +73,8 @@ function ButtonAction({
   const [remark, remarkSet] = useState("");
   const [alertInfo, alertInfoSet] = useState("");
   const [disabledSubmit, disabledSubmitSet] = useState(false);
+  const [accountLevel, accountLevelSet] = useState({ id: 1, label: "SILVER" });
+  const [accountLevels, accountLevelsSet] = useState([]);
 
   const openMenu = (event) => setMenu(event.currentTarget);
   const closeMenu = () => setMenu(null);
@@ -169,7 +175,7 @@ function ButtonAction({
             modalNotifRef.current.setShow({
               modalTitle: "Gagal",
               modalMessage: err.response.data
-                ? err.response.data?.message.length
+                ? Array.isArray(err.response.data?.message)
                   ? err.response.data.message[0].message
                   : err.response.data?.message
                 : "Terjadi kesalahan pada system",
@@ -501,6 +507,70 @@ function ButtonAction({
     }
   };
 
+  // change account level of member or agen
+  const handleAccountLevel = () => {
+    closeMenu();
+    loadAccountLevel();
+    accountLevelSet(oldLevelData);
+    accountLevelFormRef.current.setShow({ show: true, title: "Ubah Level Akun" });
+  };
+
+  const loadAccountLevel = () => {
+    useAxios()
+      .get(`${Config.ApiUrl}/api/v1/dropdown/account-level`)
+      .then((response) => {
+        let data = response.data.data;
+        data = data.map((item) => ({ id: item.id, label: item.name }));
+        accountLevelsSet(data);
+      })
+      .catch((err) => console.log("[!] Error :", err));
+  };
+
+  const handleChangeAccountLevel = () => {
+    if (!accountLevel.id) {
+      modalNotifRef.current.setShow({
+        modalTitle: "Peringatan",
+        modalMessage: "Level Akun belum dipilih",
+      });
+    } else {
+      disabledSubmitSet(true);
+      useAxios()
+        .put(`${Config.ApiUrl}/api/v1/${urlKey}/change-level`, {
+          id,
+          accountLevelId: parseInt(accountLevel.id),
+        })
+        .then((response) => {
+          modalNotifRef.current.setShow({
+            modalTitle: "Sukses",
+            modalMessage: response.data.message,
+            onClose: () => {
+              console.log("[REFRESH]");
+              refreshData();
+            },
+          });
+        })
+        .catch((err) => {
+          disabledSubmitSet(false);
+          if (err.response?.data) {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: err.response.data
+                ? Array.isArray(err.response.data?.message)
+                  ? err.response.data.message[0].message
+                  : err.response.data?.message
+                : "Terjadi kesalahan pada system",
+              color: "warning",
+            });
+          } else {
+            modalNotifRef.current.setShow({
+              modalTitle: "Gagal",
+              modalMessage: "Koneksi jaringan terputus",
+            });
+          }
+        });
+    }
+  };
+
   const renderMenu = (
     <Menu
       anchorEl={menu}
@@ -554,6 +624,9 @@ function ButtonAction({
       {rejectTrxStokisReward && statusId == 1 && (
         <MenuItem onClick={() => handleRejectTrxStokisReward()}>Tolak</MenuItem>
       )}
+
+      {/* change acccount level */}
+      {changeAccountLevel && <MenuItem onClick={handleAccountLevel}>Ubah Level Akun</MenuItem>}
     </Menu>
   );
 
@@ -827,6 +900,49 @@ function ButtonAction({
         </Grid>
       </DialogForm>
 
+      <DialogForm ref={accountLevelFormRef} maxWidth="xs">
+        <Grid container item xs={12} lg={12} sx={{ mx: "auto" }} mt={2}>
+          <MDBox width="100%" component="form">
+            <MDBox mb={2}>
+              <Autocomplete
+                options={accountLevels}
+                value={accountLevel}
+                onChange={(e, value) => {
+                  accountLevelSet(value);
+                }}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                fullWidth
+                renderInput={(params) => <MDInput {...params} label="Level Akun" />}
+              />
+            </MDBox>
+          </MDBox>
+          <MDBox
+            py={3}
+            width="100%"
+            display="flex"
+            justifyContent={{ md: "flex-end", xs: "center" }}
+          >
+            <MDBox mr={1}>
+              <MDButton
+                variant="gradient"
+                color="error"
+                onClick={() => accountLevelFormRef.current.setShow({ show: false, title: "" })}
+              >
+                Tutup
+              </MDButton>
+            </MDBox>
+            <MDButton
+              variant="gradient"
+              color="info"
+              disabled={disabledSubmit}
+              onClick={handleChangeAccountLevel}
+            >
+              Submit
+            </MDButton>
+          </MDBox>
+        </Grid>
+      </DialogForm>
+
       <MDButton variant="contained" color="info" size="small" onClick={openMenu}>
         actions&nbsp;
         <Icon>keyboard_arrow_down</Icon>
@@ -858,6 +974,8 @@ ButtonAction.defaultProps = {
   processTrx: false,
   transferedTrx: false,
   editTrxRw: false,
+  changeAccountLevel: false,
+  levelData: { id: 1, label: "SILVER" },
 };
 
 ButtonAction.propTypes = {
@@ -887,6 +1005,8 @@ ButtonAction.propTypes = {
   transferedTrx: PropTypes.bool,
   editTrxRw: PropTypes.bool,
   setIdTrxRw: PropTypes.func,
+  changeAccountLevel: PropTypes.bool,
+  oldLevelData: PropTypes.object, // data level lama
 };
 
 export default ButtonAction;
