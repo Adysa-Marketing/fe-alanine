@@ -96,7 +96,8 @@ function Dashboard() {
   const [historyReferral, historyReferralSet] = useState([]);
   const [historyWidhraw, historyWidhrawSet] = useState([]);
   const [historyAgenSale, historyAgenSaleSet] = useState([]);
-  const [historySale, historySaleSet] = useState([]);
+  // const [historySale, historySaleSet] = useState([]);
+  const [historyRegister, historyRegisterSet] = useState([]);
   const [historyReward, historyRewardSet] = useState([]);
   const [historyStokis, historyStokisSet] = useState([]);
 
@@ -117,7 +118,7 @@ function Dashboard() {
         loadMonWidhraw(),
         loadMonSpendWd(),
         loadChart(),
-        loadHistorySale(),
+        loadHistoryRegister(), // loadHistorySale(),
         loadHistoryReward(),
         loadHistoryStokis(),
         loadHistoryWidhraw(),
@@ -143,7 +144,7 @@ function Dashboard() {
           monWdSet(result[9] ? result[9].amount : 0);
           monSpendWdSet(result[10] ? result[10].amount : 0);
           datasetMembersSet(result[11] ? result[11] : { labels: [], datasets: [] });
-          historySaleSet(result[12] ? result[12] : []);
+          historyRegisterSet(result[12] ? result[12] : []); //  historySaleSet(result[12] ? result[12] : []);
           historyRewardSet(result[13] ? result[13] : []);
           historyStokisSet(result[14] ? result[14] : []);
           historyWidhrawSet(result[15] ? result[15] : []);
@@ -471,6 +472,16 @@ function Dashboard() {
       .catch((err) => console.log(`[!] Error : ${err}`));
   };
 
+  const loadHistoryRegister = () => {
+    return useAxios()
+      .get(`${Config.ApiUrl}/api/v1/trx/stat/history-register`)
+      .then((res) => {
+        const data = res.data.data;
+        return data;
+      })
+      .catch((err) => console.log(`[!] Error : ${err}`));
+  };
+
   const user = secureStorage.getItem("user");
   return (
     <DashboardLayout>
@@ -742,9 +753,10 @@ function Dashboard() {
         {/* HISTORY LIST DATA */}
         {user && [1, 2].includes(user.roleId) && (
           <>
-            {/* history sale & history reward */}
+            {/* history register & history widhraw */}
             <Grid container spacing={3} mb={2}>
-              <Grid item xs={12} md={12} lg={6}>
+              {/* history sale */}
+              {/* <Grid item xs={12} md={12} lg={6}>
                 <Card>
                   <MDBox
                     p={2}
@@ -813,7 +825,9 @@ function Dashboard() {
                     />
                   </MDBox>
                 </Card>
-              </Grid>
+              </Grid> */}
+
+              {/* history register */}
               <Grid item xs={12} md={12} lg={6}>
                 <Card>
                   <MDBox
@@ -825,7 +839,7 @@ function Dashboard() {
                     alignItems={{ md: "center", xs: "flex-start" }}
                   >
                     <MDTypography variant="button" fontWeight="medium">
-                      History Reward
+                      History Pendaftaran
                     </MDTypography>
 
                     <MDBox mt={{ xs: 1, md: 0 }}>
@@ -834,7 +848,7 @@ function Dashboard() {
                         color="info"
                         component={Link}
                         size="small"
-                        to={{ pathname: "/trx/reward" }}
+                        to={{ pathname: "/manage/member" }}
                       >
                         Lihat Semua
                       </MDButton>
@@ -845,34 +859,102 @@ function Dashboard() {
                     <CTable
                       tableHead={[
                         { name: "kode", width: "15%" },
-                        { name: "nama", width: "20%" },
-                        { name: "item", width: "25%" },
-                        { name: "status", width: "15%" },
-                        { name: "tanggal", width: "15%" },
+                        { name: "Identitas", width: "20%" },
+                        { name: "kontak", width: "25%" },
+                        { name: "level", width: "15%" },
+                        { name: "tanggal", width: "20%" },
                       ]}
                       textAlignColumns={["center", "left", "left", "right", "center"]}
-                      tableData={historyReward.map((item, idx) => [
+                      tableData={historyRegister.map((item, idx) => {
+                        const member = (
+                          <p>
+                            {item.name} <br />
+                            {item.username} <br />
+                          </p>
+                        );
+                        const contact = (
+                          <p>
+                            {item.phone} <br />
+                            {item.email} <br />
+                          </p>
+                        );
+                        return [
+                          item.kode,
+                          member,
+                          contact,
+                          item.AccountLevel?.name,
+                          moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
+                        ];
+                      })}
+                    />
+                  </MDBox>
+                </Card>
+              </Grid>
+
+              {/* history widhraw */}
+              <Grid item xs={12} md={12} lg={6}>
+                <Card>
+                  <MDBox
+                    p={2}
+                    lineHeight={1}
+                    display="flex"
+                    flexDirection={{ md: "row", xs: "column" }}
+                    justifyContent={{ md: "space-between", xs: "center" }}
+                    alignItems={{ md: "center", xs: "flex-start" }}
+                  >
+                    <MDTypography variant="button" fontWeight="medium">
+                      History Widhraw
+                    </MDTypography>
+
+                    <MDBox mt={{ xs: 1, md: 0 }}>
+                      <MDButton
+                        variant="gradient"
+                        color="info"
+                        component={Link}
+                        size="small"
+                        to={{ pathname: "/trx/widhraw" }}
+                      >
+                        Lihat Semua
+                      </MDButton>
+                    </MDBox>
+                  </MDBox>
+
+                  <MDBox pb={2} px={2}>
+                    <CTable
+                      tableHead={[
+                        { name: "kode", width: "15%" },
+                        { name: "penarikan", width: "20%" },
+                        { name: "dibayar", width: "25%" },
+                        { name: "status", width: "15%" },
+                        { name: "pengajuan", width: "15%" },
+                        { name: "pencairan", width: "15%" },
+                      ]}
+                      textAlignColumns={["center", "left", "left", "right", "center"]}
+                      tableData={historyWidhraw.map((item, idx) => [
                         item.kode,
-                        item.User?.name,
-                        item.Reward?.name,
+                        "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
+                        "Rp. " + new Intl.NumberFormat("id-ID").format(item.paidAmount),
                         <MDBadge
                           key={idx}
                           size="lg"
                           variant="contained"
-                          badgeContent={item.RwStatus && item.RwStatus ? item.RwStatus.name : ""}
+                          badgeContent={item.WdStatus && item.WdStatus ? item.WdStatus.name : ""}
                           color={
-                            item.RwStatus.id === 1
+                            item.WdStatus.id === 1
                               ? "secondary"
-                              : item.RwStatus.id === 2
+                              : item.WdStatus.id === 2
                               ? "error"
-                              : item.RwStatus.id === 3
+                              : item.WdStatus.id === 3
                               ? "warning"
-                              : item.RwStatus.id === 4
+                              : item.WdStatus.id === 4
                               ? "info"
                               : "success"
                           }
                         />,
-                        moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
+                        moment(item.createdAt).format("DD-MM-YYYY HH:mm:ss"),
+                        [5].includes(item.WdStatus?.id)
+                          ? moment(item.updatedAt).format("DD-MM-YYYY HH:mm:ss")
+                          : "-",
                       ])}
                     />
                   </MDBox>
@@ -880,8 +962,9 @@ function Dashboard() {
               </Grid>
             </Grid>
 
-            {/* history stokis & history widharaw */}
+            {/* history stokis & history reward */}
             <Grid container spacing={3} mb={2}>
+              {/* history stokis */}
               <Grid item xs={12} md={12} lg={6}>
                 <Card>
                   <MDBox
@@ -957,6 +1040,8 @@ function Dashboard() {
                   </MDBox>
                 </Card>
               </Grid>
+
+              {/* history reward */}
               <Grid item xs={12} md={12} lg={6}>
                 <Card>
                   <MDBox
@@ -968,7 +1053,7 @@ function Dashboard() {
                     alignItems={{ md: "center", xs: "flex-start" }}
                   >
                     <MDTypography variant="button" fontWeight="medium">
-                      History Widhraw
+                      History Reward
                     </MDTypography>
 
                     <MDBox mt={{ xs: 1, md: 0 }}>
@@ -977,7 +1062,7 @@ function Dashboard() {
                         color="info"
                         component={Link}
                         size="small"
-                        to={{ pathname: "/trx/widhraw" }}
+                        to={{ pathname: "/trx/reward" }}
                       >
                         Lihat Semua
                       </MDButton>
@@ -988,38 +1073,34 @@ function Dashboard() {
                     <CTable
                       tableHead={[
                         { name: "kode", width: "15%" },
-                        { name: "penarikan", width: "20%" },
-                        { name: "dibayar", width: "25%" },
+                        { name: "nama", width: "20%" },
+                        { name: "item", width: "25%" },
                         { name: "status", width: "15%" },
-                        { name: "pengajuan", width: "15%" },
-                        { name: "pencairan", width: "15%" },
+                        { name: "tanggal", width: "15%" },
                       ]}
                       textAlignColumns={["center", "left", "left", "right", "center"]}
-                      tableData={historyWidhraw.map((item, idx) => [
+                      tableData={historyReward.map((item, idx) => [
                         item.kode,
-                        "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
-                        "Rp. " + new Intl.NumberFormat("id-ID").format(item.paidAmount),
+                        item.User?.name,
+                        item.Reward?.name,
                         <MDBadge
                           key={idx}
                           size="lg"
                           variant="contained"
-                          badgeContent={item.WdStatus && item.WdStatus ? item.WdStatus.name : ""}
+                          badgeContent={item.RwStatus && item.RwStatus ? item.RwStatus.name : ""}
                           color={
-                            item.WdStatus.id === 1
+                            item.RwStatus.id === 1
                               ? "secondary"
-                              : item.WdStatus.id === 2
+                              : item.RwStatus.id === 2
                               ? "error"
-                              : item.WdStatus.id === 3
+                              : item.RwStatus.id === 3
                               ? "warning"
-                              : item.WdStatus.id === 4
+                              : item.RwStatus.id === 4
                               ? "info"
                               : "success"
                           }
                         />,
-                        moment(item.createdAt).format("DD-MM-YYYY HH:mm:ss"),
-                        [5].includes(item.WdStatus?.id)
-                          ? moment(item.updatedAt).format("DD-MM-YYYY HH:mm:ss")
-                          : "-",
+                        moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
                       ])}
                     />
                   </MDBox>
