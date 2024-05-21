@@ -57,6 +57,7 @@ function BasicInfo() {
     imageFilename: "",
     remark: "",
     Role: null,
+    AccountLevel: "",
     wallet: 0,
     point: 0,
 
@@ -105,6 +106,7 @@ function BasicInfo() {
             : null,
           remark: user.remark,
           Role: user.Role,
+          AccountLevel: user.AccountLevel,
           point: user.point,
           wallet: user.wallet,
 
@@ -341,7 +343,7 @@ function BasicInfo() {
                       {state.name}
                     </MDTypography>
                     <MDTypography variant="button" color="text" fontWeight="medium">
-                      {state.Role?.name} / {state.username}
+                      {state.Role?.name} / {state.AccountLevel?.name} / {state.username}
                     </MDTypography>
                   </MDBox>
                 </Grid>

@@ -109,7 +109,7 @@ function Header({ children, profile }) {
                   {profile.name || ""}
                 </MDTypography>
                 <MDTypography variant="button" color="text" fontWeight="regular">
-                  {profile.role} / {profile.username}
+                  {profile.role} / {profile.accountLevel} / {profile.username}
                 </MDTypography>
               </MDBox>
             </Grid>

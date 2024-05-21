@@ -64,6 +64,7 @@ function Overview({ path }) {
   const [bio, bioSet] = useState("");
   const [testimoni, testimoniSet] = useState({});
   const [role, roleSet] = useState("");
+  const [accountLevel, accountLevelSet] = useState("");
   const [sponsorKey, sponsorKeySet] = useState("");
   const [downline, downlineSet] = useState([]);
   const [redirect, redirectSet] = useState(null);
@@ -106,6 +107,7 @@ function Overview({ path }) {
         bioSet(data.remark);
         testimoniSet(data.Testimonial);
         roleSet(data.Role?.name);
+        accountLevelSet(data.AccountLevel?.name);
         sponsorKeySet(data.SponsorKey?.key);
         const Downline = data.SponsorKey?.Referrals
           ? data.SponsorKey?.Referrals.map((downline) => {
@@ -127,6 +129,7 @@ function Overview({ path }) {
           username: data.username,
           role: data.Role?.name,
           image: data.image,
+          accountLevel: data.AccountLevel?.name,
         });
       })
       .catch((err) => {
@@ -161,6 +164,7 @@ function Overview({ path }) {
                   "Nama Lengkap": name,
                   username: username,
                   role,
+                  accountLevel,
                   phone,
                   email,
                   point: point.toString(),

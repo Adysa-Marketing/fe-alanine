@@ -108,7 +108,7 @@ function Generation() {
       rowsPerPage: params && params.rowsPerPage ? params.rowsPerPage : rowsPerPage,
       startDate: params && params.startDate ? params.startDate : startDate,
       endDate: params && params.endDate ? params.endDate : endDate,
-      levelId: level,
+      level: level,
     };
 
     useAxios()
@@ -231,7 +231,7 @@ function Generation() {
                       currentPage: 1,
                       startDate,
                       endDate,
-                      levelId: level ? level.id : null,
+                      level: level ? level.id : null,
                     });
                   }}
                   iconOnly

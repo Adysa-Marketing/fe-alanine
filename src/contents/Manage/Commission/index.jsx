@@ -93,12 +93,17 @@ function Commission() {
         let no = 0;
         const output = data.data.map((item) => {
           no++;
+          let uplineLevel = item.Upline?.AccountLevel?.name || "";
+          let downlineLevel = item.Downline?.AccountLevel?.name || "";
+          let commissionLevel = item.CommissionLevel?.level || "";
           return {
             no,
             amount: "Rp. " + new Intl.NumberFormat("id-ID").format(item.amount),
-            upline: item.Upline?.name,
-            downline: item.Downline?.name,
-            level: item.CommissionLevel?.name,
+            upline: `${item.Upline?.name} ${uplineLevel != "" ? "[" + uplineLevel + "]" : ""}`,
+            downline: `${item.Downline?.name} ${
+              downlineLevel != "" ? "[" + downlineLevel + "]" : ""
+            }`,
+            level: `Level ${commissionLevel}`,
             date: moment(item.date).format("DD-MM-YYYY HH:mm:ss"),
           };
         });
