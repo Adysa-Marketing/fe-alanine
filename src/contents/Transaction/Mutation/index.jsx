@@ -55,6 +55,10 @@ function Mutation() {
       id: 2,
       label: "Dana Keluar",
     },
+    {
+      id: 3,
+      label: "Registrasi",
+    },
   ]);
   const [categories, categoriesSet] = useState([
     {
@@ -68,6 +72,10 @@ function Mutation() {
     {
       id: 3,
       label: "Widhraw",
+    },
+    {
+      id: 3,
+      label: "Member",
     },
   ]);
   const [startDate, startDateSet] = useState("");
