@@ -55,7 +55,7 @@ import { Link } from "react-router-dom";
 
 function Dashboard() {
   // ADMIN STATS
-  const [datasetSales, datasetSalesSet] = useState({
+  const [datasetMembers, datasetMembersSet] = useState({
     labels: [],
     datasets: [],
   });
@@ -142,7 +142,7 @@ function Dashboard() {
           monRwSet(result[8] ? result[8].amount : 0);
           monWdSet(result[9] ? result[9].amount : 0);
           monSpendWdSet(result[10] ? result[10].amount : 0);
-          datasetSalesSet(result[11] ? result[11] : { labels: [], datasets: [] });
+          datasetMembersSet(result[11] ? result[11] : { labels: [], datasets: [] });
           historySaleSet(result[12] ? result[12] : []);
           historyRewardSet(result[13] ? result[13] : []);
           historyStokisSet(result[14] ? result[14] : []);
@@ -712,9 +712,9 @@ function Dashboard() {
               <Grid item xs={12} md={12} lg={8}>
                 <MDBox mb={3}>
                   <ChartSales
-                    title={`Statistik Transaksi Bulanan ${moment().format("YYYY")}`}
+                    title={`Statistik Pendaftaran Bulanan ${moment().format("YYYY")}`}
                     height={"22.19rem"}
-                    chart={datasetSales}
+                    chart={datasetMembers}
                   />
                 </MDBox>
               </Grid>
@@ -725,11 +725,11 @@ function Dashboard() {
                     height="325px"
                     description={"Laporan Dana Masuk dan Dana Keluar Bulan ini"}
                     chart={{
-                      labels: ["Dana Masuk", "Dana Keluar"],
+                      labels: ["Dana Masuk", "Dana Keluar", "Register Member"],
                       datasets: {
                         label: "Statistik Keuangan",
-                        backgroundColors: ["success", "error"],
-                        data: [monMutation.income, monMutation.outcome],
+                        backgroundColors: ["success", "error", "info"],
+                        data: [monMutation.income, monMutation.outcome, monMutation.registration],
                       },
                     }}
                   />
